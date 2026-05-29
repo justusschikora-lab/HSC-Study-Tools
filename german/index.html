@@ -217,18 +217,24 @@ function buildNav(){
 function goto(id){
   currentPage=id;buildNav();
   const m=document.getElementById('main');
-  switch(id){
-    case'lang':renderLang(m);break;
-    case'grammar':renderGrammar(m);break;
-    case'oral':renderOral(m);break;
-    case'vocab':renderVocab(m);break;
-    case'phrases':renderPhrases(m);break;
-    case'verbs':renderVerbs(m);break;
-    case'pastpapers':renderPastPapers(m);break;
-    case'quiz':renderQuiz(m);break;
-    case'writing':renderWriting(m);break;
-    case'errors':renderErrors(m);break;
-    default:renderLang(m);
+  try{
+    switch(id){
+      case'lang':renderLang(m);break;
+      case'grammar':renderGrammar(m);break;
+      case'oral':renderOral(m);break;
+      case'vocab':renderVocab(m);break;
+      case'phrases':renderPhrases(m);break;
+      case'verbs':renderVerbs(m);break;
+      case'pastpapers':renderPastPapers(m);break;
+      case'quiz':renderQuiz(m);break;
+      case'writing':renderWriting(m);break;
+      case'errors':renderErrors(m);break;
+      default:renderLang(m);
+    }
+  }catch(e){
+    m.innerHTML=`<div style="padding:30px;color:#ef4444;font-family:monospace;font-size:13px;background:#2c1414;border-radius:12px;margin:20px">
+      <b>JS Error in render('${id}'):</b><br><br>${e.message}<br><br><pre style="white-space:pre-wrap;font-size:11px;opacity:.7">${e.stack||''}</pre>
+    </div>`;
   }
   m.scrollTop=0;
 }
