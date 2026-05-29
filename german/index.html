@@ -162,7 +162,8 @@ function esc(s){return(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;',
 
 /* ==================== NAV ==================== */
 const NAV=[
-  {id:"lang",label:"Language Devices",ic:"🔍"},
+  {id:"lang",label:"Text Analysis Devices",ic:"🔍"},
+  {id:"grammar",label:"Grammar Reference",ic:"📖"},
   {sep:"ORAL"},
   {id:"oral",label:"Oral Exam Prep",ic:"🎙️"},
   {sep:"VOCAB & REFERENCE"},
@@ -192,6 +193,7 @@ function goto(id){
   const m=document.getElementById('main');
   switch(id){
     case'lang':renderLang(m);break;
+    case'grammar':renderGrammar(m);break;
     case'oral':renderOral(m);break;
     case'vocab':renderVocab(m);break;
     case'phrases':renderPhrases(m);break;
@@ -936,7 +938,334 @@ const QUIZ_ITEMS=[
   {cat:"oral",topic:"Technologie",q:"Welche Rolle spielen soziale Medien in deinem Leben?",a:"Expand with:\n• Konkrete Nutzung: 'Ich nutze soziale Medien hauptsächlich für…'\n• Vorteile: 'Einerseits ermöglichen sie…'\n• Nachteile: 'Andererseits ist die ständige Erreichbarkeit…'\n• Meinung: 'Ich bin der Meinung, dass…'\n• Generationsvergleich: 'Im Vergleich zu meinen Eltern…'\n\nTip: nuanced answer scores better than pure positive OR negative."},
 ];
 
-/* ==================== RENDER FUNCTIONS ==================== */
+const GRAMMAR=[
+  {
+    cat:"Fälle (Cases)",
+    items:[
+      {
+        name:"Nominativ",en:"Nominative",
+        rule:"Subject of the sentence — who/what is doing the action.",
+        forms:"der/die/das/die · ein/eine/ein/— · kein/keine/kein/keine",
+        ex:["Der Mann liest. — The man reads.","Eine Frau arbeitet hier. — A woman works here."],
+        hsc:"Use: subject of any sentence. Default case — use when in doubt for the 'doer'."
+      },
+      {
+        name:"Akkusativ",en:"Accusative",
+        rule:"Direct object — what/whom the action directly affects. Also after: durch, für, gegen, ohne, um, bis, entlang.",
+        forms:"den/die/das/die · einen/eine/ein/— · keinen/keine/kein/keine",
+        ex:["Ich sehe den Mann. — I see the man (masc. changes der→den).","Er kauft einen Kaffee. — He buys a coffee.","Das ist für meinen Vater. — That is for my father."],
+        hsc:"Key change: masculine only — der→den, ein→einen, kein→keinen. Fem/neut/pl unchanged."
+      },
+      {
+        name:"Dativ",en:"Dative",
+        rule:"Indirect object — to/for whom. Also after: aus, bei, mit, nach, seit, von, zu, gegenüber, außer.",
+        forms:"dem/der/dem/den+n · einem/einer/einem/— · keinem/keiner/keinem/keinen",
+        ex:["Ich helfe dem Mann. — I help the man.","Sie gibt ihrer Schwester das Buch. — She gives her sister the book.","Er fährt mit dem Bus. — He travels by bus."],
+        hsc:"Plural nouns add -n in dative: die Männer → den Männern. After mit, von, zu, seit — always dative."
+      },
+      {
+        name:"Genitiv",en:"Genitive",
+        rule:"Possession / belonging. Also after: wegen, trotz, während, anstatt/statt.",
+        forms:"des+s/der/des+s/der · eines+s/einer/eines+s/— · keines/keiner/keines/keiner",
+        ex:["Das Auto des Vaters. — The father's car.","Wegen des Regens blieb er zu Hause. — Because of the rain he stayed home.","Trotz des schlechten Wetters gingen sie spazieren."],
+        hsc:"Masc/neut nouns add -(e)s: des Mannes, des Kindes. Often replaceable with 'von + Dativ' in informal writing."
+      },
+    ]
+  },
+  {
+    cat:"Wortstellung (Word Order)",
+    items:[
+      {
+        name:"Verb-Zweit-Regel (V2)",en:"Verb-Second Rule",
+        rule:"In a main clause, the conjugated verb ALWAYS occupies position 2 — regardless of what comes first.",
+        forms:"[Position 1] + [Verb] + [Subject if not P1] + [rest]",
+        ex:["Ich gehe morgen ins Kino. — normal order.","Morgen gehe ich ins Kino. — time adverb first → verb still 2nd, subject moves.","Leider kann er nicht kommen. — 'Leider' first → verb 2nd."],
+        hsc:"Key for writing: starting a sentence with 'Deshalb', 'Jedoch', 'Außerdem', 'Trotzdem' etc. → verb immediately after, then subject."
+      },
+      {
+        name:"Nebensatz (Subordinate Clause)",en:"Subordinate Clause Word Order",
+        rule:"After a subordinating conjunction (weil, dass, obwohl, wenn, als, ob, damit, während, bevor, nachdem, falls...), the conjugated verb goes to the END.",
+        forms:"[Main clause], + [conjunction] + [subject] + [rest] + [VERB].",
+        ex:["Ich bleibe zu Hause, weil ich krank bin. — ...because I am sick.","Er sagt, dass er morgen kommt. — ...that he is coming tomorrow.","Obwohl es regnet, gehen wir spazieren. — Although it rains, we go for a walk (V2 in main clause after)."],
+        hsc:"Two-part rule: verb to end in Nebensatz. If Nebensatz comes FIRST, main clause starts with verb (inversion)."
+      },
+      {
+        name:"Modalverben im Nebensatz",en:"Modals in Subordinate Clauses",
+        rule:"With a modal verb in a subordinate clause: infinitive at very end, modal before it.",
+        forms:"[conj.] + [subj.] + ... + [infinitive] + [modal]",
+        ex:["..., weil er nicht schlafen kann. — ...because he cannot sleep.","..., dass sie morgen kommen muss. — ...that she must come tomorrow.","..., obwohl ich das nicht machen will."],
+        hsc:"Remember: infinitive THEN modal at the end. Common mistake: putting modal last."
+      },
+      {
+        name:"Perfekt Wortstellung",en:"Perfect Tense Word Order",
+        rule:"Auxiliary (haben/sein) in position 2; past participle (Partizip II) at the END of the clause.",
+        forms:"[Subj.] + [haben/sein] + [rest] + [Partizip II]",
+        ex:["Ich habe gestern einen Film gesehen. — I watched a film yesterday.","Er ist nach Berlin gefahren. — He travelled to Berlin.","Sie hat ihm das Buch gegeben. — She gave him the book."],
+        hsc:"Partizip II always at end of main clause. In Nebensatz: ...dass er den Film gesehen hat."
+      },
+    ]
+  },
+  {
+    cat:"Zeitformen (Tenses)",
+    items:[
+      {
+        name:"Präsens",en:"Present Tense",
+        rule:"Current actions, habitual actions, facts, and (in German) often used for near future.",
+        forms:"Regular: -e/-st/-t/-en/-t/-en. Stem-change verbs: du/er forms — fahren→fährst/fährt, lesen→liest.",
+        ex:["Ich lerne jeden Tag Deutsch. — I study German every day.","Morgen fahre ich nach Sydney. — Tomorrow I'm going to Sydney (future meaning)."],
+        hsc:"Use in: oral exam descriptions, present-tense reflections in writing, factual statements in articles."
+      },
+      {
+        name:"Perfekt",en:"Present Perfect (conversational past)",
+        rule:"The standard past tense in spoken German and informal writing (letters, diary entries, emails).",
+        forms:"haben/sein (conjugated) + Partizip II at end. Sein verbs: motion (gehen, fahren, laufen), change of state (werden, sterben), sein/bleiben/werden.",
+        ex:["Ich habe das Buch gelesen. — I read the book.","Wir sind nach Hamburg gefahren. — We went to Hamburg.","Er ist aufgewacht und hat gefrühstückt."],
+        hsc:"Default past tense for diary entries and informal letters. Sein or haben — learn the key sein-verbs."
+      },
+      {
+        name:"Präteritum",en:"Simple Past (narrative past)",
+        rule:"Used in formal writing, newspapers, and literary texts. Also obligatory for: sein→war, haben→hatte, and all modal verbs.",
+        forms:"Weak verbs: stem + -te/-test/-te/-ten. Strong verbs: vowel change (irregular — see verb table).",
+        ex:["Er war sehr müde. — He was very tired. (NOT 'er ist... gewesen' in formal writing)","Sie hatte keine Zeit. — She had no time.","Der Zug kam um 9 Uhr an. — The train arrived at 9.","Das Mädchen konnte nicht schlafen."],
+        hsc:"Use in: newspaper articles, formal reports, story writing. ALWAYS use Präteritum for war/hatte/konnte/wollte etc. even in informal writing."
+      },
+      {
+        name:"Futur I",en:"Future Tense",
+        rule:"werden + Infinitiv. Often replaced by Präsens + time adverb in everyday German.",
+        forms:"ich werde / du wirst / er wird / wir werden / ihr werdet / sie werden + [Infinitiv at end]",
+        ex:["Ich werde morgen arbeiten. — I will work tomorrow.","Es wird Regen geben. — There will be rain.","In der Zukunft werden Roboter viele Jobs übernehmen."],
+        hsc:"Use for: predictions, future plans in formal writing, discussing trends. 'In Zukunft wird...' is a strong sentence opener."
+      },
+      {
+        name:"Plusquamperfekt",en:"Past Perfect",
+        rule:"Action completed BEFORE another past action. hatte/war (Präteritum) + Partizip II.",
+        forms:"hatte/war + [Partizip II at end]",
+        ex:["Nachdem er gegessen hatte, ging er schlafen. — After he had eaten, he went to sleep.","Als sie ankam, hatte er schon gegangen. — When she arrived, he had already left."],
+        hsc:"Mainly used after 'nachdem' (which triggers Plusquamperfekt in the nachdem-clause)."
+      },
+    ]
+  },
+  {
+    cat:"Passiv (Passive Voice)",
+    items:[
+      {
+        name:"Vorgangspassiv",en:"Process Passive (action)",
+        rule:"Describes an action being done — the process. Formed with werden + Partizip II.",
+        forms:"[werden conjugated] + [rest] + [Partizip II]. Agent with 'von + Dativ' if needed.",
+        ex:["Das Buch wird gelesen. — The book is being read.","Das Haus wurde gebaut. — The house was built.","Der Brief wird von der Sekretärin geschrieben. — The letter is being written by the secretary.","Die Regeln müssen beachtet werden. — The rules must be observed. (modal + Passiv)"],
+        hsc:"Use in: formal articles, reports, scientific writing where the actor is unimportant. Common in newspaper texts you'll read in the exam."
+      },
+      {
+        name:"Zustandspassiv",en:"State Passive (result)",
+        rule:"Describes the resulting STATE after an action — not the process. Formed with sein + Partizip II.",
+        forms:"[sein conjugated] + [Partizip II at end]",
+        ex:["Das Geschäft ist geschlossen. — The shop is closed (state/result).","Die Aufgabe ist erledigt. — The task is done.","Der Tisch ist gedeckt. — The table is set."],
+        hsc:"Contrast: 'Das Fenster wird geöffnet' (someone is opening it — process) vs. 'Das Fenster ist geöffnet' (it's open — state)."
+      },
+      {
+        name:"Passiv mit Modalverben",en:"Passive with Modal Verbs",
+        rule:"Modal verb conjugated + Partizip II + werden (infinitive) at end.",
+        forms:"[Modal] + [rest] + [Partizip II] + werden",
+        ex:["Das muss gemacht werden. — That must be done.","Die Hausaufgaben sollten abgegeben werden. — The homework should be handed in.","Das kann nicht erklärt werden. — That cannot be explained."],
+        hsc:"Very common in formal writing to express obligation or possibility without naming an actor."
+      },
+    ]
+  },
+  {
+    cat:"Konjunktiv II (Subjunctive / Conditional)",
+    items:[
+      {
+        name:"würde + Infinitiv",en:"würde-construction (most common)",
+        rule:"The standard way to express hypothetical/unreal conditions, wishes, polite requests. würde = conditional auxiliary.",
+        forms:"ich würde / du würdest / er würde / wir würden / ihr würdet / sie würden + [Infinitiv at end]",
+        ex:["Ich würde gern nach Deutschland reisen. — I would love to travel to Germany.","Was würdest du tun? — What would you do?","Wenn ich Zeit hätte, würde ich mehr lesen."],
+        hsc:"Use in oral exam for hypotheticals: 'Wenn ich die Wahl hätte, würde ich...' / 'Ich würde empfehlen...' Shows language sophistication."
+      },
+      {
+        name:"Konjunktiv II — Sonderformen",en:"Special forms (sein, haben, modals)",
+        rule:"These verbs use their own Konjunktiv II forms rather than würde (preferred in writing).",
+        forms:"sein→wäre · haben→hätte · können→könnte · müssen→müsste · sollen→sollte · wollen→wollte · dürfen→dürfte · mögen→möchte",
+        ex:["Wenn ich reich wäre, würde ich reisen. — If I were rich, I would travel.","Wenn er mehr Zeit hätte, könnte er helfen. — If he had more time, he could help.","Das sollte nicht passieren. — That shouldn't happen.","Ich möchte bitte einen Kaffee. — I would like a coffee (polite)."],
+        hsc:"wäre/hätte/könnte/müsste are extremely common. Learn these cold — they appear in both writing tasks and oral exam."
+      },
+      {
+        name:"Konditionalsatz (Conditional Sentences)",en:"If-clauses",
+        rule:"'Wenn' triggers Konjunktiv II in both clauses for unreal/hypothetical conditions.",
+        forms:"Wenn + [Konj. II], [Konj. II main clause] OR [Konj. II main clause], wenn [Konj. II].",
+        ex:["Wenn ich Deutsch als Muttersprache hätte, wäre das einfacher. — If I had German as a native language, it would be easier.","Wenn es nicht so teuer wäre, würde ich das kaufen.","Hätte ich mehr Zeit, würde ich Sport treiben. — (inverted: 'Hätte' at start, no 'wenn')"],
+        hsc:"For oral and writing: 'Wenn ich könnte, würde ich...' / 'Wenn die Situation anders wäre...' — elevates register significantly."
+      },
+    ]
+  },
+  {
+    cat:"Modalverben (Modal Verbs)",
+    items:[
+      {
+        name:"Modalverben — Übersicht",en:"Modal Verbs Overview",
+        rule:"Modal verbs express ability, necessity, permission, desire. Conjugated verb in P2, infinitive at end of clause.",
+        forms:"können (can) · müssen (must) · wollen (want to) · sollen (should/supposed to) · dürfen (may/allowed to) · mögen/möchten (like/would like)",
+        ex:["Ich kann Deutsch sprechen. — I can speak German.","Du musst das nicht machen. — You don't have to do that.","Er will nach Berlin fahren. — He wants to go to Berlin.","Sie darf hier nicht rauchen. — She is not allowed to smoke here.","Ich möchte bitte helfen. — I would like to help."],
+        hsc:"'müssen' (obligation) vs. 'sollen' (told to by someone else) vs. 'dürfen' (permitted). Critical distinction for comprehension questions."
+      },
+      {
+        name:"Modalverben im Perfekt",en:"Modals in Perfect Tense",
+        rule:"When a modal is used with another verb in Perfekt, use double infinitive (Ersatzinfinitiv), NOT Partizip II.",
+        forms:"haben + [Infinitiv] + [Modal-Infinitiv] at very end (NOT gekonnt/gemocht etc.)",
+        ex:["Ich habe das machen müssen. — I had to do that. (NOT: gemüsst)","Er hat kommen wollen. — He wanted to come.","Sie hat es nicht sagen können. — She was not able to say it."],
+        hsc:"The double infinitive always comes at the end. Very common source of error."
+      },
+    ]
+  },
+  {
+    cat:"Konjunktionen (Conjunctions)",
+    items:[
+      {
+        name:"Koordinierende Konjunktionen",en:"Coordinating Conjunctions (no word order change)",
+        rule:"Join two main clauses — no change to word order. Both clauses keep normal V2 order.",
+        forms:"und (and) · aber (but) · oder (or) · denn (because/for) · sondern (but rather — after negative)",
+        ex:["Er lernt Deutsch, aber er spricht noch nicht fließend.","Ich mag Kaffee, denn er gibt mir Energie. (denn ≠ weil — no verb-final)","Er ist nicht faul, sondern er hat wenig Zeit. (sondern after negation)"],
+        hsc:"'denn' vs. 'weil': denn = coordinating (V2), weil = subordinating (verb-final). Don't mix them up."
+      },
+      {
+        name:"Subordinierende Konjunktionen",en:"Subordinating Conjunctions (verb to end)",
+        rule:"These send the verb to the END of the clause. Memorise them all.",
+        forms:"weil (because) · dass (that) · obwohl (although) · wenn (when/if) · als (when — single past event) · ob (whether) · damit (so that) · während (while) · bevor (before) · nachdem (after) · seitdem (since) · falls (in case/if) · sobald (as soon as)",
+        ex:["Ich lerne Deutsch, weil es wichtig ist.","Ich glaube, dass er Recht hat.","Obwohl es teuer war, hat er es gekauft.","Als ich jung war, wohnte ich in Hamburg. (als = specific past moment)","Wenn ich Zeit habe, lese ich gern. (wenn = repeated/future)"],
+        hsc:"'als' vs. 'wenn': als = single past event; wenn = repeated past OR present/future. Classic exam trap."
+      },
+      {
+        name:"Zweiteilige Konjunktionen",en:"Two-part Conjunctions",
+        rule:"Come in pairs — connect parallel elements.",
+        forms:"entweder... oder (either...or) · weder... noch (neither...nor) · sowohl... als auch (both...and) · zwar... aber (admittedly...but) · nicht nur... sondern auch (not only...but also)",
+        ex:["Entweder gehst du jetzt, oder du bleibst für immer.","Weder Musik noch Sport interessiert ihn.","Sie spricht sowohl Deutsch als auch Englisch.","Nicht nur er, sondern auch seine Schwester lernt Deutsch."],
+        hsc:"sowohl...als auch and nicht nur...sondern auch are great connectives for writing — they elevate register."
+      },
+    ]
+  },
+  {
+    cat:"Relativsätze (Relative Clauses)",
+    items:[
+      {
+        name:"Relativsätze",en:"Relative Clauses",
+        rule:"A subordinate clause that describes a noun. Relative pronoun agrees in GENDER/NUMBER with the noun it refers to, but CASE depends on its role in the relative clause. Verb goes to end.",
+        forms:"Nom: der/die/das/die · Akk: den/die/das/die · Dat: dem/der/dem/denen · Gen: dessen/deren/dessen/deren",
+        ex:["Der Mann, der hier wohnt, ist mein Lehrer. — Nom (he lives here = subject)","Der Mann, den ich kenne, ist nett. — Akk (I know him = direct object)","Die Frau, der ich geholfen habe, war dankbar. — Dat (I helped her = indirect object)","Das Kind, dessen Vater Arzt ist... — Gen (whose father...)"],
+        hsc:"To elevate writing: use relative clauses to combine sentences and vary structure. Gender of pronoun = gender of noun it refers back to."
+      },
+    ]
+  },
+  {
+    cat:"Infinitivkonstruktionen (Infinitive Constructions)",
+    items:[
+      {
+        name:"um...zu + Infinitiv",en:"In order to",
+        rule:"Expresses purpose — 'in order to do something'. Comma before um.",
+        forms:"[Main clause], um [rest] zu [Infinitiv].",
+        ex:["Ich lerne Deutsch, um in Deutschland zu studieren. — ...in order to study in Germany.","Er spart Geld, um ein Auto zu kaufen.","Sie joggt jeden Tag, um fit zu bleiben."],
+        hsc:"Very useful in oral exam: 'Ich mache das, um... zu...' Shows sophisticated sentence structure."
+      },
+      {
+        name:"ohne...zu + Infinitiv",en:"Without doing",
+        rule:"Expresses that something happens WITHOUT something else happening.",
+        forms:"[Main clause], ohne [rest] zu [Infinitiv].",
+        ex:["Er ging weg, ohne ein Wort zu sagen. — ...without saying a word.","Sie hat gegessen, ohne zu bezahlen."],
+        hsc:"Good for contrast/criticism in writing: 'Er hat entschieden, ohne die anderen zu fragen.'"
+      },
+      {
+        name:"anstatt...zu + Infinitiv",en:"Instead of doing",
+        rule:"Expresses that something is done INSTEAD of something else.",
+        forms:"[Main clause], anstatt [rest] zu [Infinitiv].",
+        ex:["Anstatt zu lernen, spielte er Videospiele. — Instead of studying, he played video games.","Sie ging spazieren, anstatt zu Hause zu bleiben."],
+        hsc:"Useful for criticism or comparison in writing and oral: 'Anstatt das Problem zu lösen, ignorierten sie es.'"
+      },
+    ]
+  },
+  {
+    cat:"Adjektivendungen (Adjective Endings)",
+    items:[
+      {
+        name:"Adjektivendungen — Übersicht",en:"Adjective Endings",
+        rule:"Adjectives before nouns take endings that depend on: (1) what article precedes them, (2) the case, (3) gender.",
+        forms:`After definite article (der/die/das):
+  Nom: -e / -e / -e / -en
+  Akk: -en / -e / -e / -en
+  Dat: -en / -en / -en / -en
+  Gen: -en / -en / -en / -en
+
+After indefinite article (ein/eine/ein):
+  Nom: -er / -e / -es / -en
+  Akk: -en / -e / -es / -en
+  Dat: -en / -en / -en / -en`,
+        ex:["der alte Mann (Nom) → den alten Mann (Akk)","eine schöne Frau (Nom) → einer schönen Frau (Dat)","ein kleines Kind (Nom) → ein kleines Kind (Akk)","mit dem neuen Auto (Dat)"],
+        hsc:"For native speakers: mostly intuitive. Watch out in formal writing — adjective endings must match case precisely. Most errors occur in Dativ."
+      },
+    ]
+  },
+  {
+    cat:"Präpositionen (Prepositions)",
+    items:[
+      {
+        name:"Präpositionen + Kasus",en:"Prepositions and their cases",
+        rule:"Each preposition requires a specific case. Memorise by group.",
+        forms:`Akkusativ only: durch · für · gegen · ohne · um · bis · entlang
+Dativ only: aus · bei · mit · nach · seit · von · zu · gegenüber · außer
+Akkusativ OR Dativ (two-way): an · auf · hinter · in · neben · über · unter · vor · zwischen
+  → Akkusativ = movement/direction (Wohin?): Ich gehe in die Schule.
+  → Dativ = position/location (Wo?): Ich bin in der Schule.
+Genitiv: wegen · trotz · während · anstatt/statt · aufgrund`,
+        ex:["Ich fahre durch den Tunnel. (Akk — durch)","Seit drei Jahren lebe ich in Sydney. (Dat — seit)","Das Buch liegt auf dem Tisch. (Dat — wo?) / Leg das Buch auf den Tisch. (Akk — wohin?)","Wegen des Regens blieb er zu Hause. (Gen — wegen)"],
+        hsc:"Two-way prepositions: wo? = Dativ, wohin? = Akkusativ. This distinction appears in both writing tasks and comprehension."
+      },
+      {
+        name:"Präpositionen + Artikel (Kontraktionen)",en:"Preposition + Article Contractions",
+        rule:"Common prepositions contract with the definite article in speech and informal writing.",
+        forms:"an + dem = am · an + das = ans · in + dem = im · in + das = ins · zu + dem = zum · zu + der = zur · bei + dem = beim · von + dem = vom",
+        ex:["Ich gehe ins Kino. (in + das)","Er ist am Bahnhof. (an + dem)","Wir fahren zum Supermarkt. (zu + dem)","Sie kommt vom Arzt. (von + dem)"],
+        hsc:"Always use contractions in informal writing and speech — avoiding them sounds unnatural."
+      },
+    ]
+  },
+];
+
+function renderGrammar(m){
+  const catKeys=GRAMMAR.map(c=>c.cat);
+  m.innerHTML=`
+  <div class="page-head"><div><h1>📖 Grammar Reference</h1><p>Syllabus structures — what each is · rule · examples · when to use in HSC</p></div></div>
+  <div class="block green" style="margin-bottom:16px"><span class="bl">How to use</span>
+  As a native speaker, use this as a quick reference for exam writing. Focus on: <b>Konjunktiv II</b> (elevates writing), <b>Passiv</b> (formal texts), <b>Nebensatz order</b> (avoid errors under pressure), and <b>als vs. wenn</b> (classic trap).</div>
+  <div class="tabs" style="flex-wrap:wrap">
+    ${GRAMMAR.map((c,i)=>`<button class="tab${i===0?' on':''}" onclick="showGramTab(${i},this)">${esc(c.cat.split('(')[0].trim())}</button>`).join('')}
+  </div>
+  ${GRAMMAR.map((cat,ci)=>`
+  <div id="gram-${ci}" ${ci>0?'class="hidden"':''}>
+    ${cat.items.map((item,ii)=>`
+    <div class="dot">
+      <div class="dot-h" onclick="toggleDot(this)">
+        <span class="ttl">${esc(item.name)} <span class="pill">${esc(item.en)}</span></span>
+        <span class="chev">▶</span>
+      </div>
+      <div class="dot-body">
+        <div class="block amber"><span class="bl">Rule</span>${esc(item.rule)}</div>
+        <div class="block blue"><span class="bl">Forms / Structure</span><pre style="white-space:pre-wrap;font-family:inherit;margin:0;font-size:13px">${esc(item.forms)}</pre></div>
+        <div class="block green"><span class="bl">Examples</span>
+          ${item.ex.map(e=>`<div style="padding:4px 0;font-size:13.5px;border-bottom:1px solid var(--line)">${esc(e)}</div>`).join('')}
+        </div>
+        <div class="block muted"><span class="bl">HSC context</span>${esc(item.hsc)}</div>
+      </div>
+    </div>`).join('')}
+  </div>`).join('')}
+  <div class="card" style="margin-top:16px"><h3>My Grammar Notes</h3>
+  <textarea class="notes" rows="5" placeholder="Things to practise, teacher corrections, examples…" onchange="saveNote('grammar',this.value)">${esc(state.notes['grammar']||'')}</textarea>
+  </div>`;
+}
+
+function showGramTab(idx,btn){
+  GRAMMAR.forEach((_,i)=>{const el=document.getElementById('gram-'+i);if(el)el.classList.toggle('hidden',i!==idx);});
+  btn.closest('.tabs').querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+/* ==================== RENDER FUNCTIONS ====================
 
 function renderLang(m){
   m.innerHTML=`
@@ -1235,7 +1564,7 @@ document.body.appendChild(imp);
 document.getElementById('globalSearch').addEventListener('input',function(){
   const q=this.value.toLowerCase().trim();if(!q)return;
   const pages=[
-    {label:'Language Devices',id:'lang'},{label:'Oral Exam Prep',id:'oral'},
+    {label:'Text Analysis Devices',id:'lang'},{label:'Grammar Reference',id:'grammar'},{label:'Oral Exam Prep',id:'oral'},
     {label:'Topic Vocab Banks',id:'vocab'},{label:'Phrases Connectives',id:'phrases'},
     {label:'Irregular Verbs',id:'verbs'},{label:'Past Paper Questions',id:'pastpapers'},
     {label:'Quiz Mode',id:'quiz'},{label:'Writing Templates',id:'writing'},
