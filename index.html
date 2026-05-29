@@ -7,30 +7,53 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
+/* ===== THEMES ===== */
 :root{
-  --bg:#07070f;
-  --surface:rgba(255,255,255,.05);--surface2:rgba(255,255,255,.08);--surfaceb:rgba(255,255,255,.03);
-  --border:rgba(255,255,255,.1);--border2:rgba(255,255,255,.15);
+  --bg:#07070f;--glow1:rgba(168,85,247,.07);--glow2:rgba(34,197,94,.05);--glow3:rgba(59,130,246,.04);
+  --surface:rgba(255,255,255,.05);--surface2:rgba(255,255,255,.08);
+  --border:rgba(255,255,255,.1);--border2:rgba(255,255,255,.16);
   --text:#f0f0ff;--muted:rgba(240,240,255,.45);--muted2:rgba(240,240,255,.22);
   --bio:#22c55e;--biob:rgba(34,197,94,.1);--bioborder:rgba(34,197,94,.25);
   --chem:#f59e0b;--chemb:rgba(245,158,11,.1);--chemborder:rgba(245,158,11,.25);
   --eng:#a855f7;--engb:rgba(168,85,247,.1);--engborder:rgba(168,85,247,.25);
   --math:#3b82f6;--mathb:rgba(59,130,246,.1);--mathborder:rgba(59,130,246,.25);
   --red:#ef4444;--redb:rgba(239,68,68,.1);
-  --radius:18px;--rsm:12px;
+  --radius:18px;--rsm:12px;--hero-txt:#fff;
 }
-html[data-theme="light"]{
-  --bg:#f0f0f8;
-  --surface:rgba(255,255,255,.85);--surface2:rgba(255,255,255,.98);--surfaceb:rgba(255,255,255,.6);
-  --border:rgba(0,0,0,.08);--border2:rgba(0,0,0,.14);
-  --text:#0f0f1a;--muted:rgba(15,15,26,.5);--muted2:rgba(15,15,26,.25);
+[data-theme="light"]{
+  --bg:#f4f2ff;--glow1:rgba(168,85,247,.06);--glow2:rgba(34,197,94,.04);--glow3:rgba(59,130,246,.04);
+  --surface:rgba(255,255,255,.92);--surface2:rgba(255,255,255,.99);
+  --border:rgba(80,60,120,.1);--border2:rgba(80,60,120,.18);
+  --text:#160f2a;--muted:rgba(22,15,42,.5);--muted2:rgba(22,15,42,.28);
+  --hero-txt:#2d1b69;
+}
+[data-theme="midnight"]{
+  --bg:#00091a;--glow1:rgba(56,189,248,.07);--glow2:rgba(99,102,241,.05);--glow3:rgba(14,165,233,.04);
+  --surface:rgba(56,189,248,.04);--surface2:rgba(56,189,248,.07);
+  --border:rgba(56,189,248,.1);--border2:rgba(56,189,248,.18);
+  --text:#e0f2fe;--muted:rgba(224,242,254,.45);--muted2:rgba(224,242,254,.22);
+  --eng:#38bdf8;--engb:rgba(56,189,248,.1);--engborder:rgba(56,189,248,.25);
+  --hero-txt:#fff;
+}
+[data-theme="forest"]{
+  --bg:#010a05;--glow1:rgba(34,197,94,.07);--glow2:rgba(16,185,129,.05);--glow3:rgba(101,163,13,.04);
+  --surface:rgba(34,197,94,.04);--surface2:rgba(34,197,94,.07);
+  --border:rgba(34,197,94,.1);--border2:rgba(34,197,94,.18);
+  --text:#ecfdf5;--muted:rgba(236,253,245,.45);--muted2:rgba(236,253,245,.22);
+  --eng:#10b981;--engb:rgba(16,185,129,.1);--engborder:rgba(16,185,129,.25);
+  --hero-txt:#fff;
+}
+[data-theme="ember"]{
+  --bg:#0a0400;--glow1:rgba(251,146,60,.07);--glow2:rgba(245,158,11,.05);--glow3:rgba(239,68,68,.04);
+  --surface:rgba(251,146,60,.04);--surface2:rgba(251,146,60,.07);
+  --border:rgba(251,146,60,.12);--border2:rgba(251,146,60,.2);
+  --text:#fff7ed;--muted:rgba(255,247,237,.45);--muted2:rgba(255,247,237,.22);
+  --eng:#fb923c;--engb:rgba(251,146,60,.1);--engborder:rgba(251,146,60,.25);
+  --hero-txt:#fff;
 }
 body{
   background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',system-ui,sans-serif;min-height:100vh;line-height:1.5;
-  background-image:
-    radial-gradient(ellipse 70% 50% at 15% 0%,rgba(168,85,247,.07) 0%,transparent 60%),
-    radial-gradient(ellipse 55% 45% at 85% 100%,rgba(34,197,94,.05) 0%,transparent 60%),
-    radial-gradient(ellipse 40% 50% at 50% 40%,rgba(59,130,246,.04) 0%,transparent 70%);
+  background-image:radial-gradient(ellipse 70% 50% at 15% 0%,var(--glow1),transparent 60%),radial-gradient(ellipse 55% 45% at 85% 100%,var(--glow2),transparent 60%),radial-gradient(ellipse 40% 50% at 50% 40%,var(--glow3),transparent 70%);
   background-attachment:fixed;
 }
 h1,h2,h3{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:700}
@@ -57,7 +80,14 @@ a{color:inherit;text-decoration:none}
 /* HERO (centre column, spans 2 rows) */
 .hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding:22px 20px 20px;grid-column:2;grid-row:1/3;border-color:rgba(168,85,247,.2);box-shadow:0 0 60px rgba(168,85,247,.06)}
 .hero-eye{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:10px}
-.hero-count{font-size:76px;font-weight:800;font-family:'Bricolage Grotesque',sans-serif;line-height:1;letter-spacing:-.04em;background:linear-gradient(135deg,#fff 20%,rgba(168,85,247,.75));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:2px}
+.hero-count{font-size:76px;font-weight:800;font-family:'Bricolage Grotesque',sans-serif;line-height:1;letter-spacing:-.04em;color:var(--hero-txt);margin-bottom:2px}
+/* theme picker */
+.theme-picker{position:absolute;top:44px;right:0;background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px;z-index:200;min-width:160px;box-shadow:0 12px 40px rgba(0,0,0,.4);backdrop-filter:blur(20px)}
+.theme-picker.hidden{display:none}
+.theme-opt{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:9px;cursor:pointer;font-size:13px;font-weight:500;transition:.12s;color:var(--text)}
+.theme-opt:hover{background:var(--border)}
+.theme-opt.active{background:var(--border2)}
+.theme-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0;border:2px solid rgba(255,255,255,.2)}
 .hero-unit{font-size:16px;color:var(--muted);font-weight:500;margin-bottom:6px}
 .hero-datestr{font-size:12px;color:var(--muted2);margin-bottom:20px}
 .streak-pill{display:inline-flex;align-items:center;gap:7px;background:var(--surface2);border:1px solid var(--border);border-radius:40px;padding:6px 14px;margin-bottom:14px}
@@ -191,9 +221,16 @@ canvas#studyGraph{width:100%;height:160px;display:block}
 <div class="wrap">
   <div class="hdr anim">
     <div class="hdr-brand">HSC <span>Dashboard</span></div>
-    <div style="display:flex;gap:8px">
-      <button class="hbtn" id="themeBtn">☀ Theme</button>
+    <div style="display:flex;gap:8px;position:relative">
+      <button class="hbtn" id="themeBtn" onclick="toggleThemePicker()">🎨 Theme</button>
       <button class="hbtn" id="backupBtn">⇅ Backup</button>
+      <div class="theme-picker hidden" id="themePicker">
+        <div class="theme-opt" onclick="setTheme('dark')"><span class="theme-dot" style="background:#a855f7"></span>Dark</div>
+        <div class="theme-opt" onclick="setTheme('light')"><span class="theme-dot" style="background:#9333ea;border-color:#c4b5fd"></span>Light</div>
+        <div class="theme-opt" onclick="setTheme('midnight')"><span class="theme-dot" style="background:#38bdf8"></span>Midnight</div>
+        <div class="theme-opt" onclick="setTheme('forest')"><span class="theme-dot" style="background:#22c55e"></span>Forest</div>
+        <div class="theme-opt" onclick="setTheme('ember')"><span class="theme-dot" style="background:#fb923c"></span>Ember</div>
+      </div>
     </div>
   </div>
   <div class="bento" id="bento"></div>
@@ -303,20 +340,13 @@ function renderHero(){
   <div style="font-size:12px;color:var(--muted2);margin-bottom:14px">8 Aug 2026 · 10:30</div>
   <div class="streak-pill"><span style="font-size:16px">🔥</span><span class="streak-n">${streak}</span><span class="streak-lbl">day streak</span></div>
   <div class="hdiv"></div>
-  <div style="width:100%;display:flex;flex-direction:column;gap:3px;margin-bottom:14px">
-    ${allExams.map(e=>`<div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);padding:1px 0">
+  <div style="width:100%;display:grid;grid-template-columns:1fr 1fr;gap:3px 10px">
+    ${allExams.map(e=>`<div style="display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--muted);padding:2px 0;min-width:0">
       <span style="width:5px;height:5px;border-radius:50%;background:${e.color};flex-shrink:0;display:inline-block"></span>
-      <span style="flex:1">${esc(e.label)}</span>
-      <span style="font-weight:700;color:${e.color};min-width:26px;text-align:right">${daysTo(e.date)}d</span>
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(e.label)}</span>
+      <span style="font-weight:700;color:${e.color};flex-shrink:0">${daysTo(e.date)}d</span>
     </div>`).join('')}
   </div>
-  <div class="hdiv"></div>
-  <div class="focus-lbl">📌 Today's focus</div>
-  <button class="focus-btn" onclick="go('${focus.id}')">
-    <span class="focus-dot" style="background:${focus.color}"></span>
-    <span class="focus-name">${focus.name}</span>
-    <span class="focus-arr">Open →</span>
-  </button>
 </div>`;
 }
 
@@ -343,16 +373,43 @@ function renderLeft(){
 }
 
 function renderRight(){
-  const sched=genSched();
+  // Today + This Week study goals
+  const todaySec=todayStudiedSec()+(timerRunning()?timerCurrent():0);
+  const goalSec=S.dailyGoalSec;
+  const todayPct=Math.min(100,Math.round(todaySec/goalSec*100));
+  // this week (Mon-Sun)
+  const weekDays=[];const now=new Date();
+  const mon=new Date(now);mon.setDate(now.getDate()-((now.getDay()+6)%7));
+  for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);weekDays.push(d.toISOString().slice(0,10));}
+  const weekSec=S.sessions.filter(s=>weekDays.includes(s.date)&&s.duration).reduce((a,s)=>a+(s.duration||0),0);
+  const weekGoal=goalSec*7;const weekPct=Math.min(100,Math.round(weekSec/weekGoal*100));
+  // per-subject week breakdown
+  const subjWeek={};SUBJECTS.forEach(s=>{subjWeek[s.id]=S.sessions.filter(ss=>weekDays.includes(ss.date)&&ss.subject===s.id&&ss.duration).reduce((a,ss)=>a+(ss.duration||0),0);});
+  const maxSubjSec=Math.max(...Object.values(subjWeek),1);
+  // streak heatmap (last 28 days)
+  const heatDays=[];for(let i=27;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);heatDays.push(d.toISOString().slice(0,10));}
   return `<div class="card anim" style="grid-row:1/3">
-  <div class="card-title"><span class="ic">📅</span>Study Schedule</div>
-  <div class="sched-scroll">
-    ${sched.map(day=>`<div class="sched-day">
-      <div class="sday-lbl">${day.label}<span></span></div>
-      ${day.items.map(it=>`<div class="sched-item"><span class="sdot" style="background:${it.s.color}"></span><span class="sched-txt"><b>${it.s.short}</b> · ${it.t}</span><span class="sched-dur">${it.dur}</span></div>`).join('')}
-    </div>`).join('')}
+  <div class="card-title"><span class="ic">🎯</span>Study Goals</div>
+  <div style="margin-bottom:16px">
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px"><span>Today</span><span style="font-weight:700;color:var(--text)">${fmtTime(todaySec)} <span style="color:var(--muted);font-weight:400">/ 3h 00m</span></span></div>
+    <div class="pbar" style="height:10px"><i style="width:${todayPct}%;background:linear-gradient(90deg,var(--eng),var(--math))"></i></div>
+    <div style="font-size:11px;color:${todayPct>=100?'var(--bio)':'var(--muted)'};margin-top:4px;text-align:right">${todayPct>=100?'✅ Goal reached!':todayPct+'% of daily goal'}</div>
   </div>
-  <button class="regen" onclick="regenSched()">🔀 Regenerate schedule</button>
+  <div style="margin-bottom:18px">
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px"><span>This week</span><span style="font-weight:700;color:var(--text)">${(weekSec/3600).toFixed(1)}h <span style="color:var(--muted);font-weight:400">/ 21h</span></span></div>
+    <div class="pbar" style="height:10px"><i style="width:${weekPct}%;background:linear-gradient(90deg,var(--bio),var(--eng))"></i></div>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px;text-align:right">${weekPct}% of weekly goal</div>
+  </div>
+  <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px">This week by subject</div>
+  ${SUBJECTS.map(s=>{const sec=subjWeek[s.id];const pct=Math.round(sec/maxSubjSec*100);return`<div style="display:flex;align-items:center;gap:9px;margin-bottom:7px;font-size:12px">
+    <span>${s.icon}</span><span style="min-width:52px;color:var(--muted)">${s.short}</span>
+    <div class="pbar" style="flex:1;height:6px"><i style="width:${pct}%;background:${s.color}"></i></div>
+    <span style="min-width:36px;text-align:right;color:${s.color};font-weight:600">${(sec/3600).toFixed(1)}h</span>
+  </div>`;}).join('')}
+  <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:14px 0 8px">Study streak — 28 days</div>
+  <div style="display:flex;gap:3px;flex-wrap:wrap">
+    ${heatDays.map(d=>{const sec=S.sessions.filter(s=>s.date===d&&s.duration).reduce((a,s)=>a+(s.duration||0),0);const intensity=Math.min(1,sec/goalSec);const isToday=d===today();return`<div title="${d}: ${fmtTime(sec)}" style="width:calc(25% - 3px);height:10px;border-radius:3px;background:${sec>0?`rgba(168,85,247,${0.2+intensity*.8})`:'var(--surface2)'};border:1px solid ${isToday?'var(--eng)':'transparent'}"></div>`;}).join('')}
+  </div>
 </div>`;
 }
 
@@ -609,18 +666,27 @@ function setDate(v){S.examDate=v;save();render();toast('Exam date updated');}
 function regenSched(){S.schedSeed=Math.floor(Math.random()*100);save();render();toast('Schedule regenerated');}
 function clearHist(){if(confirm('Clear all session history?')){S.sessions=[];save();render();}}
 
+function toggleThemePicker(){const p=document.getElementById('themePicker');p.classList.toggle('hidden');}
+function setTheme(t){
+  document.documentElement.setAttribute('data-theme',t);S.theme=t;save();
+  document.getElementById('themePicker').classList.add('hidden');
+  requestAnimationFrame(drawGraph);
+  // update active state
+  document.querySelectorAll('.theme-opt').forEach((el,i)=>{
+    const themes=['dark','light','midnight','forest','ember'];
+    el.classList.toggle('active',themes[i]===t);
+  });
+}
+document.addEventListener('click',e=>{
+  const p=document.getElementById('themePicker');
+  if(p&&!p.classList.contains('hidden')&&!p.contains(e.target)&&e.target.id!=='themeBtn')p.classList.add('hidden');
+});
+
 function bind(){
-  document.getElementById('themeBtn').onclick=function(){
-    const h=document.documentElement,t=h.getAttribute('data-theme')==='dark'?'light':'dark';
-    h.setAttribute('data-theme',t);S.theme=t;save();this.textContent=t==='dark'?'☀ Theme':'🌙 Theme';
-    requestAnimationFrame(drawGraph);
-  };
-  document.getElementById('backupBtn').onclick=function(){
-    const a=document.createElement('a');a.href='data:application/json,'+encodeURIComponent(JSON.stringify(S));a.download='hsc-dashboard-backup.json';a.click();
-  };
+  document.getElementById('backupBtn').onclick=function(){const a=document.createElement('a');a.href='data:application/json,'+encodeURIComponent(JSON.stringify(S));a.download='hsc-dashboard-backup.json';a.click();};
 }
 
-if(S.theme==='light')document.documentElement.setAttribute('data-theme','light');
+document.documentElement.setAttribute('data-theme',S.theme||'dark');
 markStreak();
 render();
 </script>
