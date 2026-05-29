@@ -96,8 +96,9 @@ a{color:inherit;text-decoration:none}
 .sl .sdot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
 
 /* BOTTOM */
-.bottom-row{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media(max-width:720px){.bottom-row{grid-template-columns:1fr}}
+.bottom-row{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+@media(max-width:900px){.bottom-row{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.bottom-row{grid-template-columns:1fr}}
 
 /* TODO */
 .todo-add{display:flex;gap:8px;margin-bottom:10px}
@@ -145,6 +146,45 @@ a{color:inherit;text-decoration:none}
 .anim{animation:fadeUp .38s ease both}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .anim:nth-child(1){animation-delay:.05s}.anim:nth-child(2){animation-delay:.1s}.anim:nth-child(3){animation-delay:.15s}
+
+/* TIMER CARD */
+.timer-display{font-size:48px;font-weight:800;font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;line-height:1;margin:10px 0 6px;text-align:center}
+.timer-subj-sel{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tsbtn2{font-size:11px;padding:4px 11px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;transition:.12s}
+.tsbtn2.on{color:#fff;border-color:transparent}
+.timer-btns{display:flex;gap:8px;justify-content:center;margin-top:10px}
+.tbtn{border:none;border-radius:12px;padding:10px 22px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s}
+.tbtn.start{background:var(--eng);color:#fff}
+.tbtn.start:hover{background:#9333ea}
+.tbtn.pause{background:var(--chem);color:#000}
+.tbtn.stop{background:var(--surface2);border:1px solid var(--border);color:var(--muted)}
+.tbtn.stop:hover{color:var(--red);border-color:var(--red)}
+.goal-bar-wrap{margin-top:10px}
+.goal-bar-top{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:5px}
+.focus-btn2{width:100%;margin-top:10px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:7px;font-size:12px;cursor:pointer;font-family:inherit;transition:.15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.focus-btn2:hover{color:var(--text);border-color:var(--border2)}
+
+/* FULLSCREEN FOCUS */
+.focus-overlay{position:fixed;inset:0;background:#030308;z-index:1000;display:none;flex-direction:column;align-items:center;justify-content:center;gap:0}
+.focus-overlay.show{display:flex}
+.fo-subject{font-size:16px;font-weight:600;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.15em;margin-bottom:16px}
+.fo-icon{font-size:56px;margin-bottom:10px}
+.fo-time{font-size:120px;font-weight:800;font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.04em;line-height:1;color:#fff;margin-bottom:8px}
+.fo-goal{font-size:14px;color:rgba(255,255,255,.3);margin-bottom:32px}
+.fo-goalbar{width:320px;height:6px;background:rgba(255,255,255,.1);border-radius:20px;overflow:hidden;margin-bottom:40px}
+.fo-goalbar i{display:block;height:100%;border-radius:20px;transition:width .5s}
+.fo-btns{display:flex;gap:14px}
+.fo-btn{border:none;border-radius:14px;padding:13px 30px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;transition:.15s}
+.fo-btn.pause{background:rgba(245,158,11,.2);color:#f59e0b;border:1px solid rgba(245,158,11,.3)}
+.fo-btn.pause:hover{background:rgba(245,158,11,.3)}
+.fo-btn.stop{background:rgba(255,255,255,.07);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.1)}
+.fo-btn.stop:hover{background:rgba(239,68,68,.15);color:#ef4444;border-color:rgba(239,68,68,.3)}
+.fo-esc{position:absolute;top:20px;right:24px;font-size:12px;color:rgba(255,255,255,.2);cursor:pointer}
+.fo-esc:hover{color:rgba(255,255,255,.5)}
+
+/* GRAPH */
+.graph-wrap{position:relative;width:100%}
+canvas#studyGraph{width:100%;height:160px;display:block}
 </style>
 </head>
 <body>
@@ -159,6 +199,18 @@ a{color:inherit;text-decoration:none}
   <div class="bento" id="bento"></div>
 </div>
 <div class="toast" id="toast"></div>
+<div class="focus-overlay" id="focusOverlay">
+  <div class="fo-esc" onclick="exitFocus()">✕ press esc to exit</div>
+  <div class="fo-icon" id="foIcon">📚</div>
+  <div class="fo-subject" id="foSubject">English Advanced</div>
+  <div class="fo-time" id="foTime">00:00:00</div>
+  <div class="fo-goal" id="foGoal">0:00 / 3:00 today</div>
+  <div class="fo-goalbar"><i id="foGoalBar" style="width:0%;background:var(--eng)"></i></div>
+  <div class="fo-btns">
+    <button class="fo-btn pause" id="foPause" onclick="timerPause()">⏸ Pause</button>
+    <button class="fo-btn stop" onclick="timerStop()">⏹ Stop &amp; Save</button>
+  </div>
+</div>
 <script>
 const KEY='hsc_dash';
 const SUBJECTS=[
@@ -180,7 +232,7 @@ const EXTRA_EXAMS=[
   {name:'German Continuers',short:'German',icon:'🇩🇪',examDate:'2026-08-08',examLabel:'Oral · 8 Aug 10:30',color:'#64748b'},
   {name:'German Continuers',short:'German',icon:'🇩🇪',examDate:'2026-10-13',examLabel:'Written · 13 Oct 14:00',color:'#64748b'},
 ];
-const DEF={examDate:'2026-10-13',todos:[],sessions:[],theme:'dark',streak:[],schedSeed:3,todoSubj:''};
+const DEF={examDate:'2026-10-13',todos:[],sessions:[],theme:'dark',streak:[],schedSeed:3,todoSubj:'',timerSubj:'eng',dailyGoalSec:10800};
 let S=load();
 
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s)return Object.assign({},JSON.parse(JSON.stringify(DEF)),s);}catch(e){}return JSON.parse(JSON.stringify(DEF));}
@@ -233,6 +285,7 @@ function logSession(id,section){
 function render(){
   document.getElementById('bento').innerHTML=renderLeft()+renderHero()+renderRight()+renderSubjRow()+renderBottom();
   bind();
+  requestAnimationFrame(drawGraph);
 }
 
 function renderHero(){
@@ -320,10 +373,11 @@ function renderSubjRow(){
 function renderBottom(){
   const sess=S.sessions.slice().reverse().slice(0,15);
   return `<div class="bottom-row">
+  ${renderTimer()}
   <div class="card anim">
     <div class="card-title"><span class="ic">🕐</span>Session History<span class="pill" style="margin-left:auto">${S.sessions.length} total</span>${S.sessions.length?`<button class="hbtn" style="font-size:10px;padding:3px 9px;margin-left:6px" onclick="clearHist()">Clear</button>`:''}</div>
     <div class="sess-list">
-      ${sess.length?sess.map(s=>{const sb=subj(s.subject)||SUBJECTS[0];return`<div class="sess-item"><span class="sess-dot" style="background:${sb.color}"></span><span class="sess-info"><b>${sb.short}</b> · ${s.section}</span><span class="sess-date">${s.date===today()?'Today '+s.time:s.date}</span></div>`;}).join(''):`<div class="empty">Open a subject to start tracking</div>`}
+      ${sess.length?sess.map(s=>{const sb=subj(s.subject)||SUBJECTS[0];const dur=s.duration?` · ${fmtTime(s.duration)}`:'';return`<div class="sess-item"><span class="sess-dot" style="background:${sb.color}"></span><span class="sess-info"><b>${sb.short}</b> · ${s.section}${dur}</span><span class="sess-date">${s.date===today()?'Today '+s.time:s.date}</span></div>`;}).join(''):`<div class="empty">Start a timer to log sessions</div>`}
     </div>
   </div>
   <div class="card anim">
@@ -332,8 +386,218 @@ function renderBottom(){
       ${SUBJECTS.map(s=>{const p=getProg(s);return`<div><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><span style="font-size:14px">${s.icon}</span><span style="font-size:13px;font-weight:600;flex:1">${s.name}</span><span style="font-size:12px;color:${s.color};font-weight:700">${p}%</span></div><div class="pbar"><i style="width:${p}%;background:${s.color}"></i></div></div>`;}).join('')}
     </div>
   </div>
-  </div>`;
+  </div>
+  ${renderGraph()}`;
 }
+
+/* ==================== TIMER ==================== */
+let timerInterval=null;
+let timerElapsed=0; // seconds accumulated before current run
+let timerStart=null; // Date.now() when last started
+
+function timerRunning(){return timerInterval!==null;}
+function timerCurrent(){return timerRunning()?timerElapsed+Math.floor((Date.now()-timerStart)/1000):timerElapsed;}
+function fmtTime(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;}
+function todayStudiedSec(){return S.sessions.filter(s=>s.date===today()&&s.duration).reduce((a,s)=>a+(s.duration||0),0);}
+
+function timerStart2(){
+  if(timerRunning())return;
+  timerStart=Date.now();
+  timerInterval=setInterval(()=>{
+    const cur=timerCurrent();
+    const display=fmtTime(cur);
+    // update mini card
+    const el=document.getElementById('timerDisplay');if(el)el.textContent=display;
+    // update focus overlay
+    const fo=document.getElementById('foTime');if(fo)fo.textContent=display;
+    // update goal
+    const todaySec=todayStudiedSec()+cur;
+    const goalPct=Math.min(100,Math.round(todaySec/S.dailyGoalSec*100));
+    const foGoal=document.getElementById('foGoal');
+    if(foGoal)foGoal.textContent=fmtTime(todaySec)+' / 3:00:00 today ('+goalPct+'%)';
+    const foBar=document.getElementById('foGoalBar');
+    if(foBar)foBar.style.width=goalPct+'%';
+    // update mini goal bar
+    const mb=document.getElementById('miniGoalBar');if(mb)mb.style.width=goalPct+'%';
+    const mg=document.getElementById('miniGoalLbl');if(mg)mg.textContent=goalPct+'%';
+  },1000);
+  // update focus overlay subject
+  const s=subj(S.timerSubj)||SUBJECTS[0];
+  const foS=document.getElementById('foSubject');if(foS)foS.textContent=s.name;
+  const foI=document.getElementById('foIcon');if(foI)foI.textContent=s.icon;
+  const foBar=document.getElementById('foGoalBar');if(foBar)foBar.style.background=s.color;
+  updateTimerCard();
+}
+
+function timerPause(){
+  if(timerRunning()){
+    timerElapsed=timerCurrent();
+    clearInterval(timerInterval);timerInterval=null;timerStart=null;
+    const fp=document.getElementById('foPause');if(fp)fp.textContent='▶ Resume';
+  } else {
+    timerStart2();
+    const fp=document.getElementById('foPause');if(fp)fp.textContent='⏸ Pause';
+  }
+  updateTimerCard();
+}
+
+function timerStop(){
+  const dur=timerCurrent();
+  if(dur>5){
+    S.sessions.push({date:today(),time:new Date().toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit'}),subject:S.timerSubj,section:'Focus Session',duration:dur});
+    if(S.sessions.length>200)S.sessions=S.sessions.slice(-200);
+    markStreak();save();
+    toast('✅ Session saved — '+fmtTime(dur));
+  }
+  clearInterval(timerInterval);timerInterval=null;timerStart=null;timerElapsed=0;
+  exitFocus();
+  render();
+}
+
+function enterFocus(){
+  const s=subj(S.timerSubj)||SUBJECTS[0];
+  document.getElementById('foSubject').textContent=s.name;
+  document.getElementById('foIcon').textContent=s.icon;
+  document.getElementById('foGoalBar').style.background=s.color;
+  document.getElementById('foTime').textContent=fmtTime(timerCurrent());
+  document.getElementById('focusOverlay').classList.add('show');
+  if(!timerRunning()){timerStart2();}
+  const fp=document.getElementById('foPause');if(fp)fp.textContent='⏸ Pause';
+}
+
+function exitFocus(){document.getElementById('focusOverlay').classList.remove('show');}
+
+function setTimerSubj(id){S.timerSubj=id;save();updateTimerCard();}
+
+function updateTimerCard(){
+  const el=document.getElementById('timerDisplay');if(el)el.textContent=fmtTime(timerCurrent());
+  const s=subj(S.timerSubj)||SUBJECTS[0];
+  SUBJECTS.forEach(sub=>{const b=document.getElementById('tsb_'+sub.id);if(b){b.classList.toggle('on',sub.id===S.timerSubj);b.style.background=sub.id===S.timerSubj?sub.color:'';b.style.borderColor=sub.id===S.timerSubj?sub.color:'';}});
+  const startBtn=document.getElementById('timerStartBtn');
+  if(startBtn)startBtn.textContent=timerRunning()?'⏸ Pause':'▶ Start';
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')exitFocus();});
+
+/* ==================== GRAPH ==================== */
+function drawGraph(){
+  const canvas=document.getElementById('studyGraph');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.offsetWidth,H=canvas.offsetHeight;
+  canvas.width=W*window.devicePixelRatio;canvas.height=H*window.devicePixelRatio;
+  ctx.scale(window.devicePixelRatio,window.devicePixelRatio);
+
+  const isDark=document.documentElement.getAttribute('data-theme')!=='light';
+  const textCol=isDark?'rgba(240,240,255,.4)':'rgba(15,15,26,.4)';
+  const gridCol=isDark?'rgba(255,255,255,.06)':'rgba(0,0,0,.06)';
+  const goalCol=isDark?'rgba(239,68,68,.5)':'rgba(239,68,68,.6)';
+
+  // build 14 days of data
+  const days=14;
+  const labels=[],data=[],colors=[];
+  for(let i=days-1;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const ds=d.toISOString().slice(0,10);
+    labels.push(i===0?'Today':d.toLocaleDateString('en-AU',{weekday:'short'}));
+    const sess=S.sessions.filter(s=>s.date===ds&&s.duration);
+    const totalSec=sess.reduce((a,s)=>a+(s.duration||0),0);
+    data.push(totalSec/3600); // hours
+    // dominant subject colour
+    const subjCount={};
+    sess.forEach(s=>{subjCount[s.subject]=(subjCount[s.subject]||0)+(s.duration||0);});
+    const dom=Object.entries(subjCount).sort((a,b)=>b[1]-a[1])[0];
+    const domSubj=dom?subj(dom[0]):null;
+    const colorMap={'eng':'#a855f7','bio':'#22c55e','chem':'#f59e0b','math':'#3b82f6'};
+    colors.push(domSubj?colorMap[domSubj.id]:'rgba(255,255,255,.15)');
+  }
+
+  const maxH=Math.max(4,Math.ceil(Math.max(...data,3)*1.2));
+  const goalH=3; // 3 hour goal line
+  const padL=32,padR=10,padT=14,padB=28;
+  const chartW=W-padL-padR,chartH=H-padT-padB;
+
+  ctx.clearRect(0,0,W,H);
+
+  // grid lines
+  for(let i=0;i<=4;i++){
+    const y=padT+chartH-(chartH*i/4);
+    ctx.strokeStyle=gridCol;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(padL+chartW,y);ctx.stroke();
+    ctx.fillStyle=textCol;ctx.font='10px IBM Plex Sans,sans-serif';ctx.textAlign='right';
+    ctx.fillText((maxH*i/4).toFixed(1)+'h',padL-4,y+3.5);
+  }
+
+  // goal line
+  const goalY=padT+chartH-(chartH*goalH/maxH);
+  ctx.strokeStyle=goalCol;ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(padL,goalY);ctx.lineTo(padL+chartW,goalY);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=goalCol;ctx.font='bold 10px IBM Plex Sans,sans-serif';ctx.textAlign='left';
+  ctx.fillText('3h goal',padL+4,goalY-4);
+
+  // bars
+  const barW=Math.floor(chartW/days*0.6);
+  const gap=chartW/days;
+  data.forEach((val,i)=>{
+    const x=padL+gap*i+(gap-barW)/2;
+    const barH=Math.max(2,chartH*val/maxH);
+    const y=padT+chartH-barH;
+    // glow
+    ctx.shadowColor=colors[i];ctx.shadowBlur=val>0?8:0;
+    ctx.fillStyle=colors[i];
+    // rounded top
+    const r=Math.min(4,barW/2);
+    ctx.beginPath();
+    ctx.moveTo(x+r,y);ctx.lineTo(x+barW-r,y);
+    ctx.quadraticCurveTo(x+barW,y,x+barW,y+r);
+    ctx.lineTo(x+barW,y+barH);ctx.lineTo(x,y+barH);ctx.lineTo(x,y+r);
+    ctx.quadraticCurveTo(x,y,x+r,y);ctx.fill();
+    ctx.shadowBlur=0;
+    // label
+    ctx.fillStyle=textCol;ctx.font='9px IBM Plex Sans,sans-serif';ctx.textAlign='center';
+    ctx.fillText(labels[i],x+barW/2,H-padB+13);
+    // value on top if >0
+    if(val>0.05){
+      ctx.fillStyle=colors[i];ctx.font='bold 9px IBM Plex Sans,sans-serif';
+      ctx.fillText(val.toFixed(1),x+barW/2,y-3);
+    }
+  });
+}
+
+/* ==================== RENDER ADDITIONS ==================== */
+function renderTimer(){
+  const s=subj(S.timerSubj)||SUBJECTS[0];
+  const todaySec=todayStudiedSec()+(timerRunning()?timerCurrent():0);
+  const goalPct=Math.min(100,Math.round(todaySec/S.dailyGoalSec*100));
+  return`<div class="card anim">
+  <div class="card-title"><span class="ic">⏱</span>Study Timer
+    <span style="margin-left:auto;font-size:11px;color:var(--muted)">Goal: 3h/day</span>
+  </div>
+  <div class="timer-subj-sel">
+    ${SUBJECTS.map(sub=>`<button id="tsb_${sub.id}" class="tsbtn2${S.timerSubj===sub.id?' on':''}" style="${S.timerSubj===sub.id?`background:${sub.color};border-color:${sub.color};color:#fff`:''}" onclick="setTimerSubj('${sub.id}')">${sub.short}</button>`).join('')}
+  </div>
+  <div class="timer-display" id="timerDisplay" style="color:${s.color}">${fmtTime(timerCurrent())}</div>
+  <div class="goal-bar-wrap">
+    <div class="goal-bar-top"><span>Today</span><span id="miniGoalLbl">${goalPct}%</span></div>
+    <div class="pbar"><i id="miniGoalBar" style="width:${goalPct}%;background:${s.color}"></i></div>
+  </div>
+  <div class="timer-btns">
+    <button class="tbtn ${timerRunning()?'pause':'start'}" id="timerStartBtn" onclick="${timerRunning()?'timerPause()':'timerStart2()'}">${timerRunning()?'⏸ Pause':'▶ Start'}</button>
+    ${timerRunning()||timerElapsed>0?`<button class="tbtn stop" onclick="timerStop()">⏹ Stop</button>`:''}
+  </div>
+  <button class="focus-btn2" onclick="enterFocus()">⛶ Enter Focus Mode</button>
+</div>`;}
+
+function renderGraph(){
+  return`<div class="card anim" style="grid-column:1/-1">
+  <div class="card-title"><span class="ic">📊</span>Study Time — Last 14 Days
+    <span style="margin-left:auto;font-size:11px;color:var(--muted)">
+      ${SUBJECTS.map(s=>`<span style="color:${s.color};margin-left:8px">● ${s.short}</span>`).join('')}
+    </span>
+  </div>
+  <div class="graph-wrap"><canvas id="studyGraph" height="160"></canvas></div>
+</div>`;}
 
 function go(id){const s=subj(id);if(s){logSession(id,'General');window.location=s.url;}}
 function goSec(id,h){const s=subj(id);if(s){logSession(id,h);window.location=s.url+'#'+h;}}
@@ -349,6 +613,7 @@ function bind(){
   document.getElementById('themeBtn').onclick=function(){
     const h=document.documentElement,t=h.getAttribute('data-theme')==='dark'?'light':'dark';
     h.setAttribute('data-theme',t);S.theme=t;save();this.textContent=t==='dark'?'☀ Theme':'🌙 Theme';
+    requestAnimationFrame(drawGraph);
   };
   document.getElementById('backupBtn').onclick=function(){
     const a=document.createElement('a');a.href='data:application/json,'+encodeURIComponent(JSON.stringify(S));a.download='hsc-dashboard-backup.json';a.click();
