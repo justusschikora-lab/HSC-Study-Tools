@@ -1,58 +1,337 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>HSC Study Tools</title>
+<title>HSC Dashboard · 2026</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#080f0a;color:#e6f0e8;font-family:"IBM Plex Sans",system-ui,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center}
-.wrap{text-align:center;padding:40px 20px}
-h1{font-size:32px;font-weight:700;margin-bottom:8px;letter-spacing:-.01em}
-p{color:#7a9e80;margin-bottom:40px;font-size:15px}
-.cards{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
-a{text-decoration:none}
-.card{background:#101a12;border:1px solid #1a2e1e;border-radius:16px;padding:32px 40px;width:220px;transition:.15s}
-.card:hover{border-color:#22c55e;transform:translateY(-2px)}
-.icon{font-size:36px;margin-bottom:14px}
-.label{font-size:18px;font-weight:700;margin-bottom:6px}
-.sub{font-size:13px;color:#7a9e80}
+:root{
+  --bg:#07070f;
+  --surface:rgba(255,255,255,.05);--surface2:rgba(255,255,255,.08);--surfaceb:rgba(255,255,255,.03);
+  --border:rgba(255,255,255,.1);--border2:rgba(255,255,255,.15);
+  --text:#f0f0ff;--muted:rgba(240,240,255,.45);--muted2:rgba(240,240,255,.22);
+  --bio:#22c55e;--biob:rgba(34,197,94,.1);--bioborder:rgba(34,197,94,.25);
+  --chem:#f59e0b;--chemb:rgba(245,158,11,.1);--chemborder:rgba(245,158,11,.25);
+  --eng:#a855f7;--engb:rgba(168,85,247,.1);--engborder:rgba(168,85,247,.25);
+  --math:#3b82f6;--mathb:rgba(59,130,246,.1);--mathborder:rgba(59,130,246,.25);
+  --red:#ef4444;--redb:rgba(239,68,68,.1);
+  --radius:18px;--rsm:12px;
+}
+html[data-theme="light"]{
+  --bg:#f0f0f8;
+  --surface:rgba(255,255,255,.85);--surface2:rgba(255,255,255,.98);--surfaceb:rgba(255,255,255,.6);
+  --border:rgba(0,0,0,.08);--border2:rgba(0,0,0,.14);
+  --text:#0f0f1a;--muted:rgba(15,15,26,.5);--muted2:rgba(15,15,26,.25);
+}
+body{
+  background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',system-ui,sans-serif;min-height:100vh;line-height:1.5;
+  background-image:
+    radial-gradient(ellipse 70% 50% at 15% 0%,rgba(168,85,247,.07) 0%,transparent 60%),
+    radial-gradient(ellipse 55% 45% at 85% 100%,rgba(34,197,94,.05) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 50% at 50% 40%,rgba(59,130,246,.04) 0%,transparent 70%);
+  background-attachment:fixed;
+}
+h1,h2,h3{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:700}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1380px;margin:0 auto;padding:22px 24px 70px}
+
+/* HEADER */
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:26px;flex-wrap:wrap}
+.hdr-brand{font-size:21px;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;letter-spacing:-.02em;flex:1}
+.hdr-brand span{background:linear-gradient(90deg,var(--eng),var(--math));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hbtn{background:var(--surface);border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:7px 13px;font-size:12px;cursor:pointer;font-family:inherit;transition:.15s;backdrop-filter:blur(10px)}
+.hbtn:hover{color:var(--text);border-color:var(--border2)}
+
+/* BENTO GRID */
+.bento{display:grid;gap:14px;grid-template-columns:280px 1fr 280px}
+@media(max-width:1150px){.bento{grid-template-columns:1fr 1.4fr}}
+@media(max-width:720px){.bento{grid-template-columns:1fr}}
+
+/* CARD */
+.card{background:var(--surface);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--border);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden;transition:border-color .2s,transform .2s,box-shadow .2s}
+.card-title{font-size:13px;font-weight:700;font-family:'Bricolage Grotesque',sans-serif;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.card-title .ic{font-size:15px;opacity:.8}
+
+/* HERO (centre column, spans 2 rows) */
+.hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding:30px 22px 24px;grid-column:2;grid-row:1/3;border-color:rgba(168,85,247,.2);box-shadow:0 0 60px rgba(168,85,247,.06)}
+.hero-eye{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:10px}
+.hero-count{font-size:82px;font-weight:800;font-family:'Bricolage Grotesque',sans-serif;line-height:1;letter-spacing:-.04em;background:linear-gradient(135deg,#fff 20%,rgba(168,85,247,.75));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:2px}
+.hero-unit{font-size:16px;color:var(--muted);font-weight:500;margin-bottom:6px}
+.hero-datestr{font-size:12px;color:var(--muted2);margin-bottom:20px}
+.streak-pill{display:inline-flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:40px;padding:8px 18px;margin-bottom:22px}
+.streak-n{font-size:24px;font-weight:800;font-family:'Bricolage Grotesque',sans-serif;line-height:1}
+.streak-lbl{font-size:11.5px;color:var(--muted)}
+.yr-prog{width:100%;margin-bottom:20px}
+.yr-top{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px}
+.pbar{height:7px;background:var(--surface2);border-radius:20px;overflow:hidden;border:1px solid var(--border)}
+.pbar i{display:block;height:100%;border-radius:20px;transition:width .7s cubic-bezier(.4,0,.2,1)}
+.hdiv{width:100%;height:1px;background:var(--border);margin:0 0 18px}
+.focus-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:10px;text-align:left;width:100%}
+.focus-btn{display:flex;align-items:center;gap:10px;width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);padding:11px 13px;cursor:pointer;transition:.15s;text-align:left}
+.focus-btn:hover{border-color:var(--border2);background:rgba(255,255,255,.1)}
+.focus-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.focus-name{font-weight:600;font-size:13.5px;flex:1}
+.focus-arr{color:var(--muted);font-size:11px}
+.date-row{margin-top:14px;width:100%}
+.date-row label{font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:5px;text-align:left}
+.date-row input{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:9px;padding:7px 10px;font-size:13px;font-family:inherit}
+.date-row input:focus{outline:none;border-color:var(--eng)}
+
+/* SUBJECTS ROW */
+.subj-row{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:900px){.subj-row{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.subj-row{grid-template-columns:1fr}}
+.subj-card{display:flex;flex-direction:column;gap:11px;cursor:pointer;transition:transform .18s,box-shadow .18s}
+.subj-card:hover{transform:translateY(-3px)}
+.subj-top{display:flex;align-items:flex-start;gap:11px}
+.subj-ico{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.subj-name{font-size:15px;font-weight:700;font-family:'Bricolage Grotesque',sans-serif;line-height:1.2}
+.subj-sub{font-size:11.5px;color:var(--muted);margin-top:3px}
+.prog-row{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px}
+.subj-links{display:flex;flex-direction:column;gap:3px}
+.sl{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);padding:4px 7px;border-radius:7px;transition:.12s;cursor:pointer}
+.sl:hover{background:var(--surface2);color:var(--text)}
+.sl .sdot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+
+/* BOTTOM */
+.bottom-row{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:720px){.bottom-row{grid-template-columns:1fr}}
+
+/* TODO */
+.todo-add{display:flex;gap:8px;margin-bottom:10px}
+.todo-add input{flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:8px 11px;font-size:13px;font-family:inherit}
+.todo-add input:focus{outline:none;border-color:var(--eng)}
+.todo-add input::placeholder{color:var(--muted2)}
+.todo-add button{background:var(--eng);color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:14px;cursor:pointer;font-weight:700}
+.todo-add button:hover{background:#9333ea}
+.tsubj-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.tsbtn{font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;transition:.12s}
+.tsbtn.on{color:#fff;border-color:transparent}
+.todo-list{display:flex;flex-direction:column;gap:5px;max-height:230px;overflow-y:auto}
+.todo-item{display:flex;align-items:flex-start;gap:9px;padding:7px 10px;border-radius:10px;border:1px solid transparent;transition:.12s;font-size:13px}
+.todo-item:hover{background:var(--surface2);border-color:var(--border)}
+.todo-item input[type=checkbox]{accent-color:var(--eng);margin-top:2px;flex-shrink:0;cursor:pointer;width:15px;height:15px}
+.ttxt{flex:1;line-height:1.4}
+.todo-item.done .ttxt{text-decoration:line-through;color:var(--muted)}
+.tdel{color:var(--muted2);cursor:pointer;font-size:11px;padding:2px 5px;border-radius:5px;flex-shrink:0}
+.tdel:hover{color:var(--red);background:var(--redb)}
+.tpill{display:inline-block;font-size:10px;padding:1px 6px;border-radius:10px;margin-right:5px;font-weight:600}
+
+/* SCHEDULE */
+.sched-scroll{max-height:290px;overflow-y:auto}
+.sched-day{margin-bottom:10px}
+.sday-lbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:5px;display:flex;align-items:center;gap:7px}
+.sday-lbl span{height:1px;flex:1;background:var(--border)}
+.sched-item{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:9px;background:var(--surface2);border:1px solid var(--border);margin-bottom:4px;font-size:12.5px}
+.sdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.sched-txt{flex:1}
+.sched-dur{font-size:11px;color:var(--muted);flex-shrink:0}
+.regen{width:100%;margin-top:10px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:7px;font-size:12px;cursor:pointer;font-family:inherit;transition:.15s}
+.regen:hover{color:var(--text);border-color:var(--border2)}
+
+/* SESSIONS */
+.sess-list{display:flex;flex-direction:column;gap:5px;max-height:200px;overflow-y:auto}
+.sess-item{display:flex;align-items:center;gap:10px;padding:7px 11px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;font-size:12.5px}
+.sess-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.sess-info{flex:1}
+.sess-date{font-size:11px;color:var(--muted);flex-shrink:0}
+.empty{color:var(--muted);font-size:13px;text-align:center;padding:22px;opacity:.6}
+.pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--muted)}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:rgba(13,13,26,.95);border:1px solid var(--eng);color:var(--text);padding:11px 20px;border-radius:11px;z-index:100;box-shadow:0 10px 30px rgba(0,0,0,.5);opacity:0;transition:.25s;pointer-events:none;backdrop-filter:blur(20px)}
+.toast.show{opacity:1}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:6px}
+.anim{animation:fadeUp .38s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.anim:nth-child(1){animation-delay:.05s}.anim:nth-child(2){animation-delay:.1s}.anim:nth-child(3){animation-delay:.15s}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>HSC Study Tools</h1>
-  <p>Balgowlah Boys · 2026</p>
-  <div class="cards">
-    <a href="/biology/">
-      <div class="card">
-        <div class="icon">🧬</div>
-        <div class="label">Biology</div>
-        <div class="sub">Modules 1–8</div>
-      </div>
-    </a>
-    <a href="/chemistry/">
-      <div class="card">
-        <div class="icon">⚗️</div>
-        <div class="label">Chemistry</div>
-        <div class="sub">Modules 5–8</div>
-      </div>
-    </a>
-    <a href="/english/">
-      <div class="card">
-        <div class="icon">📚</div>
-        <div class="label">English</div>
-        <div class="sub">Modules A, B, C</div>
-      </div>
-    </a>
-    <a href="/math/">
-      <div class="card">
-        <div class="icon">📐</div>
-        <div class="label">Math Std 2</div>
-        <div class="sub">Y12 · 5 Topics</div>
-      </div>
-    </a>
+  <div class="hdr anim">
+    <div class="hdr-brand">HSC <span>Dashboard</span></div>
+    <div style="display:flex;gap:8px">
+      <button class="hbtn" id="themeBtn">☀ Theme</button>
+      <button class="hbtn" id="backupBtn">⇅ Backup</button>
+    </div>
   </div>
+  <div class="bento" id="bento"></div>
 </div>
+<div class="toast" id="toast"></div>
+<script>
+const KEY='hsc_dash';
+const SUBJECTS=[
+  {id:'bio',name:'Biology',short:'Bio',icon:'🧬',color:'var(--bio)',bg:'var(--biob)',border:'var(--bioborder)',url:'/biology/',lsKey:'hscbio_progress',
+   links:[{l:'Module 5 — Heredity',h:'m5'},{l:'Module 6 — Genetic Change',h:'m6'},{l:'Module 7 — Infectious Disease',h:'m7'},{l:'Module 8 — Immune System',h:'m8'}]},
+  {id:'chem',name:'Chemistry',short:'Chem',icon:'⚗️',color:'var(--chem)',bg:'var(--chemb)',border:'var(--chemborder)',url:'/chemistry/',lsKey:'hscchem_progress',
+   links:[{l:'Module 5 — Equilibrium',h:'m5'},{l:'Module 6 — Acid/Base',h:'m6'},{l:'Module 7 — Organic Chem',h:'m7'},{l:'Module 8 — Applying Chem',h:'m8'}]},
+  {id:'eng',name:'English Advanced',short:'English',icon:'📚',color:'var(--eng)',bg:'var(--engb)',border:'var(--engborder)',url:'/english/',lsKey:'hsceng_progress',
+   links:[{l:'Common Module — 1984',h:'common'},{l:'Module A — Textual Conversations',h:'moda'},{l:'Module B — T.S. Eliot',h:'modb'},{l:'Module C — Discursive',h:'modc'}]},
+  {id:'math',name:'Maths Standard 2',short:'Maths',icon:'📐',color:'var(--math)',bg:'var(--mathb)',border:'var(--mathborder)',url:'/math/',lsKey:'hscmath_progress',
+   links:[{l:'Algebra',h:'algebra'},{l:'Measurement',h:'measurement'},{l:'Financial Maths',h:'financial'},{l:'Statistics',h:'statistics'}]},
+];
+const DEF={examDate:'2026-10-21',todos:[],sessions:[],theme:'dark',streak:[],schedSeed:3,todoSubj:''};
+let S=load();
+
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s)return Object.assign({},JSON.parse(JSON.stringify(DEF)),s);}catch(e){}return JSON.parse(JSON.stringify(DEF));}
+let svT;function save(){clearTimeout(svT);svT=setTimeout(()=>localStorage.setItem(KEY,JSON.stringify(S)),300);}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1900);}
+function esc(s){return(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function subj(id){return SUBJECTS.find(s=>s.id===id)||null;}
+function today(){return new Date().toISOString().slice(0,10);}
+function daysLeft(){return Math.max(0,Math.ceil((new Date(S.examDate)-new Date())/86400000));}
+
+function getProg(s){
+  try{const d=JSON.parse(localStorage.getItem(s.lsKey));if(!d)return 0;
+    const n=Object.values(d.check||{}).filter(Boolean).length;
+    const tot=s.id==='bio'?80:s.id==='chem'?80:s.id==='eng'?20:40;
+    return Math.min(100,Math.round(n/tot*100));
+  }catch(e){return 0;}}
+
+function markStreak(){const t=today();if(!S.streak.includes(t)){S.streak.push(t);if(S.streak.length>90)S.streak=S.streak.slice(-90);save();}}
+function getStreak(){let c=0;const d=new Date();while(true){const s=d.toISOString().slice(0,10);if(S.streak.includes(s)){c++;d.setDate(d.getDate()-1);}else break;}return c;}
+function todayFocus(){const studied=S.sessions.filter(s=>s.date===today()).map(s=>s.subject);const not=SUBJECTS.filter(s=>!studied.includes(s.id));return not.length?not[Math.floor(Date.now()/3600000)%not.length]:SUBJECTS[Math.floor(Date.now()/86400000)%SUBJECTS.length];}
+
+function genSched(){
+  const dow=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];const out=[];
+  for(let i=0;i<7;i++){
+    const d=new Date();d.setDate(d.getDate()+i);
+    const isW=d.getDay()===0||d.getDay()===6;
+    const s1=SUBJECTS[(i+S.schedSeed)%SUBJECTS.length];
+    const s2=SUBJECTS[(i+S.schedSeed+2)%SUBJECTS.length];
+    const t1=s1.links[i%s1.links.length].l.split('—')[1]?.trim()||s1.links[0].l;
+    const t2=s2.links[(i+1)%s2.links.length].l.split('—')[1]?.trim()||s2.links[0].l;
+    const items=isW?[{s:s1,t:t1,dur:'2h'},{s:s2,t:t2,dur:'1h'}]:[{s:s1,t:t1,dur:'1.5h'}];
+    out.push({label:i===0?'Today':i===1?'Tomorrow':dow[d.getDay()],items});
+  }return out;
+}
+
+function logSession(id,section){
+  S.sessions.push({date:today(),time:new Date().toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit'}),subject:id,section:section||'General'});
+  if(S.sessions.length>60)S.sessions=S.sessions.slice(-60);
+  markStreak();save();
+}
+
+function render(){
+  document.getElementById('bento').innerHTML=renderLeft()+renderHero()+renderRight()+renderSubjRow()+renderBottom();
+  bind();
+}
+
+function renderHero(){
+  const dl=daysLeft(),streak=getStreak(),focus=todayFocus();
+  const pct=Math.min(100,Math.round((1-dl/365)*100));
+  return `<div class="card hero anim">
+  <div class="hero-eye">HSC Countdown</div>
+  <div class="hero-count">${dl}</div>
+  <div class="hero-unit">days remaining</div>
+  <div class="hero-datestr">${new Date(S.examDate).toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div>
+  <div class="streak-pill"><span style="font-size:18px">🔥</span><span class="streak-n">${streak}</span><span class="streak-lbl">day streak</span></div>
+  <div class="yr-prog">
+    <div class="yr-top"><span>Year progress</span><span>${pct}%</span></div>
+    <div class="pbar"><i style="width:${pct}%;background:linear-gradient(90deg,var(--eng),var(--bio),var(--math))"></i></div>
+  </div>
+  <div class="hdiv"></div>
+  <div class="focus-lbl">📌 Today's focus</div>
+  <button class="focus-btn" onclick="go('${focus.id}')">
+    <span class="focus-dot" style="background:${focus.color}"></span>
+    <span class="focus-name">${focus.name}</span>
+    <span class="focus-arr">Open →</span>
+  </button>
+  <div class="date-row"><label>Exam date</label><input type="date" value="${S.examDate}" onchange="setDate(this.value)"/></div>
+</div>`;
+}
+
+function renderLeft(){
+  const items=S.todos,done=items.filter(t=>t.done).length,sel=S.todoSubj||'';
+  return `<div class="card anim" style="grid-row:1/3">
+  <div class="card-title"><span class="ic">✅</span>To-Do List<span class="pill" style="margin-left:auto">${done}/${items.length}</span></div>
+  <div class="tsubj-row">
+    <button class="tsbtn${!sel?' on':''}" style="${!sel?'background:var(--eng);':''}" onclick="setTS('')">All</button>
+    ${SUBJECTS.map(s=>`<button class="tsbtn${sel===s.id?' on':''}" style="${sel===s.id?`background:${s.color};`:''}" onclick="setTS('${s.id}')">${s.short}</button>`).join('')}
+  </div>
+  <div class="todo-add">
+    <input id="tIn" type="text" placeholder="Add a task…" onkeydown="if(event.key==='Enter')addTodo()"/>
+    <button onclick="addTodo()">+</button>
+  </div>
+  <div class="todo-list">
+    ${items.length?items.map((t,i)=>{const sb=t.subject?subj(t.subject):null;return`<div class="todo-item${t.done?' done':''}">
+      <input type="checkbox" ${t.done?'checked':''} onchange="toggleTodo(${i})"/>
+      <span class="ttxt">${sb?`<span class="tpill" style="background:${sb.bg};color:${sb.color};border:1px solid ${sb.border}">${sb.short}</span>`:''} ${esc(t.text)}</span>
+      <span class="tdel" onclick="delTodo(${i})">✕</span>
+    </div>`;}).join(''):`<div class="empty">No tasks yet — add one above</div>`}
+  </div>
+</div>`;
+}
+
+function renderRight(){
+  const sched=genSched();
+  return `<div class="card anim" style="grid-row:1/3">
+  <div class="card-title"><span class="ic">📅</span>Study Schedule</div>
+  <div class="sched-scroll">
+    ${sched.map(day=>`<div class="sched-day">
+      <div class="sday-lbl">${day.label}<span></span></div>
+      ${day.items.map(it=>`<div class="sched-item"><span class="sdot" style="background:${it.s.color}"></span><span class="sched-txt"><b>${it.s.short}</b> · ${it.t}</span><span class="sched-dur">${it.dur}</span></div>`).join('')}
+    </div>`).join('')}
+  </div>
+  <button class="regen" onclick="regenSched()">🔀 Regenerate schedule</button>
+</div>`;
+}
+
+function renderSubjRow(){
+  return `<div class="subj-row">${SUBJECTS.map(s=>{const p=getProg(s);return`<div class="card subj-card anim" style="border-color:${s.border};box-shadow:0 8px 32px ${s.bg}" onclick="go('${s.id}')">
+    <div class="subj-top">
+      <div class="subj-ico" style="background:${s.bg};border:1px solid ${s.border}">${s.icon}</div>
+      <div><div class="subj-name">${s.name}</div><div class="subj-sub">${s.links.length} sections</div></div>
+    </div>
+    <div><div class="prog-row"><span>Progress</span><span style="color:${s.color};font-weight:700">${p}%</span></div><div class="pbar"><i style="width:${p}%;background:${s.color}"></i></div></div>
+    <div class="subj-links" onclick="event.stopPropagation()">
+      ${s.links.map(l=>`<div class="sl" onclick="goSec('${s.id}','${l.h}')"><span class="sdot" style="background:${s.color}"></span>${l.l}</div>`).join('')}
+    </div>
+  </div>`;}).join('')}</div>`;
+}
+
+function renderBottom(){
+  const sess=S.sessions.slice().reverse().slice(0,15);
+  return `<div class="bottom-row">
+  <div class="card anim">
+    <div class="card-title"><span class="ic">🕐</span>Session History<span class="pill" style="margin-left:auto">${S.sessions.length} total</span>${S.sessions.length?`<button class="hbtn" style="font-size:10px;padding:3px 9px;margin-left:6px" onclick="clearHist()">Clear</button>`:''}</div>
+    <div class="sess-list">
+      ${sess.length?sess.map(s=>{const sb=subj(s.subject)||SUBJECTS[0];return`<div class="sess-item"><span class="sess-dot" style="background:${sb.color}"></span><span class="sess-info"><b>${sb.short}</b> · ${s.section}</span><span class="sess-date">${s.date===today()?'Today '+s.time:s.date}</span></div>`;}).join(''):`<div class="empty">Open a subject to start tracking</div>`}
+    </div>
+  </div>
+  <div class="card anim">
+    <div class="card-title"><span class="ic">📈</span>Cross-Subject Progress</div>
+    <div style="display:flex;flex-direction:column;gap:14px;margin-top:4px">
+      ${SUBJECTS.map(s=>{const p=getProg(s);return`<div><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><span style="font-size:14px">${s.icon}</span><span style="font-size:13px;font-weight:600;flex:1">${s.name}</span><span style="font-size:12px;color:${s.color};font-weight:700">${p}%</span></div><div class="pbar"><i style="width:${p}%;background:${s.color}"></i></div></div>`;}).join('')}
+    </div>
+  </div>
+  </div>`;
+}
+
+function go(id){const s=subj(id);if(s){logSession(id,'General');window.location=s.url;}}
+function goSec(id,h){const s=subj(id);if(s){logSession(id,h);window.location=s.url+'#'+h;}}
+function addTodo(){const inp=document.getElementById('tIn');const t=inp.value.trim();if(!t)return;S.todos.push({text:t,done:false,subject:S.todoSubj||'',created:new Date().toISOString()});inp.value='';save();render();}
+function toggleTodo(i){S.todos[i].done=!S.todos[i].done;save();render();}
+function delTodo(i){S.todos.splice(i,1);save();render();}
+function setTS(v){S.todoSubj=v;save();render();}
+function setDate(v){S.examDate=v;save();render();toast('Exam date updated');}
+function regenSched(){S.schedSeed=Math.floor(Math.random()*100);save();render();toast('Schedule regenerated');}
+function clearHist(){if(confirm('Clear all session history?')){S.sessions=[];save();render();}}
+
+function bind(){
+  document.getElementById('themeBtn').onclick=function(){
+    const h=document.documentElement,t=h.getAttribute('data-theme')==='dark'?'light':'dark';
+    h.setAttribute('data-theme',t);S.theme=t;save();this.textContent=t==='dark'?'☀ Theme':'🌙 Theme';
+  };
+  document.getElementById('backupBtn').onclick=function(){
+    const a=document.createElement('a');a.href='data:application/json,'+encodeURIComponent(JSON.stringify(S));a.download='hsc-dashboard-backup.json';a.click();
+  };
+}
+
+if(S.theme==='light')document.documentElement.setAttribute('data-theme','light');
+markStreak();
+render();
+</script>
 </body>
 </html>
