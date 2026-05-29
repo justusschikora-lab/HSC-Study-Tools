@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>HSC English Advanced Y12 — Study Tool</title>
+<style>
+:root{
+  --bg:#09080f;--surface:#120f1a;--surface2:#1a1626;--accent:#a855f7;--accent2:#9333ea;
+  --text:#ede8f5;--muted:#8a7a9e;--line:#251d35;
+  --blue:#3b82f6;--green:#22c55e;--amber:#f59e0b;--red:#ef4444;--purple:#a855f7;
+  --blueb:#0e1836;--greenb:#0e2a14;--amberb:#2c2210;--redb:#2c1414;--purpleb:#1e1131;
+}
+html[data-theme="light"]{
+  --bg:#f5f0ff;--surface:#ffffff;--surface2:#ede8f7;--accent:#9333ea;--accent2:#7c3aed;
+  --text:#1a0f2e;--muted:#5a4a7a;--line:#d8cef0;
+  --blueb:#e6f0fb;--greenb:#e7f7ec;--amberb:#fdf3e1;--redb:#fbe9e9;--purpleb:#f0e8fb;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.55}
+h1,h2,h3,h4,.brand{font-family:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif;font-weight:700;letter-spacing:-.01em}
+a{color:var(--accent)}
+.app{display:flex;min-height:100vh}
+.sidebar{width:252px;background:var(--surface);border-right:1px solid var(--line);position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:14px 12px;gap:10px;overflow-y:auto;flex-shrink:0}
+.brand{font-size:18px;display:flex;align-items:center;gap:8px}
+.brand .logo{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px}
+.brand small{display:block;color:var(--muted);font-size:11px;font-weight:500;letter-spacing:0}
+.search input{width:100%;background:var(--surface2);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:8px 10px;font-size:13px}
+.search input:focus{outline:none;border-color:var(--accent)}
+.navlist{display:flex;flex-direction:column;gap:2px;margin-top:4px}
+.navbtn{display:flex;align-items:center;gap:9px;background:none;border:none;color:var(--muted);text-align:left;padding:8px 11px;border-radius:9px;cursor:pointer;font-size:13px;font-family:inherit;width:100%;transition:.12s}
+.navbtn .ic{width:18px;text-align:center;font-size:12px;flex-shrink:0}
+.navbtn:hover{background:var(--surface2);color:var(--text)}
+.navbtn.active{background:linear-gradient(90deg,rgba(168,85,247,.15),transparent);color:var(--accent);font-weight:600}
+.navbtn.sub{padding-left:28px;font-size:12px}
+.nav-sep{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:8px 11px 2px;opacity:.6}
+.exampill{margin-top:auto;background:var(--surface2);border:1px solid var(--line);border-radius:11px;padding:10px}
+.exampill label{font-size:11px;color:var(--muted);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em}
+.exampill .cd{font-size:22px;font-weight:700;color:var(--accent);font-family:"Bricolage Grotesque",sans-serif}
+.exampill input{width:100%;margin-top:7px;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:7px;padding:5px 7px;font-size:12px}
+.sb-foot{display:flex;gap:6px;flex-wrap:wrap}
+.sb-foot button{flex:1;font-size:11px;padding:6px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);border-radius:8px;cursor:pointer;min-width:60px}
+.sb-foot button:hover{color:var(--text);border-color:var(--accent)}
+.main{flex:1;min-width:0;padding:26px 32px 90px;max-width:1100px}
+.page-head{margin-bottom:18px;display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.page-head h1{font-size:27px;margin:0 0 4px}.page-head p{color:var(--muted);margin:0;font-size:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+.card h3{margin:0 0 12px;font-size:16px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:900px){.g2,.g3{grid-template-columns:1fr}}
+.stat{display:flex;flex-direction:column;gap:6px}
+.stat .big{font-size:30px;font-weight:700;font-family:"Bricolage Grotesque",sans-serif}
+.stat .lbl{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+.bar{height:9px;background:var(--surface2);border-radius:20px;overflow:hidden}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:20px;transition:width .4s}
+/* tabs */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.tab{font-size:13px;padding:7px 14px;border-radius:20px;border:1px solid var(--line);background:var(--surface2);color:var(--muted);cursor:pointer;font-family:inherit}
+.tab.on{background:rgba(168,85,247,.15);color:var(--accent);border-color:var(--accent)}
+/* note blocks */
+.block{border-radius:10px;padding:12px 14px;margin:10px 0;font-size:13.5px;border-left:3px solid}
+.block .bl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;font-weight:700;display:block;margin-bottom:5px;opacity:.9}
+.block.intro{background:var(--purpleb);border-color:var(--purple)}.block.intro .bl{color:#d8b4fe}
+.block.body1{background:var(--blueb);border-color:var(--blue)}.block.body1 .bl{color:#93c5fd}
+.block.body2{background:var(--greenb);border-color:var(--green)}.block.body2 .bl{color:#86efac}
+.block.body3{background:var(--amberb);border-color:var(--amber)}.block.body3 .bl{color:#fcd34d}
+.block.conc{background:var(--redb);border-color:var(--red)}.block.conc .bl{color:#fca5a5}
+.block.tip{background:var(--amberb);border-color:var(--amber)}.block.tip .bl{color:#fcd34d}
+.block.note{background:var(--surface2);border-color:var(--muted)}
+/* quote */
+.quote{font-style:italic;background:var(--surface2);border-left:3px solid var(--accent);padding:8px 13px;border-radius:0 8px 8px 0;margin:8px 0;font-size:13.5px;color:var(--text)}
+/* dot cards */
+.dot{background:var(--surface);border:1px solid var(--line);border-radius:13px;margin:0 0 10px;overflow:hidden}
+.dot-h{display:flex;align-items:flex-start;gap:11px;padding:13px 15px;cursor:pointer}
+.dot-h:hover{background:var(--surface2)}
+.dot-h .ttl{flex:1;font-weight:600;font-size:14.5px}
+.dot-h .chev{color:var(--muted);transition:.2s;font-size:12px;padding-top:3px}
+.dot.open .chev{transform:rotate(90deg)}
+.dot-body{padding:0 15px 15px;display:none}.dot.open .dot-body{display:block}
+/* Q&A */
+.qa{border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin:9px 0;background:var(--surface2)}
+.qa .qq{font-size:14px;margin-bottom:7px;font-weight:500}
+.qa .ans{display:none;border-top:1px dashed var(--line);margin-top:9px;padding-top:9px;font-size:13.5px;color:#d8b4fe;white-space:pre-wrap}
+.qa.show .ans{display:block}
+.qa .reveal{font-size:12px;background:var(--surface);border:1px solid var(--line);color:var(--accent);padding:4px 11px;border-radius:7px;cursor:pointer}
+/* quiz mode */
+.quiz-card{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:28px;text-align:center;max-width:680px;margin:0 auto}
+.quiz-card .qnum{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px}
+.quiz-card .qtext{font-size:18px;font-weight:600;line-height:1.5;margin-bottom:22px}
+.quiz-card .hint{font-size:13px;color:var(--muted);margin-bottom:20px;display:none;white-space:pre-wrap;text-align:left;background:var(--surface2);border-radius:10px;padding:13px;border:1px solid var(--line)}
+.quiz-card .hint.show{display:block}
+.quiz-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.btn{background:var(--accent);color:#fff;border:none;border-radius:9px;padding:9px 16px;font-weight:600;cursor:pointer;font-family:inherit;font-size:14px}
+.btn:hover{background:var(--accent2)}
+.btn.ghost{background:var(--surface2);color:var(--text);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn.sm{padding:6px 12px;font-size:12.5px}
+.pill{display:inline-block;font-size:11px;padding:2px 9px;border-radius:20px;background:var(--surface2);border:1px solid var(--line);color:var(--muted)}
+.pill.purple{color:#d8b4fe;border-color:#5b2d8f;background:var(--purpleb)}
+.pill.blue{color:#93c5fd;border-color:#1e4a63;background:var(--blueb)}
+.pill.green{color:#86efac;border-color:#1a4a2a;background:var(--greenb)}
+.muted{color:var(--muted)}.small{font-size:12.5px}
+.divider{height:1px;background:var(--line);margin:16px 0}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--surface2);border:1px solid var(--accent);color:var(--text);padding:11px 20px;border-radius:11px;z-index:100;box-shadow:0 10px 30px rgba(0,0,0,.4);opacity:0;transition:.25s;pointer-events:none}
+.toast.show{opacity:1}
+::-webkit-scrollbar{width:9px}::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+textarea.notes{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:9px;font-family:inherit;font-size:13px;resize:vertical;min-height:80px;margin-top:6px}
+textarea.notes:focus{outline:none;border-color:var(--accent)}
+.kv{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);font-size:13.5px}.kv:last-child{border:none}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <a href="/" style="text-decoration:none"><span class="logo" style="width:38px;height:44px;font-size:18px;flex-direction:column;gap:1px;display:flex;align-items:center;justify-content:center">⌂<span style="font-size:8px;font-weight:700;letter-spacing:.04em;opacity:.85">HOME</span></span></a>
+      <div>HSC English Adv<small>Y12 · Modules CM A B C</small></div>
+    </div>
+    <div class="search"><input id="globalSearch" type="text" placeholder="🔍 Search…" autocomplete="off"/></div>
+    <nav class="navlist" id="nav"></nav>
+    <div class="exampill">
+      <label>HSC Exam Countdown</label>
+      <div class="cd" id="countdown">— days</div>
+      <input id="examDate" type="date"/>
+    </div>
+    <div class="sb-foot">
+      <button id="themeBtn">☀ Theme</button>
+      <button id="ioBtn">⇅ Backup</button>
+    </div>
+  </aside>
+  <main class="main" id="main"></main>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const LS_KEY="hsceng_progress";
+const DEFAULT_STATE={notes:{},examDate:"2026-10-21",theme:"dark",quizStats:{},history:[]};
+let state=load();
+function load(){try{const s=JSON.parse(localStorage.getItem(LS_KEY));if(s)return Object.assign({},JSON.parse(JSON.stringify(DEFAULT_STATE)),s);}catch(e){}return JSON.parse(JSON.stringify(DEFAULT_STATE));}
+let saveT;function save(){clearTimeout(saveT);saveT=setTimeout(()=>localStorage.setItem(LS_KEY,JSON.stringify(state)),350);}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800);}
+function esc(s){return(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+/* ==================== NAV DATA ==================== */
+const NAV=[
+  {id:"dash",label:"Dashboard",ic:"⊞"},
+  {sep:"ESSAYS"},
+  {id:"common",label:"Common Module — 1984",ic:"📖"},
+  {id:"moda_tempest",label:"Module A — The Tempest",ic:"🎭",sub:true},
+  {id:"moda_hagseed",label:"Module A — Hagseed",ic:"🎭",sub:true},
+  {id:"modb",label:"Module B — T.S. Eliot",ic:"✒️"},
+  {sep:"WRITING"},
+  {id:"modc",label:"Module C — Discursive",ic:"✍️"},
+  {id:"reflections",label:"Reflection Questions",ic:"🪞"},
+  {id:"homework",label:"In-Class / Homework",ic:"📝"},
+  {sep:"PRACTICE"},
+  {id:"quiz",label:"Quiz Mode",ic:"⚡"},
+];
+
+/* ==================== CONTENT DATA ==================== */
+
+const COMMON_ESSAY = {
+  title:"Common Module — 1984 (George Orwell)",
+  text:"George Orwell, 1984 (1949)",
+  module:"Texts and Human Experiences",
+  intro:`Conventionally, [QUESTION FOCUS] the authenticity of the human experience is predicated upon [THESIS ANGLE] intellectual autonomy, emotional intimacy and genuine connections to others. The emergence of 20th century political extremes, however, refutes this notion through manufacturing states underpinned by totalitarianism and psychological oppression in the pursuit of sociopolitical control. George Orwell's novel '1984' explores [QUESTION FOCUS] the fundamental ideological conflict between humanity and the constraints of autocratic governance through constructing a society in which [ANALYSIS EMPHASIS] individuality and truth are subordinated to absolute power, [LINK TO QUESTION] warning society of how the corrosive effects of totalitarian regimes shape and limit the human experience.`,
+  placeholders:[
+    ["[QUESTION FOCUS]","Directly adapt to the wording of the question"],
+    ["[THESIS ANGLE]","Adapt to your argument about human experiences"],
+    ["[MODULE LINK]","Adapt to sound closer to the Common Module rubric"],
+    ["[ANALYSIS EMPHASIS]","Shift depending on whether the question is about truth, identity, connection, suffering, rebellion, individuality, etc."],
+    ["[LINK TO QUESTION]","Must be reshaped to directly answer the question"],
+  ],
+  bodies:[
+    {label:"Body 1 — Totalitarianism & Surveillance",content:`Arising from contemporary concerns surrounding the emergence of ideological extremes in the wake of WWII, Orwell's novel posits a bleak dystopian landscape of oppressive totalitarian governance, where fear and coercion serve as insidious mechanisms of societal control which [LINK TO QUESTION] serve to curtail the human experience.
+
+Manufacturing an allusion to Stalinist Russia, Orwell's dire prognostication of a "glittering world of steel" where a "nation of warriors" all "march forward in perfect unity" posits an industrialised totalitarian state that instils collective conformity through the indoctrination of fear and dehumanisation.
+
+Envisioning a landscape reminiscent of a Foucauldian preoccupation with asymmetrical surveillance, the ubiquitous Party slogan "Big Brother is Watching you" and the "telescreens" — an electric mode of panoptic observation — operate as a sophisticated form of internalised coercion, creating a consciousness of permanent visibility that enables totalitarian governments to restrict the anomalous behaviour fundamental to our [QUESTION FOCUS] physical freedoms.
+
+More poignantly, Orwell represents the Party's abuse of linguistic determinism as a threat to our emotional and philosophical freedoms. Satirising the dialectical materialism of Stalin's regime, the language of INGSOC, embodied in the paradoxical slogans "War is Peace, Freedom is Slavery, Ignorance is Strength" and the restrictive vocabulary of Newspeak — a semantic proliferation where words are "rubbed out and forgotten" — allows the Party to ultimately "narrow the range of thought" and manipulate universal truth.`},
+    {label:"Body 2 — Winston's Rebellion & Human Connection",content:`In response to this enforced coercive oppression, [QUESTION FOCUS] we witness the emergence of subversive individuals who pursue an authentic human experience liberated from totalitarian ideology.
+
+By positioning his protagonist, Winston Smith, as the "guardian of the human spirit", Orwell promotes the importance of safeguarding [QUESTION FOCUS] the sanctity of individual thought and veracity of the past. Winston's subversive criticism of the party rhetoric, reflected in his maintenance of a personal diary in which he writes "DOWN WITH BIG BROTHER", evolves into a wider endeavour to carry on the metaphorical "human heritage" which has been erased by totalitarian regimes.
+
+Winston's fervent longing to articulate authentic truth coalesces in his illicit affair with Julia. Their initial sexual interaction, like the diary, represents merely a "political act" designed to metaphorically "tear the party to pieces", rather than an act of affinity, allowing Orwell to foreground how totalitarian regimes distort the conventional motives of human connection.
+
+This view, however, is dismantled upon their subsequent sexual encounter, where Winston acknowledges through sensory imagery how the "feeling of her skin" had metaphorically "gotten inside of him" and galvanised a "deep tenderness he had not felt before", reflecting the capacity for human connection to temporarily circumvent Party indoctrination.`},
+    {label:"Body 3 — Defeat, Room 101 & Denouement",content:`The protagonist's ultimate failure to transcend oppressive totalitarian ideology enables Orwell to signal [QUESTION FOCUS] the inevitable subordination of individual will to autocratic governance.
+
+O'Brien's ominous threat equating Winston's future to a "boot stamping on a human face forever" is actualised in the Party's physical and psychological torture. Orwell employs polysyndeton, suggesting that Winston will no longer feel "love, or curiosity, or joy", rendering him simply "a mouth that uttered whatever was demanded of him", to articulate the Party's curtailing of anomalous expression fundamental to the human experience.
+
+This dire prognostication resonates in the novel's tragic denouement, where we witness Winston relinquish the final remnants of his humanity. Under the duress of torture in Room 101, where the "impenetrable heart" is exposed by its greatest fear, Winston's fraught imperative "Do it to Julia! Tear her face off!" signals the desecration of his emotions as he becomes subsumed within the oppressive constraints of autocratic regimes.
+
+Stripped of this autonomy, Winston's ideological conversion and subsequent reintegration coalesces in Orwell's ominous claim that "he loved Big Brother", signifying the final surrender of [QUESTION FOCUS] inherent human freedom, allowing Orwell to [LINK TO QUESTION] admonish humanity of the debilitating restraints of totalitarian regimes.`},
+  ],
+  conclusion:`Thus, Orwell cautions audiences to recognise how totalitarian regimes undermine [QUESTION FOCUS] the physical, emotional and intellectual volatilities that afford our existence meaning, ultimately [LINK TO QUESTION] signalling the desecration of the human experience.`,
+  keyQuotes:[
+    ["Big Brother is Watching you","Panoptic surveillance — internalised coercion"],
+    ["War is Peace, Freedom is Slavery, Ignorance is Strength","Linguistic determinism — manipulation of truth via paradox"],
+    ["Glittering world of steel / nation of warriors","Allusion to Stalinist industrialised totalitarian state"],
+    ["Rubbed out and forgotten","Newspeak — erasure of thought through language restriction"],
+    ["DOWN WITH BIG BROTHER","Diary as political act — subversive individuality"],
+    ["Feeling of her skin / deep tenderness","Sensory imagery — human connection circumventing Party indoctrination"],
+    ["Do it to Julia! Tear her face off!","Room 101 — desecration of human emotion under torture"],
+    ["Boot stamping on a human face forever","O'Brien's threat — power as eternal domination"],
+    ["He loved Big Brother","Denouement — total surrender of individual will"],
+    ["2+2=5","Doublethink — forced capitulation to manufactured truth"],
+  ],
+};
+
+const TEMPEST_ESSAY = {
+  title:"Module A — The Tempest (Shakespeare)",
+  text:"William Shakespeare, The Tempest (c. 1610–11, Jacobean era)",
+  module:"Textual Conversations",
+  intro:`Contemporary authors initiate textual conversation to trace/examine how similar thematic ideas resonate/translate/evolve across divergent/disparate contexts. William Shakespeare's dramatic play 'The Tempest' explores Jacobean anxieties surrounding the shifting hierarchical structures within a world of emerging humanist ideologies, whilst Margaret Atwood's modern prose fiction appropriation 'Hagseed' personalises this exploration of power within a 21st century society defined by rampant individualism and moral relativism.
+
+Ultimately, whilst Shakespeare advocates for a mediation/equilibrium between power and compassion to reconcile the evolving sociopolitical tensions of his milieu, Atwood draws us into an awareness surrounding the absence of such traditional values in the 21st century, presenting power as a corruptive force that corrodes our humanity/morality.`,
+  bodies:[
+    {label:"BP1 — Loss of Hierarchy / Disruption of Power",content:`Set against the shifting philosophical and theological parameters of the late Renaissance Era, 'The Tempest' reflects Elizabethan concerns surrounding the disturbance of traditional religious, social and political hierarchies in Post-Medieval Europe. The opening stage directions describing a "tempestuous noise of thunder and lightning" operates as an allegorical disruption of traditional Jacobean orthodoxy and precipitates a hierarchical inversion that resonates in the Boatswain's scornful rhetorical question "what care these roarers in the name of the king?"
+
+Here, Shakespeare manufactures a new world order liberated from past theological and socio-political frameworks and signals a symbolic shift away from the established status quo of a governance justified solely upon divine right by rendering it inert. Set against this upheaval, however, is the autocratic island of Prospero. Constructing a master-slave dialectic with Ariel and Caliban, who Prospero condemns, through pejorative adjectives, as "malignant thing" and "poisonous slave", Shakespeare proffers an asymmetrical system of governance characterised by dehumanisation and moral exploitation.`},
+    {label:"BP2 — Alternative Power Structures (Gonzalo / Antonio)",content:`Liberated from Jacobean hierarchy, Shakespeare uses the island as a stage upon which he explores alternative power structures. Infusing Gonzalo's dialogue with potent religious connotations, the allusion to the sacrament of baptism where he observes how their "garments" have been "stained with salt water" allows him to envision an egalitarian society that bears "no occupation" and "everybody equal."
+
+The impracticality of such governance, however, is exposed in the Machiavellian tendencies of the island's antagonists. By representing Antonio's manipulation of Sebastian to usurp Alonso, stating his "strong imagination" sees a metaphorical "crown dropping upon thy head," Shakespeare undermines the pursuit of an idyllic socialist utopia, suggesting that humanity's ambition to acquire power is fundamentally driven by malice.`},
+    {label:"BP3 — Forgiveness, Compassion & Denouement",content:`Cognisant of the barriers that undermine the attainment of a utopia, Shakespeare advocates for the necessity of a society which balances authority and individual freedom. Electing to exercise forgiveness in the play's denouement, Prospero — described through the stage directions as he "embraces Alonso" — relinquishes his authority by declaring that he will "break his staff" and metaphorically "drown his book" in a symbolic affirmation that a just society must balance power with individual freedom and compassion.
+
+Ariel catalyses a shift to forgiveness through his declaration "That if you now beheld them, your affections would become tender…mine would, sir, were I human." Prospero then declares that "the rarer action is in virtue than in vengeance." Signals a shift from autocratic dictator to compassionate individual. Prospero's freeing of Ariel is the final relinquishment — his slavery has been the symbol of Prospero's authority throughout.
+
+These ideas are developed in the meta-theatrical epilogue, where Prospero and, by extension, Shakespeare, asks the audience for forgiveness. Imploring the audience to metaphorically "release me from my bands" and "set me free", Shakespeare acknowledges the redemptive power of forgiveness and the fallibility of autocratic governance, ultimately reinforcing the necessity of a monarchical rule predicated upon benevolence and a commitment to the welfare of collective society.`},
+  ],
+  keyQuotes:[
+    ["What care these roarers in the name of the king?","Boatswain — rhetorical question; hierarchical inversion"],
+    ["Malignant thing / poisonous slave","Pejorative adjectives — Prospero's dehumanisation of Caliban"],
+    ["Garments stained with salt water","Baptism allusion — Gonzalo's egalitarian utopia"],
+    ["Crown dropping upon thy head","Metaphor — Antonio's Machiavellian manipulation of Sebastian"],
+    ["That if you now beheld them…were I human","Ariel — irony: spirit teaches human about empathy"],
+    ["The rarer action is in virtue than in vengeance","Prospero's turning point — Catholic values of forgiveness"],
+    ["Break my staff / drown my book","Symbolic relinquishment of autocratic power"],
+    ["Release me from my bands / set me free","Meta-theatrical 4th wall break — Shakespeare asks audience for forgiveness"],
+    ["O brave new world / That has such people in't","Miranda — balance between old hierarchies and new freedom"],
+    ["Every third thought shall be my grave","Prospero accepts transience of life; dedicates it to empathy"],
+  ],
+  artDecons:[
+    "Masque scene (Act IV): Prospero = director, draws awareness to constructed nature of power; transition from dictatorship",
+    "Metatheatrical addressing: Prospero's epilogue breaks 4th wall, universalising the text's concerns into our world",
+    "The Tempest itself: Prospero conjures the storm — directorship is manufactured, power is performance",
+  ],
+};
+
+const HAGSEED_ESSAY = {
+  title:"Module A — Hagseed (Atwood)",
+  text:"Margaret Atwood, Hagseed (2016, Hogarth Shakespeare)",
+  module:"Textual Conversations",
+  context:"21st century society — rampant individualism, moral relativism, devoid of traditional Christian/Catholic values",
+  swingSentence:`Reframing this exploration of the nature of authority for a contemporary audience, Atwood employs a third person limited perspective prose to question the moral responsibilities of individuals who exercise power in the 21st Century.`,
+  bodies:[
+    {label:"BP1 — Felix's Psychological Fracture & Machiavellianism",content:`In the opening of her novel, Atwood presents Felix as a passionate, theatrically inclined, yet inherently Machiavellian persona. Demonstrating the plasticity of his character, Felix's cynical observation that "the illusion of a smile" is merely "Pretense, fakery, but who's to know?" enables Atwood to convey the hollowness of identity in contemporary landscapes through depicting Felix's façade — which echoes Prospero's tendency to use magic as a kind of theatrical performance.
+
+Reaffirming this obsession for artistry, Atwood's metaphorical description of his grin as "the grin of a cornered chimpanzee, part anger, part threat, part dejection" allows her to present his newfound lust for revenge as a result of the rage manifested by the usurpation of his job.
+
+Stripped of his esteemed directorship of the Makeshiweg Festival, Felix's visceral anaphora "it rankles. It festers. It brews vengefulness" allows Atwood to position us in a 21st century society seemingly devoid of the Christian values afforded to Shakespeare's characters, instead prioritising notions of individualism and self-interest as we witness the emergence of Felix's inherent malice and Machiavellianism.`},
+    {label:"BP2 — Felix's Autocracy (Resonance with Prospero)",content:`Consequently, in an emulation of Prospero's island governance, we witness Felix accept a position at a correctional facility, where he establishes an autocracy in order to execute his own moral vengeance as a result of his deep psychological fracturing.
+
+Incarcerated within a deep psychological schism, his meta-fictive insistence that "the theatre isn't a republic, it's a monarchy" facilitates the exercising of absolute power over the inmates, who, akin to Ariel and Caliban, emerge as "experimental mice" and "playthings" in his malicious plot/scheme to avenge his artistic dismissal. Here, Atwood reframes Shakespeare's anxieties surrounding the collapse of established Jacobean hierarchies, instead opting to provide a more contemporary perspective on power for modern audiences, foregrounding its morally corruptive nature on the individual.
+
+Felix's relationship with Estelle mirrors Prospero's relationship with Ariel — gentleness to their interactions + a dependency upon Estelle to get what he wants. However, Felix is more covert/subtle — raises more questions surrounding Felix's integrity rather than Prospero's direct barbarism.`},
+    {label:"BP3 — Miranda, Absence of Christian Values (Dissonance)",content:`In a key departure from Shakespeare's text, Atwood employs a third person limited perspective narration to confront the audience regarding the moral and ethical obligations of individuals who exercise power in the 21st Century.
+
+Miranda in Hagseed holds power over Felix — inverts the hierarchy between Prospero/Miranda in The Tempest. Miranda's physical absence in the novel prohibits the emergence of the Catholic values that restore order in The Tempest. Therefore, unlike Prospero, Felix is unable to experience the same moral awakening/revelation. Miranda being in Felix's head is used as an excuse to behave in morally corrupt ways.
+
+Unlike the male characters in the novel, the women don't abuse their positions of power, and therefore emerge as more morally sound — Atwood criticises the patriarchy and empowers her female characters.
+
+Ultimately, whilst Shakespeare advocates for a mediation between power and compassion, Atwood directs us to recognise that power in the 21st century is exercised not in kindness or benevolence, but rather in the pursuit of actualising personal ambition — eroding our moral compass.`},
+  ],
+  keyQuotes:[
+    ["The illusion of a smile. Pretense, fakery, but who's to know?","Hollowness of identity; echoes Prospero's artistry as façade"],
+    ["Grin of a cornered chimpanzee, part anger, part threat, part dejection","Zoomorphism — Felix's vengefulness and psychological fragmentation"],
+    ["It rankles. It festers. It brews vengefulness","Anaphora + sibilance — devoid of Christian values; individual obsession"],
+    ["The theatre isn't a republic, it's a monarchy","Meta-fiction — Felix's autocracy; resonance with Prospero's dictatorship"],
+    ["Experimental mice / playthings","Imagery — dehumanisation of prisoners; echoes Prospero/Caliban/Ariel"],
+    ["To vindicate himself / to rub their noses in it","Anaphora — 21st century power driven by subjective justice and resentment"],
+    ["Are you sure this is ethical","Inmate question — moral ambiguity Felix dismisses"],
+    ["My island domain. My penance. My theatre","Anaphoric 'My' — individual control in pursuit of vengeance"],
+  ],
+  resonancesDissonances:[
+    {type:"Resonance",point:"Both protagonists experience loss of power and hardship, precipitating a pursuit of revenge"},
+    {type:"Resonance",point:"Both exercise autocratic control over subordinates (Ariel/Caliban ↔ inmates/Estelle)"},
+    {type:"Resonance",point:"Both use artistry/theatre as a mechanism of control"},
+    {type:"Dissonance",point:"Prospero exercises forgiveness in denouement; Felix's forgiveness is NOT meaningful"},
+    {type:"Dissonance",point:"Felix does not exercise kindness or forgiveness — Atwood argues moral values are diminished in modern society"},
+    {type:"Dissonance",point:"Miranda as tether to Catholic values in Tempest; physically absent in Hagseed — severing this tether"},
+    {type:"Dissonance",point:"Prospero retains grip on reality; Felix borderline loses his sanity through his delusional relationship with his imagined Miranda"},
+    {type:"Dissonance",point:"Felix weaponises already vulnerable prisoners; Prospero's subjects are magical beings bound by contract"},
+  ],
+};
+
+const ELIOT_ESSAY = {
+  title:"Module B — T.S. Eliot Poetry",
+  text:"T.S. Eliot (Preludes 1911 · Prufrock 1915 · Rhapsody 1917 · Magi 1927)",
+  module:"Critical Study of Literature",
+  intro:`The modernist period rejected the religious and literary conventions that underpinned Western Civilisation for nearly two millennia, forcing individuals to traverse a world of ambiguity and create meaning for themselves. T.S. Eliot's poetry explores these modernist concerns through his vivid representations of emerging urban environments, where 'Preludes' presents a dilapidated urban landscape imbued with spiritual malaise, and 'Prufrock' highlights man's inability to impose his own action and comprehend his own purpose in a landscape of spiritual and emotional indifference. 'Rhapsody' echoes this desolate modernist setting in order to depict the ultimate incarceration of humanity in an inane existential cycle, through evoking the flaneur's fractured psychological state.
+
+Ultimately, Eliot recognises the degradation of modernity and directs us to seek meaning for ourselves through belief in the divine, in order to overcome the monotony and futility of our daily lives.
+
+NOTE: For literature questions — general literature thesis first, then transition into a modernism sentence, then Eliot sentence, then optional summary on the two poems.`,
+  poems:[
+    {
+      id:"preludes",title:"Preludes (1911)",
+      keyIdeas:[
+        "Eliot's condescending disregard for desolate urban areas and their correlation to the spiritual malaise of 20th Century society",
+        "Condemnation of the banality of modern existence and the homogenous ritualistic nature of contemporary life",
+        "Central to Eliot's growing concern with the relationship between internal and external worlds",
+      ],
+      analysis:`The burgeoning theological fragmentation and existential uncertainty endemic to Modernity resonates in 'Preludes', a series of fractured vignettes which posit a desolate urban landscape imbued with spiritual vacuity.
+
+Evoking images of urban squalor in the poem's opening, Eliot employs an accumulation of pejorative adjectives to describe the "withered leaves" and "broken blinds" which fade away like the "burnt out ends" of "cigarettes", shrouding the scene with a debilitating lethargy that reflects the poet's condescending disregard for modern landscapes.
+
+The synecdochic representation likening the city's populace to "muddy feet" that "press to early coffee stands" evokes visions of the mindless collective regressing into uniformity from the monotonous rituals of modern life.
+
+Shifting from omniscient narration to second person in Vignette III — rendering these struggles universal — the speaker contemplates the "thousand sordid images" that constitute "your soul"; images indicative of an internal spiritual world in disarray. These visions are externalised as the persona embodies the "conscience of the blackened street", where, in a biblical allusion to Christ's crucifixion, "his soul" becomes "stretched tight across the sky" and "trampled by insistent feet at four, five, six o'clock."
+
+The final vignette articulates awareness of something ethereal beyond the bleak cityscape. Despite alluding to a fleeting catholicon of divinity — an "infinitely gentle, suffering thing" — Eliot ultimately directs the audience to "laugh" at such a notion, accepting that the world "revolves like ancient women gathering fuel in vacant lots." Here, Eliot confirms the hollow and meaningless tragedy of modern existence which humanity is ultimately unable to transcend.`,
+      quotes:[
+        ["Withered leaves / broken blinds / burnt out ends of smoky days","Accumulation of pejorative adjectives — urban squalor, spiritual malaise"],
+        ["Muddy feet / press to early coffee stands","Synecdoche — homogenous, mindless conformity of modern existence"],
+        ["Thousand sordid images that constitute your soul","2nd person shift — universalising spiritual disarray"],
+        ["Soul stretched tight across the sky / trampled by insistent feet","Biblical allusion to crucifixion — spiritual crushed under modernity"],
+        ["Infinitely gentle, suffering thing","Fleeting allusion to divinity — quickly dismissed"],
+        ["World revolves like ancient women gathering fuel in vacant lots","Simile — world revolves futilely; humanity unable to transcend"],
+      ],
+    },
+    {
+      id:"prufrock",title:"The Love Song of J. Alfred Prufrock (1915)",
+      keyIdeas:[
+        "Existential alienation of modern man rendered inarticulate by fear and anxiety (severance from literary/religious ideals)",
+        "The internalisation of existential inquiry and the subsequent self-deprecating realisation of modern man's inadequacy",
+        "Fate, purpose and meaning are now determined by the individual",
+      ],
+      analysis:`'Prufrock' explores the psychological despair of modern man through its tracing of the eponym's existential insecurity, which inhibits his ability to affect meaningful change and achieve genuine connection in a world devoid of traditional Romantic tethers.
+
+Employing the dramatic monologue medium, Eliot establishes a heavily industrialised setting while revealing the narrator's existential plights. His unique zoomorphism of the "yellow fog" which rubs its "back" and "muzzle on the window-panes" domesticates industrial pollution, and his ominous allusion to an "overwhelming question" signals the erosion of Romantic transcendence, allowing Eliot to foreground the grandiloquent proclivity for indecision.
+
+His anaphoric insistence that "there will be time" for "a hundred visions and revisions" as he procrastinates engaging with a woman of his affections reveals the insecurity and uncertainty which plagues humanity's psyche in this modern landscape.
+
+Prufrock's biblical allusion to the Gospel of John, declaring "I am Lazarus come from the dead" momentarily stages the fantasy of revelatory transcendence before collapsing into anticipatory rejection, immediately offset by his recognition "No! I am not Prince Hamlet", but merely "the Fool", indicating his fundamental inability to transcend his circumstances.
+
+Prufrock's ultimate concession after hearing the "mermaids singing", stating "I do not think they will sing to me", as he is forced to "wake" from his imagination and metaphorically "drown" within an existential void, signals the final surrender to his inescapable psychological condition.`,
+      quotes:[
+        ["Yellow fog that rubs its back / muzzle on the window-panes","Zoomorphism — domesticating industrial pollution, eroding Romantic transcendence"],
+        ["There will be time / a hundred visions and revisions","Anaphora — procrastination and existential indecision"],
+        ["I am Lazarus come from the dead","Biblical allusion (Gospel of John) — fantasy of revelatory transcendence"],
+        ["No! I am not Prince Hamlet, nor was meant to be","Allusion — self-deprecating recognition of inadequacy; merely 'the Fool'"],
+        ["Do I dare? / Do I dare?","Rhetorical question — paralysis, existential anxiety"],
+        ["I do not think they will sing to me / human voices wake us and we drown","Surrender to existential void — final resignation"],
+      ],
+    },
+    {
+      id:"rhapsody",title:"Rhapsody on a Windy Night (1917)",
+      keyIdeas:[
+        "Disillusion of past Romantic sensibilities incarcerates humanity in inane/repetitive existence",
+        "Eliot's condescending disregard for desolate urban areas and their correlation to the spiritual malaise of 20th century society",
+        "Fixation on time and memory as fractured remnants of a bygone era unable to liberate the persona from his disillusioned state",
+      ],
+      analysis:`'Rhapsody' recalls Bergson's philosophy on the fractured nature of time and memory as it employs an irregular prose form to construct a bleak urban landscape bereft of past Romantic sensibilities.
+
+Embodying the Romantic archetype of the flaneur, whose solitary wanderings along a deserted street "held in lunar synthesis" precipitate an explanation of nihilistic isolation, the poem shifts between distorted reality and fractured memory as the persona is influenced by the streetlamps which beat, through simile, "like a fatalistic drum." Eliot subverts the idyllic symbolism associated with past Romantic sensibilities, manufacturing a tone of dire inevitability.
+
+This scathing critique is actualised through the confronting imagery of the "torn and stained dress" of a woman and a "cat devouring a morsel of rancid butter", exacerbating this bleak vision of modern decrepitude.
+
+Their recollection, voiced through accumulation, of the "twisted branch" upon a beach, "broken springs in factory yards" and eyes attempting to "peer through lighted shutters", allows Eliot to depict the speaker's initial failure to transcend their present nihilism.
+
+The flaneur's appeal to the moon — revered by 19th Century idealists as a symbolic mirror of the human psyche — is undermined by their subsequent confrontation with its "washed-out smallpox cracked face", enabling Eliot to evoke the stagnant weariness of both past Romantic sensibilities and the spiritual condition of modern man.
+
+The poem's ultimate tragedy finds voice in the flaneur's inevitable return home as they are forced to confront the 'toothbrush on the wall' and 'shoes at the door' — quotidian symbols representing the "final twist of the knife" in their futile search for catharsis.`,
+      quotes:[
+        ["Held in lunar synthesis","Ironic — moon as fragmented/distorted, not romantic unifier"],
+        ["Like a fatalistic drum","Simile — dire inevitability; subverts Romantic symbolism"],
+        ["Torn and stained dress / cat devouring a morsel of rancid butter","Confronting imagery — modern decrepitude, Romantic decay"],
+        ["Twisted branch / broken springs in factory yards","Accumulation — fractured memory fails to transcend present nihilism"],
+        ["Washed-out smallpox cracked face","Moon's degradation — stagnant weariness of Romantic spirit"],
+        ["Toothbrush on the wall / shoes at the door — the last twist of the knife","Quotidian symbols — futile search for catharsis; inescapable monotony"],
+      ],
+    },
+    {
+      id:"magi",title:"Journey of the Magi (1927)",
+      keyIdeas:[
+        "Spiritual enlightenment fails to alleviate existential suffering and paradoxically precipitates isolation rather than salvation",
+        "The Magi as archetypal modern man, unable to comprehend the significance of the Incarnation, reflecting modernity's rejection of Christian theological belief",
+        "Suspension between doubt and certainty (Birth or Death) as the lingering condition of spiritual uncertainty within a secular world",
+      ],
+      analysis:`'Magi' operates as an allegory for Eliot's personal conversion to Catholicism and subverts the biblical grand narrative form to expose how the attainment of spirituality cannot alleviate the existential suffering concomitant with Modernist nihilism.
+
+The opening biblical allusion to the 'Three Wise Men' who undertake "a long journey" in the "dead of winter" is set against the narrator's representation of "the towns unfriendly" and "the villages dirty", establishing a hostile environment marked by decay and existential upheaval.
+
+Eliot employs symbols of renewal, revealing through sensory imagery the "smell of vegetation" and "running stream" to signal a new creation concomitant with the birth of Christ. By littering the landscape with Christian symbolism — the allusion to Christ's crucifixion "three trees on the low sky" and the Book of Revelations depicting an "old white horse" — the Magus are positioned as the archetypal modern man, unaware of the message of salvation they carry.
+
+After witnessing the birth of Christ, the Magi find themselves suspended between doubt and certainty. By recalling it as a "satisfactory" event and rhetorically questioning whether they saw a "Birth or Death?", Eliot gives voice to the spiritual uncertainty that once plagued him.
+
+Subsequently, Eliot offers a poignant image of the Christian experience in a secular world, suggesting the Magi are no "longer at ease" amongst these "alien people clutching their gods", signalling a newfound disconnection paradoxically manufactured by a transformative spiritual experience.`,
+      quotes:[
+        ["Dead of winter / towns unfriendly / villages dirty","Hostile decay — existential upheaval; hostile to spiritual awakening"],
+        ["Smell of vegetation / running stream","Sensory imagery — symbols of renewal; birth of Christ"],
+        ["Three trees on the low sky","Allusion to Christ's crucifixion — Magi unaware of significance"],
+        ["Old white horse","Book of Revelations allusion — modernity's rejection of theological belief"],
+        ["A Birth or Death?","Rhetorical question — suspension between doubt and certainty; spiritual uncertainty"],
+        ["No longer at ease here / alien people clutching their gods","Spiritual enlightenment paradoxically precipitates isolation, not salvation"],
+      ],
+    },
+  ],
+};
+
+const MODC_DATA = {
+  title:"Module C — The Craft of Writing",
+  text:"Discursive Writing · Model: Adichie, '305 Marguerite Cartwright Avenue'",
+  module:"The Craft of Writing",
+  piece:{
+    title:"11/11 Rellinger Strasse",
+    form:"Discursive",
+    wordcount:"~990 (full) / shortened version also available",
+    centralIdea:"Place as an anchor for identity — how place grounds us socially and psychologically, and how belonging can be lifted, lost, and gradually rebuilt through time, repetition and connection.",
+    extendedMetaphor:"The anchor: 'Place, however, is like an anchor. It grounds us both socially and psychologically.' → 'The anchor chain started to loosen — not all at once, but link by link.' → 'When one anchor lifts, you don't disappear. You learn how to drop another.'",
+  },
+  reflection:{
+    model:"Adichie's '305 Marguerite Cartwright Avenue' — informal language connecting with readers; directly addressing the audience; movement from stability to re-anchoring",
+    keyChoices:[
+      {choice:"Personal anecdote opening (Eimsbüttel, Hamburg)","effect":"Evokes emotional depth to captivate the reader; foregrounds Place as a vessel of identity, not just a location"},
+      {choice:"Extended metaphor of the anchor","effect":"Disrupts assumed permanence of place — 'belonging is not fixed, but something fragile that can be unsettled and gradually rebuilt'"},
+      {choice:"Abrupt declaration: 'Change, inevitable as death, always finds its way'","effect":"Marks the shift from stability to disruption; disrupts reader's sense of guaranteed security"},
+      {choice:"Anaphora: 'home is an arrangement of certainties: the same steps, the same smells, the same light at the same hour'","effect":"Emphasises routine as the essence of belonging; borrowed from Adichie's habit of direct address"},
+      {choice:"Final optimism: 'when one anchor lifts…you learn how to drop another'","effect":"Leaves audience with resilience and hope — identity can be re-established in unfamiliar ground"},
+    ],
+    metalanguage:["free indirect discourse","second person address","anaphora","extended metaphor","sensory imagery","temporal shift","tonal shift"],
+  },
+};
+
+const REFLECTIONS = [
+  {module:"1984",q:"(Q1) To what extent does the perspective — 'a solitary individual's struggle against repressive authority and the loss of humanity — reflects a timeless conflict that continues to capture the imagination of readers' — resonate with your understanding of Orwell's novel?",
+   a:`• Winston as symbol of a wider class — like Rosa Parks acting as figurehead for broader resistance (Jim Crow Laws analogy)
+• Tensions in 1984 mirror historical models of opposition — highly relatable across audiences
+• Readers look to the novel to gain deeper understanding of their own struggles
+• The text has manifested as an accurate prognostication — reminiscent of Trump administration, digital surveillance, etc.
+• Amplifies relatability → cements its place as timeless reflection of an everlasting conflict`},
+  {module:"1984",q:"(Q2) What aspect of Orwell's world do you believe is the most confronting? Justify with detailed reference to elements of the setting of Oceania.",
+   a:`• Thought Police — the most confronting: criminalising dissent at its very inception
+• Epitomises complete eradication of personal autonomy and freedom of thought
+• Omnipresent telescreens, hidden microphones, ever-watchful Big Brother = perpetual surveillance
+• Destruction of psychological independence = annihilation of individuality itself
+• Citizens coerced into conformity of MIND, not just action
+• Technology and ideology conspiring to enslave thought itself → most insidious form of oppression is internalisation of control`},
+  {module:"1984",q:"(Q3) Which secondary character is most crucial in enhancing our understanding of Orwell's text? (Julia, O'Brien or Big Brother)",
+   a:`• Big Brother = most crucial — literal embodiment of Orwell's primary message
+• Totalitarian surveillance: posters plastered everywhere, TV campaigns, omnipresent nature
+• Functions as both political tool and psychological weapon — citizens internalise oppression through fear and worship
+• Party's fabrication of propaganda, alteration of history encourages audience to question: 'Is Big Brother real?'
+• Irrelevant whether physical manifestation exists — the ideology he embodies is what matters
+• His effect on character development of others is his true significance`},
+  {module:"1984",q:"(Q5a) Many of Orwell's predictions are disturbingly accurate in the modern world. Discuss.",
+   a:`• Written in aftermath of Stalin's Soviet Union and Hitler's Nazi Germany
+• Stalin's purges, propaganda, rewriting of history → mirror Party's methods
+• Digital age: surveillance technologies echo telescreens (social media, data tracking, facial recognition)
+• More insidious — occurs under guise of 'convenience or security'
+• Online misinformation/state controlled media → truth becomes relative
+• Social stratification: Inner Party vs proles → widening global wealth gap
+• However, democratic institutions, investigative journalism, global activism continue to challenge authority`},
+  {module:"1984",q:"(Q5b) 1984 ends in apparent hopelessness. Is Orwell offering a total condemnation of human nature, or is there a latent possibility of renewal?",
+   a:`• Winston's capitulation initially extinguishes any prospect of renewal
+• But Orwell does NOT intend a blanket denunciation — it reads as a deliberate provocation
+• Human capacities (memory, affection, autonomy) can be reconfigured by systems designed to weaponise them
+• Winston's failure operates as a negative catalyst — pushes reader into a moral position of recognition
+• Oceania is not a world where optimism can flourish — designed to unsettle and caution
+• Possibility of renewal lies NOT within Winston's crushed world, but within ours
+• Orwell's pessimism is constructive — by stripping Winston of agency, he transfers responsibility for safeguarding freedom to the READER
+• 'Endurance of humanity depends upon our vigilance'`},
+  {module:"Eliot",q:"(Eliot Q1) 'The most confronting thing about Eliot's Preludes isn't the images of squalor, disorder or pessimistic nihilism, but rather, the realisation that not much has changed in the 100 years since the poem was published.' To what extent does this resonate with your understanding?",
+   a:`• The value of Eliot's poetry is derived from its persistent relatability across divergent contexts
+• Rising secularism — 'The Hollow Men': metaphorical 'void' as humanity strays from spiritual beliefs; still a trend today
+• Most confronting shared aspect: continued heavy industrialisation
+• 'Preludes' + 'Rhapsody' — monotony of modern life, dilapidation of natural world as result of technological development
+• Raises existential questions about vacuity in repetitive cycle — still widespread today, leading to depression etc.
+• Truly confrontational because despite their age, the poems retain accuracy and relatability`},
+  {module:"Tempest/Hagseed",q:"(Mod A Q1) Was Felix more or less villainous than Prospero?",
+   a:`• Felix is LESS villainous in degree of explicit harm but arguably MORE villainous in nature
+• Prospero's villainy is structural: slavery, colonial possession, dehumanisation
+• Felix's is psychological: obsession, delusion, exploitation of the vulnerable
+• Felix targets innocents (prisoners as collateral), whereas Prospero's spectacle primarily affects the men of sin
+• Felix weaponises already vulnerable population (prisoners under threat of further incarceration)
+• Felix borderline loses sanity — darker interior villainy (against himself and Miranda's memory)
+• Felix HAD A CHOICE: fired from a theatre job vs Prospero violently usurped and stranded
+• Even despite more severe treatment, Prospero still displays more empathy and ultimately forgives`},
+];
+
+const QUIZ_QUESTIONS = [
+  // Common Module
+  {module:"Common Module (1984)",q:"How does Orwell use the concept of Newspeak to represent the limits of the human experience?",starter:"Intro focus: linguistic determinism as mechanism for curtailing intellectual freedom. Key quotes: paradoxical slogans, 'rubbed out and forgotten', 'narrow the range of thought'. Argument: Orwell satirises Stalin's dialectical materialism to show language as a tool of totalitarian oppression."},
+  {module:"Common Module (1984)",q:"'Texts represent both the fragility and resilience of human experience.' How does 1984 explore this?",starter:"Fragility: Room 101, Winston's capitulation, 'boot stamping on a human face forever'. Resilience: diary, affair with Julia, Winston as 'guardian of the human spirit'. Argue both sides — ultimately Orwell shows fragility dominates when totalitarianism is absolute."},
+  {module:"Common Module (1984)",q:"To what extent does 1984 explore the paradox of control and freedom?",starter:"Intro: totalitarianism as paradox — War is Peace, Freedom is Slavery. Body 1: surveillance and Newspeak eliminate freedom. Body 2: Winston's rebellion as search for authentic freedom. Body 3: Room 101 — control is absolute; freedom is impossible."},
+  {module:"Common Module (1984)",q:"How does Orwell represent the relationship between power and truth in 1984?",starter:"Ministry of Truth as ironic inversion. 'Who controls the past controls the future.' Doublethink as mechanism for accepting manufactured truth. Winston's '2+2=5' as ultimate capitulation."},
+  {module:"Common Module (1984)",q:"'In Orwell's 1984, humanity is reduced to its most primitive state.' Discuss.",starter:"Dehumanisation: Caliban-like figures, Winston reduced to 'a mouth', loss of love/curiosity/joy via polysyndeton. Counter: Julia affair shows primitive human emotion (connection) survives until Room 101."},
+  // Module A
+  {module:"Module A (Tempest / Hagseed)",q:"How does the comparative study of The Tempest and Hagseed illuminate the nature of power?",starter:"Intro: both explore power through loss → revenge → (failed) resolution. Resonance: autocratic governance, master-slave dynamics. Dissonance: Shakespeare advocates compassion/equilibrium; Atwood exposes 21st century moral corruption."},
+  {module:"Module A (Tempest / Hagseed)",q:"Compare how Shakespeare and Atwood explore the relationship between power and morality.",starter:"Shakespeare: power tempered by Catholic/Christian values — Prospero's forgiveness. Atwood: power in 21st century corrodes morality — Felix's Machiavellianism. Key dissonance: Miranda's absence severs moral tether."},
+  {module:"Module A (Tempest / Hagseed)",q:"'Texts in conversation reveal how context shapes the exercise of authority.' Discuss with reference to both texts.",starter:"Jacobean context: divine right, hierarchical anxiety → Shakespeare advocates balanced monarchy. 21st century: individualism, secularism → Atwood presents power as personally corruptive. Context = source of dissonance."},
+  {module:"Module A (Tempest / Hagseed)",q:"How does Atwood's Hagseed reimagine Shakespeare's The Tempest to offer new insights into forgiveness?",starter:"Prospero's forgiveness: genuine, catalysed by Ariel, 'rarer action is virtue than vengeance'. Felix's forgiveness: hollow, performative. Atwood subverts this to argue traditional Catholic values of forgiveness are absent in the 21st century."},
+  {module:"Module A (Tempest / Hagseed)",q:"Compare how both composers use the figure of Miranda to explore power.",starter:"Miranda in Tempest: moral tether, symbol of innocence, catalyst for Prospero's humanity. Miranda in Hagseed: physically absent, lives in Felix's delusion, INVERTS hierarchy — holds power over Felix. Atwood: women don't abuse power, emerge as more morally sound → critique of patriarchy."},
+  // Module B
+  {module:"Module B (T.S. Eliot)",q:"How does Eliot's poetry explore the spiritual crisis of modernity?",starter:"Intro: modernism rejected religious conventions → spiritual vacuum. Preludes: soul 'stretched tight across the sky' — crushed under modernity. Prufrock: 'I am Lazarus' fantasy collapses. Magi: spiritual awakening paradoxically precipitates isolation."},
+  {module:"Module B (T.S. Eliot)",q:"'Eliot's poetry condemns modern existence as futile and inescapable.' Do you agree?",starter:"Agree: Preludes — world 'revolves like ancient women gathering fuel'; Rhapsody — toothbrush and shoes as 'final twist of the knife'. Partially agree: Magi gestures toward salvation but finds it inadequate. Textual integrity argument: the very form (fragmented vignettes, irregular prose) enacts this futility."},
+  {module:"Module B (T.S. Eliot)",q:"How does Eliot's use of form and structure reflect his modernist concerns?",starter:"Preludes: fractured vignettes — discontinuity of modern experience. Prufrock: dramatic monologue — internalised existential inquiry. Rhapsody: irregular prose form — Bergsonian fractured time. Magi: subverts biblical grand narrative form. Form IS the argument."},
+  {module:"Module B (T.S. Eliot)",q:"Compare how Eliot represents the urban environment in Preludes and Rhapsody on a Windy Night.",starter:"Both: desolate urban landscapes, spiritual malaise, condescension toward industrialisation. Preludes: focus on collective conformity (muddy feet, coffee stands). Rhapsody: flaneur's individual fracture, failed search for catharsis through Romantic traditions."},
+  {module:"Module B (T.S. Eliot)",q:"How does Eliot explore the relationship between memory and identity in his poetry?",starter:"Rhapsody: Bergsonian fractured time — memories as distorted remnants, unable to liberate from nihilism. Prufrock: time and memory = paralysis ('Do I dare?'). Magi: retrospective narration — memory of the Birth suspended between doubt and certainty."},
+  // Module C
+  {module:"Module C (Discursive)",q:"Write a discursive piece exploring the idea that belonging is something that can be lost and rebuilt.",starter:"Consider Adichie's structure: personal → reflective → universal. Extended metaphor. Move from specific (place, memory, routine) to abstract (identity, resilience). Open with sensory anecdote. End with earned optimism."},
+  {module:"Module C (Discursive)",q:"'Place is not merely a location on a map, but an arrangement of certainties.' Compose a discursive piece responding to this idea.",starter:"Your '11/11 Rellinger Strasse' structure works perfectly here. Anchor metaphor. Hamburg anecdote → disruption of change → Sydney → re-anchoring. Anaphora for certainties."},
+  {module:"Module C (Discursive)",q:"Write a short discursive piece exploring the idea of home.",starter:"Avoid clichés. Use Adichie's informal register. Start with ONE specific detail (smell, sound, texture). Build outward. Address 'comfort is easiest to recognise in its absence.'"},
+];
+
+/* ==================== STATE & ROUTING ==================== */
+let currentPage = "dash";
+let currentQuizIdx = 0;
+let quizOrder = [];
+
+function buildNav(){
+  const nav=document.getElementById('nav');
+  nav.innerHTML='';
+  NAV.forEach(item=>{
+    if(item.sep){
+      const s=document.createElement('div');
+      s.className='nav-sep';s.textContent=item.sep;nav.appendChild(s);return;
+    }
+    const b=document.createElement('button');
+    b.className='navbtn'+(item.sub?' sub':'')+(currentPage===item.id?' active':'');
+    b.innerHTML=`<span class="ic">${item.ic}</span>${esc(item.label)}`;
+    b.onclick=()=>goto(item.id);
+    nav.appendChild(b);
+  });
+}
+
+function goto(id){currentPage=id;buildNav();render();}
+
+function render(){
+  const m=document.getElementById('main');
+  if(currentPage==='dash') return renderDash(m);
+  if(currentPage==='common') return renderCommon(m);
+  if(currentPage==='moda_tempest') return renderTempest(m);
+  if(currentPage==='moda_hagseed') return renderHagseed(m);
+  if(currentPage==='modb') return renderEliot(m);
+  if(currentPage==='modc') return renderModC(m);
+  if(currentPage==='reflections') return renderReflections(m);
+  if(currentPage==='homework') return renderHomework(m);
+  if(currentPage==='quiz') return renderQuiz(m);
+}
+
+/* ==================== DASHBOARD ==================== */
+function renderDash(m){
+  m.innerHTML=`
+  <div class="page-head"><div><h1>📚 English Advanced Y12</h1><p>Common · Module A · Module B · Module C</p></div></div>
+  <div class="grid g2" style="margin-bottom:16px">
+    <div class="card"><div class="stat"><div class="lbl">Module</div><div class="big" style="font-size:16px;color:var(--accent)">Common — 1984</div><div class="small muted">Texts & Human Experiences</div></div></div>
+    <div class="card"><div class="stat"><div class="lbl">Module A</div><div class="big" style="font-size:16px;color:var(--blue)">Tempest + Hagseed</div><div class="small muted">Textual Conversations</div></div></div>
+    <div class="card"><div class="stat"><div class="lbl">Module B</div><div class="big" style="font-size:16px;color:var(--amber)">T.S. Eliot Poetry</div><div class="small muted">Critical Study of Literature</div></div></div>
+    <div class="card"><div class="stat"><div class="lbl">Module C</div><div class="big" style="font-size:16px;color:var(--green)">Discursive Writing</div><div class="small muted">The Craft of Writing</div></div></div>
+  </div>
+  <div class="card">
+    <h3>Quick Links</h3>
+    <div class="grid g3">
+      <button class="btn ghost" onclick="goto('common')">📖 1984 Essay</button>
+      <button class="btn ghost" onclick="goto('moda_tempest')">🎭 Tempest Essay</button>
+      <button class="btn ghost" onclick="goto('moda_hagseed')">🎭 Hagseed Essay</button>
+      <button class="btn ghost" onclick="goto('modb')">✒️ Eliot Poems</button>
+      <button class="btn ghost" onclick="goto('modc')">✍️ Module C</button>
+      <button class="btn ghost" onclick="goto('quiz')">⚡ Quiz Mode</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Essay Writing Reminders</h3>
+    <div class="block tip"><span class="bl">⚠️ Always Remember</span>
+    <ul style="margin:0;padding-left:18px;line-height:1.8">
+      <li>Isolate key terms & address in intro, then throughout the essay</li>
+      <li>Expand on significant/rubric terms: "construction", "form", "composer's purpose", "context"</li>
+      <li>Be explicit in analysis — say something, don't just describe</li>
+      <li>When recognisably separable terms are clumped together, SEPARATE and distinguish</li>
+      <li>Intro/Thesis is the Bible → do not deviate from argument established in intro</li>
+      <li>When dropping keywords (struggles, concerns etc.), EXPAND → surrounding, in relation to, adverb/adjective</li>
+      <li>Don't use 'trump cards' early — save parts of the question/words for later paragraphs</li>
+      <li>HANDWRITING — distinguish between letters clearly</li>
+    </ul></div>
+  </div>`;
+}
+
+/* ==================== COMMON MODULE ==================== */
+function renderCommon(m){
+  const d=COMMON_ESSAY;
+  m.innerHTML=`
+  <div class="page-head"><div><h1>${esc(d.title)}</h1><p>${esc(d.module)}</p></div></div>
+  <div class="tabs">
+    <button class="tab on" onclick="showTab('cm','intro',this)">Intro Template</button>
+    <button class="tab" onclick="showTab('cm','bodies',this)">Body Paragraphs</button>
+    <button class="tab" onclick="showTab('cm','quotes',this)">Key Quotes</button>
+    <button class="tab" onclick="showTab('cm','notes',this)">My Notes</button>
+  </div>
+  <div id="cm-intro">
+    <div class="card">
+      <h3>Intro Template <span class="pill purple">Manipulable</span></h3>
+      <div class="block intro"><span class="bl">Intro</span>${esc(d.intro).replace(/\n/g,'<br>')}</div>
+      <div class="divider"></div>
+      <h3 style="font-size:14px;color:var(--muted)">Placeholders</h3>
+      ${d.placeholders.map(([ph,desc])=>`<div class="kv"><span style="color:var(--accent);font-family:monospace;font-size:13px">${esc(ph)}</span><span class="small muted">${esc(desc)}</span></div>`).join('')}
+    </div>
+    <div class="card"><span class="bl" style="font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;font-weight:700;color:var(--muted)">Conclusion</span>
+      <div class="block conc" style="margin-top:8px"><span class="bl">Conclusion</span>${esc(d.conclusion)}</div>
+    </div>
+  </div>
+  <div id="cm-bodies" class="hidden">
+    ${d.bodies.map((b,i)=>`<div class="card"><h3>${esc(b.label)}</h3><div class="block body${i+1}"><span class="bl">Body ${i+1}</span><pre style="white-space:pre-wrap;font-family:inherit;margin:0;font-size:13.5px">${esc(b.content)}</pre></div></div>`).join('')}
+  </div>
+  <div id="cm-quotes" class="hidden">
+    <div class="card"><h3>Key Quotes — 1984</h3>
+    ${d.keyQuotes.map(([q,a])=>`<div class="kv"><span class="quote" style="flex:1;margin:0">${esc(q)}</span><span class="small muted" style="max-width:260px;text-align:right">${esc(a)}</span></div>`).join('')}
+    </div>
+  </div>
+  <div id="cm-notes" class="hidden">
+    <div class="card"><h3>My Notes — Common Module</h3>
+    <textarea class="notes" rows="14" placeholder="Add your own notes, extra quotes, teacher feedback…" onchange="saveNote('cm',this.value)">${esc(state.notes['cm']||'')}</textarea>
+    </div>
+  </div>`;
+}
+
+/* ==================== MODULE A — TEMPEST ==================== */
+function renderTempest(m){
+  const d=TEMPEST_ESSAY;
+  m.innerHTML=`
+  <div class="page-head"><div><h1>${esc(d.title)}</h1><p>${esc(d.module)}</p></div></div>
+  <div class="tabs">
+    <button class="tab on" onclick="showTab('t','intro',this)">Intro</button>
+    <button class="tab" onclick="showTab('t','bodies',this)">Body Paragraphs</button>
+    <button class="tab" onclick="showTab('t','quotes',this)">Key Quotes</button>
+    <button class="tab" onclick="showTab('t','artistry',this)">Artistry Decons</button>
+    <button class="tab" onclick="showTab('t','notes',this)">My Notes</button>
+  </div>
+  <div id="t-intro">
+    <div class="card"><h3>Introduction</h3><div class="block intro"><span class="bl">Intro</span><pre style="white-space:pre-wrap;font-family:inherit;margin:0;font-size:13.5px">${esc(d.intro)}</pre></div></div>
+  </div>
+  <div id="t-bodies" class="hidden">
+    ${d.bodies.map((b,i)=>`<div class="card"><h3>${esc(b.label)}</h3><div class="block body${i+1}"><span class="bl">BP${i+1}</span><pre style="white-space:pre-wrap;font-family:inherit;margin:0;font-size:13.5px">${esc(b.content)}</pre></div></div>`).join('')}
+  </div>
+  <div id="t-quotes" class="hidden">
+    <div class="card"><h3>Key Quotes — The Tempest</h3>
+    ${d.keyQuotes.map(([q,a])=>`<div class="kv"><span class="quote" style="flex:1;margin:0">${esc(q)}</span><span class="small muted" style="max-width:280px;text-align:right">${esc(a)}</span></div>`).join('')}
+    </div>
+  </div>
+  <div id="t-artistry" class="hidden">
+    <div class="card"><h3>Artistry / Metatheatrical Decons</h3>
+    <div class="block note"><span class="bl">When to use</span>Use these decons when a question forces Artistry or any theme OTHER than Power. Adapt the essay heavily.</div>
+    ${d.artDecons.map((a,i)=>`<div class="block body${(i%3)+1}"><span class="bl">Decon ${i+1}</span>${esc(a)}</div>`).join('')}
+    </div>
+  </div>
+  <div id="t-notes" class="hidden">
+    <div class="card"><h3>My Notes — The Tempest</h3>
+    <textarea class="notes" rows="12" placeholder="Add your own notes, extra quotes, teacher feedback…" onchange="saveNote('tempest',this.value)">${esc(state.notes['tempest']||'')}</textarea>
+    </div>
+  </div>`;
+}
+
+/* ==================== MODULE A — HAGSEED ==================== */
+function renderHagseed(m){
+  const d=HAGSEED_ESSAY;
+  m.innerHTML=`
+  <div class="page-head"><div><h1>${esc(d.title)}</h1><p>${esc(d.module)}</p></div></div>
+  <div class="tabs">
+    <button class="tab on" onclick="showTab('h','intro',this)">Swing Sentence</button>
+    <button class="tab" onclick="showTab('h','bodies',this)">Body Paragraphs</button>
+    <button class="tab" onclick="showTab('h','quotes',this)">Key Quotes</button>
+    <button class="tab" onclick="showTab('h','rd',this)">Resonance / Dissonance</button>
+    <button class="tab" onclick="showTab('h','notes',this)">My Notes</button>
+  </div>
+  <div id="h-intro">
+    <div class="card"><h3>Swing Sentence (Context → Hagseed)</h3><div class="block intro"><span class="bl">Swing Sentence</span>${esc(d.swingSentence)}</div>
+    <div class="block note" style="margin-top:12px"><span class="bl">Context</span>${esc(d.context)}</div>
+    </div>
+  </div>
+  <div id="h-bodies" class="hidden">
+    ${d.bodies.map((b,i)=>`<div class="card"><h3>${esc(b.label)}</h3><div class="block body${i+1}"><span class="bl">BP${i+1}</span><pre style="white-space:pre-wrap;font-family:inherit;margin:0;font-size:13.5px">${esc(b.content)}</pre></div></div>`).join('')}
+  </div>
+  <div id="h-quotes" class="hidden">
+    <div class="card"><h3>Key Quotes — Hagseed</h3>
+    ${d.keyQuotes.map(([q,a])=>`<div class="kv"><span class="quote" style="flex:1;margin:0">${esc(q)}</span><span class="small muted" style="max-width:280px;text-align:right">${esc(a)}</span></div>`).join('')}
+    </div>
+  </div>
+  <div id="h-rd" class="hidden">
+    <div class="card"><h3>Resonances & Dissonances</h3>
+    ${d.resonancesDissonances.map(r=>`<div class="kv"><span class="pill ${r.type==='Resonance'?'green':'blue'}">${r.type}</span><span style="flex:1;padding-left:10px;font-size:13.5px">${esc(r.point)}</span></div>`).join('')}
+    </div>
+  </div>
+  <div id="h-notes" class="hidden">
+    <div class="card"><h3>My Notes — Hagseed</h3>
+    <textarea class="notes" rows="12" placeholder="Add your own notes, extra quotes, teacher feedback…" onchange="saveNote('hagseed',this.value)">${esc(state.notes['hagseed']||'')}</textarea>
+    </div>
+  </div>`;
+}
+
+/* ==================== MODULE B — ELIOT ==================== */
+function renderEliot(m){
+  const d=ELIOT_ESSAY;
+  m.innerHTML=`
+  <div class="page-head"><div><h1>${esc(d.title)}</h1><p>${esc(d.module)}</p></div></div>
+  <div class="tabs">
+    <button class="tab on" onclick="showTab('e','intro',this)">Intro Template</button>
+    ${d.poems.map(p=>`<button class="tab" onclick="showTab('e','${p.id}',this)">${esc(p.title.split(' ')[0])}</button>`).join('')}
+    <button class="tab" onclick="showTab('e','notes',this)">My Notes</button>
+  </div>
+  <div id="e-intro">
+    <div class="card"><h3>Introduction Template</h3><div class="block intro"><span class="bl">Intro</span><pre style="white-space:pre-wrap;font-family:inherit;margin:0;font-size:13.5px">${esc(d.intro)}</pre></div></div>
+  </div>
+  ${d.poems.map(p=>`
+  <div id="e-${p.id}" class="hidden">
+    <div class="card"><h3>${esc(p.title)}</h3>
+      <div style="margin-bottom:12px">${p.keyIdeas.map(k=>`<div style="display:flex;gap:8px;padding:4px 0;font-size:13.5px"><span style="color:var(--accent);flex-shrink:0">▸</span>${esc(k)}</div>`).join('')}</div>
+      <div class="block body1"><span class="bl">Analysis</span><pre style="white-space:pre-wrap;font-family:inherit;margin:0;font-size:13.5px">${esc(p.analysis)}</pre></div>
+      <div class="divider"></div>
+      <h3 style="font-size:14px">Key Quotes</h3>
+      ${p.quotes.map(([q,a])=>`<div class="kv"><span class="quote" style="flex:1;margin:0">${esc(q)}</span><span class="small muted" style="max-width:280px;text-align:right">${esc(a)}</span></div>`).join('')}
+    </div>
+  </div>`).join('')}
+  <div id="e-notes" class="hidden">
+    <div class="card"><h3>My Notes — T.S. Eliot</h3>
+    <textarea class="notes" rows="12" placeholder="Add notes, comparisons between poems, teacher feedback…" onchange="saveNote('eliot',this.value)">${esc(state.notes['eliot']||'')}</textarea>
+    </div>
+  </div>`;
+}
+
+/* ==================== MODULE C ==================== */
+function renderModC(m){
+  const d=MODC_DATA;
+  m.innerHTML=`
+  <div class="page-head"><div><h1>${esc(d.title)}</h1><p>${esc(d.module)}</p></div></div>
+  <div class="tabs">
+    <button class="tab on" onclick="showTab('c','piece',this)">The Piece</button>
+    <button class="tab" onclick="showTab('c','reflection',this)">Reflection</button>
+    <button class="tab" onclick="showTab('c','notes',this)">My Notes</button>
+  </div>
+  <div id="c-piece">
+    <div class="card">
+      <h3>${esc(d.piece.title)} <span class="pill green">${esc(d.piece.form)}</span></h3>
+      <div class="kv"><span class="muted small">Wordcount</span><span>${esc(d.piece.wordcount)}</span></div>
+      <div class="kv"><span class="muted small">Central Idea</span><span style="flex:1;text-align:right;font-size:13.5px">${esc(d.piece.centralIdea)}</span></div>
+      <div class="divider"></div>
+      <div class="block intro"><span class="bl">Extended Metaphor — The Anchor</span><pre style="white-space:pre-wrap;font-family:inherit;margin:0;font-size:13.5px">${esc(d.piece.extendedMetaphor)}</pre></div>
+    </div>
+  </div>
+  <div id="c-reflection" class="hidden">
+    <div class="card">
+      <h3>Reflection / Statement of Intentions</h3>
+      <div class="block note"><span class="bl">Model Text</span>${esc(d.reflection.model)}</div>
+      <div class="divider"></div>
+      <h3 style="font-size:14px">Key Compositional Choices</h3>
+      ${d.reflection.keyChoices.map(c=>`
+      <div class="dot">
+        <div class="dot-h" onclick="toggleDot(this)">
+          <div class="ttl">${esc(c.choice)}</div>
+          <div class="chev">▶</div>
+        </div>
+        <div class="dot-body"><div class="block body1"><span class="bl">Effect / Intention</span>${esc(c.effect)}</div></div>
+      </div>`).join('')}
+      <div class="divider"></div>
+      <h3 style="font-size:14px">Metalanguage to Use</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">
+        ${d.reflection.metalanguage.map(t=>`<span class="pill purple">${esc(t)}</span>`).join('')}
+      </div>
+    </div>
+  </div>
+  <div id="c-notes" class="hidden">
+    <div class="card"><h3>My Notes — Module C</h3>
+    <textarea class="notes" rows="12" placeholder="Piece drafts, reflections, creative writing prompts…" onchange="saveNote('modc',this.value)">${esc(state.notes['modc']||'')}</textarea>
+    </div>
+  </div>`;
+}
+
+/* ==================== REFLECTIONS ==================== */
+function renderReflections(m){
+  m.innerHTML=`
+  <div class="page-head"><div><h1>🪞 Reflection Questions</h1><p>1984 · Eliot · Tempest/Hagseed</p></div></div>
+  ${REFLECTIONS.map((r,i)=>`
+  <div class="qa" id="ref${i}">
+    <div class="qq"><span class="pill ${r.module==='1984'?'purple':r.module==='Eliot'?'blue':'green'}">${esc(r.module)}</span> ${esc(r.q)}</div>
+    <button class="reveal" onclick="toggleQA('ref${i}')">Show dot-point plan</button>
+    <div class="ans"><pre style="white-space:pre-wrap;font-family:inherit;margin:0">${esc(r.a)}</pre></div>
+  </div>`).join('')}
+  <div class="card" style="margin-top:20px"><h3>My Reflection Notes</h3>
+  <textarea class="notes" rows="10" placeholder="Additional reflection questions, teacher feedback…" onchange="saveNote('reflections',this.value)">${esc(state.notes['reflections']||'')}</textarea>
+  </div>`;
+}
+
+/* ==================== HOMEWORK ==================== */
+function renderHomework(m){
+  m.innerHTML=`
+  <div class="page-head"><div><h1>📝 In-Class / Homework</h1><p>Organise your class notes, tasks and feedback here</p></div></div>
+  <div class="card"><h3>Common Module — 1984</h3>
+  <textarea class="notes" rows="8" placeholder="Class notes, marked essays, feedback…" onchange="saveNote('hw_common',this.value)">${esc(state.notes['hw_common']||'')}</textarea>
+  </div>
+  <div class="card"><h3>Module A — Tempest & Hagseed</h3>
+  <textarea class="notes" rows="8" placeholder="Class notes, marked essays, feedback…" onchange="saveNote('hw_moda',this.value)">${esc(state.notes['hw_moda']||'')}</textarea>
+  </div>
+  <div class="card"><h3>Module B — T.S. Eliot</h3>
+  <textarea class="notes" rows="8" placeholder="Class notes, marked essays, feedback…" onchange="saveNote('hw_modb',this.value)">${esc(state.notes['hw_modb']||'')}</textarea>
+  </div>
+  <div class="card"><h3>Module C — Craft of Writing</h3>
+  <textarea class="notes" rows="8" placeholder="Class notes, marked pieces, reflections, feedback…" onchange="saveNote('hw_modc',this.value)">${esc(state.notes['hw_modc']||'')}</textarea>
+  </div>`;
+}
+
+/* ==================== QUIZ MODE ==================== */
+function renderQuiz(m){
+  quizOrder=shuffleArray([...Array(QUIZ_QUESTIONS.length).keys()]);
+  currentQuizIdx=0;
+  renderQuizCard(m);
+}
+
+function renderQuizCard(m){
+  const q=QUIZ_QUESTIONS[quizOrder[currentQuizIdx]];
+  m.innerHTML=`
+  <div class="page-head"><div><h1>⚡ Quiz Mode</h1><p>Essay questions — write an intro (essays) or dot-point plan (Module C). Then reveal the starter.</p></div></div>
+  <div class="quiz-card">
+    <div class="qnum"><span class="pill ${
+      q.module.includes('Common')?'purple':q.module.includes('Module A')?'blue':q.module.includes('Module B')?'':'green'
+    }">${esc(q.module)}</span> &nbsp; Question ${currentQuizIdx+1} of ${QUIZ_QUESTIONS.length}</div>
+    <div class="qtext">${esc(q.q)}</div>
+    <div class="hint" id="qhint"><b>Starter / Key Points:</b><br><br>${esc(q.starter)}</div>
+    <div class="quiz-btns">
+      <button class="btn ghost" onclick="document.getElementById('qhint').classList.toggle('show');this.textContent=this.textContent==='Show Starter'?'Hide Starter':'Show Starter'">Show Starter</button>
+      <button class="btn" onclick="nextQuizQ()">Next Question →</button>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:24px">
+    <button class="btn ghost sm" onclick="renderQuiz(document.getElementById('main'))">🔀 Reshuffle All</button>
+    <select id="quizFilter" style="margin-left:10px;font-size:13px" onchange="filterQuiz(this.value)">
+      <option value="all">All Modules</option>
+      <option value="Common">Common Module</option>
+      <option value="Module A">Module A</option>
+      <option value="Module B">Module B</option>
+      <option value="Module C">Module C</option>
+    </select>
+  </div>`;
+}
+
+function nextQuizQ(){
+  currentQuizIdx=(currentQuizIdx+1)%quizOrder.length;
+  renderQuizCard(document.getElementById('main'));
+}
+
+function filterQuiz(val){
+  if(val==='all'){quizOrder=shuffleArray([...Array(QUIZ_QUESTIONS.length).keys()]);}
+  else{quizOrder=shuffleArray(QUIZ_QUESTIONS.map((q,i)=>q.module.includes(val)?i:-1).filter(i=>i>=0));}
+  currentQuizIdx=0;
+  renderQuizCard(document.getElementById('main'));
+}
+
+function shuffleArray(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+/* ==================== HELPERS ==================== */
+function showTab(prefix,id,btn){
+  // hide all tabs for this prefix
+  document.querySelectorAll(`[id^="${prefix}-"]`).forEach(el=>el.classList.add('hidden'));
+  document.getElementById(`${prefix}-${id}`).classList.remove('hidden');
+  // update tab buttons
+  btn.closest('.tabs').querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+function toggleDot(h){
+  const dot=h.closest('.dot');
+  dot.classList.toggle('open');
+}
+
+function toggleQA(id){
+  const el=document.getElementById(id);
+  el.classList.toggle('show');
+  el.querySelector('.reveal').textContent=el.classList.contains('show')?'Hide':'Show dot-point plan';
+}
+
+function saveNote(key,val){state.notes[key]=val;save();}
+
+/* ==================== COUNTDOWN ==================== */
+function updateCountdown(){
+  const d=document.getElementById('countdown');
+  const ei=document.getElementById('examDate');
+  if(!d||!ei) return;
+  ei.value=state.examDate||'2026-10-21';
+  const diff=Math.ceil((new Date(state.examDate)-new Date())/86400000);
+  d.textContent=diff>0?diff+' days':diff===0?'Today!':'Past';
+}
+document.getElementById('examDate').addEventListener('change',function(){state.examDate=this.value;save();updateCountdown();});
+
+/* ==================== THEME ==================== */
+document.getElementById('themeBtn').onclick=function(){
+  const h=document.documentElement;
+  const t=h.getAttribute('data-theme')==='dark'?'light':'dark';
+  h.setAttribute('data-theme',t);state.theme=t;save();
+  this.textContent=t==='dark'?'☀ Theme':'🌙 Theme';
+};
+if(state.theme==='light'){document.documentElement.setAttribute('data-theme','light');document.getElementById('themeBtn').textContent='🌙 Theme';}
+
+/* ==================== BACKUP ==================== */
+document.getElementById('ioBtn').onclick=function(){
+  const a=document.createElement('a');
+  a.href='data:application/json,'+encodeURIComponent(JSON.stringify(state));
+  a.download='hsc-english-backup.json';a.click();
+};
+
+/* ==================== SEARCH ==================== */
+document.getElementById('globalSearch').addEventListener('input',function(){
+  const q=this.value.toLowerCase().trim();
+  if(!q)return;
+  const all=[
+    {label:'Common Module — 1984',id:'common'},{label:'Module A — The Tempest',id:'moda_tempest'},
+    {label:'Module A — Hagseed',id:'moda_hagseed'},{label:'Module B — T.S. Eliot',id:'modb'},
+    {label:'Module C — Discursive',id:'modc'},{label:'Reflection Questions',id:'reflections'},
+    {label:'Quiz Mode',id:'quiz'},{label:'In-Class / Homework',id:'homework'},
+  ];
+  const match=all.find(x=>x.label.toLowerCase().includes(q));
+  if(match){goto(match.id);this.value='';}
+});
+
+/* ==================== INIT ==================== */
+buildNav();
+render();
+updateCountdown();
+</script>
+</body>
+</html>
