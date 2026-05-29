@@ -17,6 +17,7 @@
   --chem:#f59e0b;--chemb:rgba(245,158,11,.1);--chemborder:rgba(245,158,11,.25);
   --eng:#a855f7;--engb:rgba(168,85,247,.1);--engborder:rgba(168,85,247,.25);
   --math:#3b82f6;--mathb:rgba(59,130,246,.1);--mathborder:rgba(59,130,246,.25);
+  --ger:#e8a020;--gerb:rgba(232,160,32,.1);--gerborder:rgba(232,160,32,.25);
   --red:#ef4444;--redb:rgba(239,68,68,.1);
   --radius:18px;--rsm:12px;--hero-txt:#fff;
 }
@@ -110,7 +111,8 @@ a{color:inherit;text-decoration:none}
 .date-row input:focus{outline:none;border-color:var(--eng)}
 
 /* SUBJECTS ROW */
-.subj-row{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.subj-row{grid-column:1/-1;display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+@media(max-width:1100px){.subj-row{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:900px){.subj-row{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:500px){.subj-row{grid-template-columns:1fr}}
 .subj-card{display:flex;flex-direction:column;gap:11px;cursor:pointer;transition:transform .18s,box-shadow .18s}
@@ -263,12 +265,12 @@ const SUBJECTS=[
   {id:'chem',name:'Chemistry',short:'Chem',icon:'⚗️',color:'var(--chem)',bg:'var(--chemb)',border:'var(--chemborder)',url:'/chemistry/',lsKey:'hscchem_progress',
    examDate:'2026-10-30',examLabel:'Written · 30 Oct 09:25',
    links:[{l:'Module 5 — Equilibrium',h:'m5'},{l:'Module 6 — Acid/Base',h:'m6'},{l:'Module 7 — Organic Chem',h:'m7'},{l:'Module 8 — Applying Chem',h:'m8'}]},
+  {id:'ger',name:'German Continuers',short:'German',icon:'🇩🇪',color:'var(--ger)',bg:'var(--gerb)',border:'var(--gerborder)',url:'/german/',lsKey:'hscger_v1',
+   examDate:'2026-08-08',examLabel:'Oral · 8 Aug 10:30',examDate2:'2026-10-13',examLabel2:'Written · 13 Oct 14:00',
+   links:[{l:'Language Devices',h:'lang'},{l:'Oral Exam Prep',h:'oral'},{l:'Past Paper Qs',h:'pastpapers'},{l:'Writing Templates',h:'writing'}]},
 ];
 // Extra exams not in tools yet
-const EXTRA_EXAMS=[
-  {name:'German Continuers',short:'German',icon:'🇩🇪',examDate:'2026-08-08',examLabel:'Oral · 8 Aug 10:30',color:'#64748b'},
-  {name:'German Continuers',short:'German',icon:'🇩🇪',examDate:'2026-10-13',examLabel:'Written · 13 Oct 14:00',color:'#64748b'},
-];
+const EXTRA_EXAMS=[];
 const DEF={examDate:'2026-10-13',todos:[],sessions:[],theme:'dark',streak:[],schedSeed:3,todoSubj:'',timerSubj:'eng',dailyGoalSec:10800};
 let S=load();
 

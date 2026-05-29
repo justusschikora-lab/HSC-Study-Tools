@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>HSC German Continuers — Study Tool</title>
+<style>
+:root{
+  --bg:#09080a;--surface:#130d09;--surface2:#1c1508;--accent:#e8a020;--accent2:#c47c10;
+  --text:#f5e8d0;--muted:#9a8060;--line:#2e1f0a;
+  --blue:#3b82f6;--green:#22c55e;--amber:#f59e0b;--red:#ef4444;--purple:#a855f7;
+  --blueb:#0e1836;--greenb:#0e2a14;--amberb:#261800;--redb:#2c1414;--purpleb:#1e1131;
+}
+html[data-theme="light"]{
+  --bg:#fffbf0;--surface:#ffffff;--surface2:#fdf6e3;--accent:#b87010;--accent2:#8a5500;
+  --text:#2c1800;--muted:#7a5c2a;--line:#e8d8b0;
+  --blueb:#e6f0fb;--greenb:#e7f7ec;--amberb:#fdf3e1;--redb:#fbe9e9;--purpleb:#f0e8fb;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.55}
+h1,h2,h3,h4,.brand{font-family:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif;font-weight:700;letter-spacing:-.01em}
+a{color:var(--accent)}
+.app{display:flex;min-height:100vh}
+.sidebar{width:252px;background:var(--surface);border-right:1px solid var(--line);position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:14px 12px;gap:10px;overflow-y:auto;flex-shrink:0}
+.brand{font-size:18px;display:flex;align-items:center;gap:8px}
+.brand .logo{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#1a0800;font-weight:800;font-size:13px}
+.brand small{display:block;color:var(--muted);font-size:11px;font-weight:500;letter-spacing:0}
+.search input{width:100%;background:var(--surface2);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:8px 10px;font-size:13px}
+.search input:focus{outline:none;border-color:var(--accent)}
+.navlist{display:flex;flex-direction:column;gap:2px;margin-top:4px}
+.navbtn{display:flex;align-items:center;gap:9px;background:none;border:none;color:var(--muted);text-align:left;padding:8px 11px;border-radius:9px;cursor:pointer;font-size:13px;font-family:inherit;width:100%;transition:.12s}
+.navbtn .ic{width:18px;text-align:center;font-size:12px;flex-shrink:0}
+.navbtn:hover{background:var(--surface2);color:var(--text)}
+.navbtn.active{background:linear-gradient(90deg,rgba(232,160,32,.15),transparent);color:var(--accent);font-weight:600}
+.nav-sep{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:8px 11px 2px;opacity:.6}
+.exampill{margin-top:auto;background:var(--surface2);border:1px solid var(--line);border-radius:11px;padding:10px}
+.exampill label{font-size:11px;color:var(--muted);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em}
+.exampill .cd{font-size:22px;font-weight:700;color:var(--accent);font-family:"Bricolage Grotesque",sans-serif}
+.exampill input{width:100%;margin-top:7px;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:7px;padding:5px 7px;font-size:12px}
+.sb-foot{display:flex;gap:6px;flex-wrap:wrap}
+.sb-foot button{flex:1;font-size:11px;padding:6px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);border-radius:8px;cursor:pointer;min-width:60px}
+.sb-foot button:hover{color:var(--text);border-color:var(--accent)}
+.main{flex:1;min-width:0;padding:26px 32px 90px;max-width:1100px}
+.page-head{margin-bottom:18px;display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.page-head h1{font-size:27px;margin:0 0 4px}.page-head p{color:var(--muted);margin:0;font-size:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+.card h3{margin:0 0 12px;font-size:16px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:900px){.g2,.g3{grid-template-columns:1fr}}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.tab{font-size:13px;padding:7px 14px;border-radius:20px;border:1px solid var(--line);background:var(--surface2);color:var(--muted);cursor:pointer;font-family:inherit}
+.tab.on{background:rgba(232,160,32,.15);color:var(--accent);border-color:var(--accent)}
+.block{border-radius:10px;padding:12px 14px;margin:10px 0;font-size:13.5px;border-left:3px solid}
+.block .bl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;font-weight:700;display:block;margin-bottom:5px;opacity:.9}
+.block.amber{background:var(--amberb);border-color:var(--accent)}.block.amber .bl{color:#fcd34d}
+.block.blue{background:var(--blueb);border-color:var(--blue)}.block.blue .bl{color:#93c5fd}
+.block.green{background:var(--greenb);border-color:var(--green)}.block.green .bl{color:#86efac}
+.block.red{background:var(--redb);border-color:var(--red)}.block.red .bl{color:#fca5a5}
+.block.purple{background:var(--purpleb);border-color:var(--purple)}.block.purple .bl{color:#d8b4fe}
+.block.muted{background:var(--surface2);border-color:var(--muted)}
+.dot{background:var(--surface);border:1px solid var(--line);border-radius:13px;margin:0 0 10px;overflow:hidden}
+.dot-h{display:flex;align-items:flex-start;gap:11px;padding:13px 15px;cursor:pointer;user-select:none}
+.dot-h:hover{background:var(--surface2)}
+.dot-h .ttl{flex:1;font-weight:600;font-size:14.5px}
+.dot-h .chev{color:var(--muted);transition:.2s;font-size:12px;padding-top:3px}
+.dot.open .chev{transform:rotate(90deg)}
+.dot-body{padding:0 15px 15px;display:none}.dot.open .dot-body{display:block}
+.qa{border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin:9px 0;background:var(--surface2)}
+.qa .qq{font-size:14px;margin-bottom:7px;font-weight:500}
+.qa .ans{display:none;border-top:1px dashed var(--line);margin-top:9px;padding-top:9px;font-size:13.5px;color:#fcd34d;white-space:pre-wrap}
+.qa.show .ans{display:block}
+.qa .reveal{font-size:12px;background:var(--surface);border:1px solid var(--line);color:var(--accent);padding:4px 11px;border-radius:7px;cursor:pointer}
+.quiz-card{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:28px;text-align:center;max-width:680px;margin:0 auto}
+.quiz-card .qnum{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px}
+.quiz-card .qtext{font-size:18px;font-weight:600;line-height:1.5;margin-bottom:22px}
+.quiz-card .hint{font-size:13px;color:var(--text);margin-bottom:20px;display:none;white-space:pre-wrap;text-align:left;background:var(--surface2);border-radius:10px;padding:13px;border:1px solid var(--line)}
+.quiz-card .hint.show{display:block}
+.quiz-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.btn{background:var(--accent);color:#1a0800;border:none;border-radius:9px;padding:9px 16px;font-weight:600;cursor:pointer;font-family:inherit;font-size:14px}
+.btn:hover{background:var(--accent2);color:#fff}
+.btn.ghost{background:var(--surface2);color:var(--text);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn.sm{padding:6px 12px;font-size:12.5px}
+.pill{display:inline-block;font-size:11px;padding:2px 9px;border-radius:20px;background:var(--surface2);border:1px solid var(--line);color:var(--muted)}
+.pill.amber{color:#fcd34d;border-color:#5a3500;background:var(--amberb)}
+.pill.blue{color:#93c5fd;border-color:#1e4a63;background:var(--blueb)}
+.pill.green{color:#86efac;border-color:#1a4a2a;background:var(--greenb)}
+.pill.red{color:#fca5a5;border-color:#5a1414;background:var(--redb)}
+.pill.purple{color:#d8b4fe;border-color:#5b2d8f;background:var(--purpleb)}
+.muted{color:var(--muted)}.small{font-size:12.5px}
+.divider{height:1px;background:var(--line);margin:16px 0}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--surface2);border:1px solid var(--accent);color:var(--text);padding:11px 20px;border-radius:11px;z-index:100;box-shadow:0 10px 30px rgba(0,0,0,.4);opacity:0;transition:.25s;pointer-events:none}
+.toast.show{opacity:1}
+::-webkit-scrollbar{width:9px}::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+textarea.notes{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:9px;font-family:inherit;font-size:13px;resize:vertical;min-height:80px;margin-top:6px}
+textarea.notes:focus{outline:none;border-color:var(--accent)}
+.kv{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);font-size:13.5px;gap:12px}.kv:last-child{border:none}
+.hidden{display:none!important}
+.verb-table{width:100%;border-collapse:collapse;font-size:13px}
+.verb-table th{background:var(--surface2);color:var(--muted);padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;border-bottom:2px solid var(--line)}
+.verb-table td{padding:8px 12px;border-bottom:1px solid var(--line)}
+.verb-table tr:hover td{background:var(--surface2)}
+.verb-table td:first-child{font-weight:700;color:var(--accent)}
+.verb-table td:last-child{color:var(--muted);font-size:12px}
+.vocab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:9px;margin-top:10px}
+.vocab-item{background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 13px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.vocab-item .de{font-weight:600;font-size:13.5px}
+.vocab-item .en{color:var(--muted);font-size:12.5px;text-align:right;flex-shrink:0}
+.device-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin-top:12px}
+.device-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:15px}
+.device-card .dname{font-size:15px;font-weight:700;margin-bottom:1px}
+.device-card .den{font-size:11px;color:var(--muted);margin-bottom:9px;text-transform:uppercase;letter-spacing:.06em}
+.device-card .drow{font-size:13px;margin-bottom:7px;line-height:1.5}
+.device-card .drow b{color:var(--accent);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:2px}
+.device-card .ex{font-style:italic;background:var(--amberb);border-left:2px solid var(--accent);padding:6px 10px;border-radius:0 8px 8px 0;font-size:12.5px;margin-top:8px;color:var(--text)}
+.phrase-cat{margin-bottom:20px}
+.phrase-cat h3{font-size:14px;margin:0 0 10px;color:var(--accent)}
+.phrase-row{display:flex;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13.5px;align-items:flex-start}
+.phrase-row:last-child{border:none}
+.phrase-row .pde{flex:1;font-weight:500}
+.phrase-row .pen{color:var(--muted);font-size:12.5px;flex:1}
+.oral-starter{background:var(--surface2);border-left:3px solid var(--accent);padding:7px 12px;border-radius:0 8px 8px 0;font-size:13.5px;margin:5px 0}
+.error-item{background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:13px;margin-bottom:10px}
+.error-item .etitle{font-weight:700;font-size:14px;margin-bottom:5px}
+.error-item .edetail{font-size:13px;color:var(--muted);margin-bottom:7px}
+.error-item .efix{font-size:13px;color:#86efac}
+.error-item .efix::before{content:"✓ ";font-weight:700}
+.template-box{background:var(--amberb);border:1px solid var(--line);border-radius:10px;padding:14px;font-family:"IBM Plex Mono",monospace;font-size:12.5px;white-space:pre-wrap;margin:10px 0;line-height:1.65}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <a href="/" style="text-decoration:none"><span class="logo" style="width:38px;height:44px;font-size:18px;flex-direction:column;gap:1px;display:flex;align-items:center;justify-content:center">⌂<span style="font-size:8px;font-weight:700;letter-spacing:.04em;opacity:.85">HOME</span></span></a>
+      <div>HSC German Cont.<small>Y12 · Continuers</small></div>
+    </div>
+    <div class="search"><input id="globalSearch" type="text" placeholder="🔍 Search…" autocomplete="off"/></div>
+    <nav class="navlist" id="nav"></nav>
+    <div class="exampill">
+      <label>HSC Exam Countdown</label>
+      <div class="cd" id="countdown">— days</div>
+      <input id="examDate" type="date"/>
+    </div>
+    <div class="sb-foot">
+      <button id="themeBtn">☀ Theme</button>
+      <button id="ioBtn">⇅ Backup</button>
+    </div>
+  </aside>
+  <main class="main" id="main"></main>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const LS_KEY="hscger_v1";
+const DEFAULT_STATE={notes:{},examDate:"2026-10-14",theme:"dark"};
+let state=load();
+function load(){try{const s=JSON.parse(localStorage.getItem(LS_KEY));if(s)return Object.assign({},JSON.parse(JSON.stringify(DEFAULT_STATE)),s);}catch(e){}return JSON.parse(JSON.stringify(DEFAULT_STATE));}
+let saveT;function save(){clearTimeout(saveT);saveT=setTimeout(()=>localStorage.setItem(LS_KEY,JSON.stringify(state)),350);}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800);}
+function esc(s){return(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+/* ==================== NAV ==================== */
+const NAV=[
+  {id:"lang",label:"Language Devices",ic:"🔍"},
+  {sep:"ORAL"},
+  {id:"oral",label:"Oral Exam Prep",ic:"🎙️"},
+  {sep:"VOCAB & REFERENCE"},
+  {id:"vocab",label:"Topic Vocab Banks",ic:"📚"},
+  {id:"phrases",label:"Phrases & Connectives",ic:"💬"},
+  {id:"verbs",label:"Irregular Verbs",ic:"🔄"},
+  {sep:"EXAM PREP"},
+  {id:"pastpapers",label:"Past Paper Qs",ic:"📋"},
+  {id:"quiz",label:"Quiz Mode",ic:"⚡"},
+  {id:"writing",label:"Writing Templates",ic:"✍️"},
+  {id:"errors",label:"Common Errors",ic:"⚠️"},
+];
+
+let currentPage="lang";
+let quizFilter='all';let quizCurrent=0;let quizOrder=[];
+
+function buildNav(){
+  const nav=document.getElementById('nav');
+  nav.innerHTML=NAV.map(n=>{
+    if(n.sep) return`<div class="nav-sep">${esc(n.sep)}</div>`;
+    return`<button class="navbtn${n.id===currentPage?' active':''}" onclick="goto('${n.id}')"><span class="ic">${n.ic}</span>${esc(n.label)}</button>`;
+  }).join('');
+}
+
+function goto(id){
+  currentPage=id;buildNav();
+  const m=document.getElementById('main');
+  switch(id){
+    case'lang':renderLang(m);break;
+    case'oral':renderOral(m);break;
+    case'vocab':renderVocab(m);break;
+    case'phrases':renderPhrases(m);break;
+    case'verbs':renderVerbs(m);break;
+    case'pastpapers':renderPastPapers(m);break;
+    case'quiz':renderQuiz(m);break;
+    case'writing':renderWriting(m);break;
+    case'errors':renderErrors(m);break;
+    default:renderLang(m);
+  }
+  m.scrollTop=0;
+}
+function render(){goto(currentPage);}
+
+/* ==================== DATA ==================== */
+
+const DEVICES=[
+  {de:"Rhetorische Frage",en:"Rhetorical Question",
+   what:"Eine Frage ohne erwartete Antwort — gestellt um Wirkung zu erzielen.",
+   when:"Emotionale Gespräche (Q7), persuasive Texte. Zeigt Frustration, Überzeugung, Ironie.",
+   ex:'"Warum bin ich immer Diejenige, die den Kaffee holen muss?" — unterstreicht Katjas Frustration, 2025 Q7',
+   how:"Name + effect: Die rhetorische Frage unterstreicht [Gefühl], indem sie nahelegt, dass..."},
+  {de:"Emotive Sprache",en:"Emotive Language",
+   what:"Wörter mit stark emotionalem Gehalt, die intensive Gefühle hervorrufen.",
+   when:"Überall wo emotionale Zustände analysiert werden — Gespräche, Briefe, Streitigkeiten.",
+   ex:'"Ich habe die Nase voll" / "unglaublich" / "das ist mir wirklich zu viel" — Katjas Frustration, 2025 Q7',
+   how:"Identify word/phrase → name the emotion → link to character's state or purpose"},
+  {de:"Sarkasmus",en:"Sarcasm",
+   what:"Das Gegenteil von dem, was man meint — ironisch, oft spöttisch oder verachtend.",
+   when:"Konflikttexte, Kritiken, wenn Charaktere Enttäuschung oder Verachtung zeigen.",
+   ex:'"der liebe Oskar B." — verwendet ironisch um Enttäuschung über den Autor zu zeigen, 2025 Q9d',
+   how:"Sarcasm in [phrase] conveys [emotion] by implying the opposite of its literal meaning"},
+  {de:"Hyperbel",en:"Hyperbole",
+   what:"Absichtliche Übertreibung für Wirkung — nicht wörtlich zu verstehen.",
+   when:"Persuasive Texte, emotionale Reaktionen. Zeigt Intensität von Gefühlen.",
+   ex:'"etwas so Verzauberndes, so Entzückendes" — wiederholt um Begeisterung zu übertreiben, 2025 Q9d',
+   how:"The hyperbole in [phrase] emphasises [emotion] to an extreme degree, conveying..."},
+  {de:"Ausruf",en:"Exclamation",
+   what:"Ein Ausruf, der starke Emotion ausdrückt — Freude, Ärger, Überraschung.",
+   when:"Gespräche und informelle Texte. Zeigt sofortigen emotionalen Ausbruch.",
+   ex:'"Juhu!" / "Wirklich?" — Katjas Überraschung und Freude als Leo ihre Schicht übernimmt, 2025 Q7',
+   how:"The exclamation [word] conveys [emotion] through its sudden, emphatic nature"},
+  {de:"Idiomatischer Ausdruck",en:"Idiomatic Expression",
+   what:"Eine bildliche Redewendung, die wörtlich keinen Sinn ergibt — kulturell verankert.",
+   when:"Authentische Texte, Gespräche. Zeigt muttersprachliches Register und emotionale Nuance.",
+   ex:'"in die Luft springen" (to jump for joy) — zeigt Renates enthusiastische Vorfreude, 2025 Q9d',
+   how:"The idiomatic expression [phrase] conveys [emotion/meaning] through its culturally embedded imagery"},
+  {de:"Umgangssprache / Jugendsprache",en:"Colloquial / Youth Language",
+   what:"Informelle Alltagssprache, manchmal Slang — steht im Kontrast zur Standardsprache.",
+   when:"Informelle Gespräche und SMS. Zeigt Vertrautheit, Alter oder sozialen Status.",
+   ex:'"I bims" (= ich bin es) / "Job ist cool" / "Lass mal, Oma!" — generationale Sprachkluft, 2018 Q8',
+   how:"The colloquial language reveals [character trait/relationship/generational contrast] by contrasting with..."},
+  {de:"Wiederholung / Anapher",en:"Repetition / Anaphora",
+   what:"Wiederholung von Wörtern oder gleichen Satzanfängen für Rhythmus und Betonung.",
+   when:"Persuasive Texte, emotionale Passagen. Erzeugt Dringlichkeit und verstärkt die Aussage.",
+   ex:'"Es rankelt. Es brodelt. Es braut sich Rachgefühl." — Anapher betont Intensität und Persistenz',
+   how:"The repetition/anaphora of [word/phrase] emphasises [idea] by creating accumulation/urgency"},
+  {de:"Kontrast",en:"Contrast",
+   what:"Das Gegenüberstellen von gegensätzlichen Ideen, Figuren oder Situationen.",
+   when:"Texte über Wandel, Generationsunterschiede oder gesellschaftliche Spannungen.",
+   ex:'Joachims altes vs. neues Hannover — Kontrast zeigt Wandel und Entfremdung, 2022 Q9',
+   how:"The contrast between [X] and [Y] highlights [theme/tension] and reveals..."},
+  {de:"Metapher",en:"Metaphor",
+   what:"Ein direkter Vergleich ohne 'wie' — etwas wird als etwas anderes bezeichnet.",
+   when:"Literarische und journalistische Texte. Zeigt tiefere Bedeutung durch Bildsprache.",
+   ex:'"Geldquelle für die Stadt" — Tourismus als finanzielle Ressource beschrieben, 2018 Q9',
+   how:"The metaphor of [phrase] conveys [meaning] by attributing the qualities of [Y] to [X]"},
+  {de:"Vergleich / Simile",en:"Simile / Comparison",
+   what:"Ein expliziter Vergleich mit 'wie' oder 'als'.",
+   when:"Texte mit starker Bildsprache. Macht abstrakte Konzepte durch bekannte Bilder greifbar.",
+   ex:'"Berlin ist das New York von Europa" — zeigt Berlins Status als weltgewandte Metropole, 2018 Q9',
+   how:"The simile [phrase] illustrates [quality] by comparing [X] to the familiar image of [Y]"},
+  {de:"Direkte Anrede",en:"Direct Address",
+   what:"Direkte Anrede des Lesers/Hörers — mit 'du', 'Sie', 'ihr' oder Namen.",
+   when:"Persuasive Texte, Reden, Artikel. Schafft persönliche Verbindung und Verantwortungsgefühl.",
+   ex:'"schließlich profitieren alle" — schließt Leser implizit ein, 2018 Q9',
+   how:"Direct address engages the reader personally, creating a sense of [urgency/inclusion/responsibility]"},
+  {de:"Statistiken / Zahlen",en:"Statistics / Numbers",
+   what:"Numerische Daten als Beweis für eine Aussage.",
+   when:"Nachrichtenartikel, Berichte, Argumentationstexte. Verleiht Glaubwürdigkeit.",
+   ex:'"über 6 Millionen Touristen" / "nicht einmal 10%" — stützt Argumente mit Fakten, 2018/2022',
+   how:"The statistic [X] lends credibility to the argument by providing concrete evidence of [claim]"},
+  {de:"Ton / Register",en:"Tone / Register",
+   what:"Die emotionale Färbung oder Stimmung eines Textes — formell/informell, optimistisch/pessimistisch.",
+   when:"Immer relevant. Identifiziere den Ton, um die Haltung des Autors/Sprechers zu analysieren.",
+   ex:"Müllers optimistischer Ton vs. Elisabeths pessimistischer Ton zu Berliner Tourismus, 2018 Q9",
+   how:"The [optimistic/critical/nostalgic] tone is established through [specific language], suggesting that..."},
+  {de:"Personifikation",en:"Personification",
+   what:"Abstrakte Konzepte oder Dinge bekommen menschliche Eigenschaften.",
+   when:"Literarische und journalistische Texte. Macht abstrakte Ideen greifbar und lebendig.",
+   ex:'"Die Stadt schläft nie" — Personifikation verstärkt Berlins lebhaftes Image, 2018 Q9',
+   how:"The personification of [X] as [quality] makes the concept vivid and conveys..."},
+  {de:"Alliteration",en:"Alliteration",
+   what:"Wiederholung des gleichen Anfangslauts in aufeinanderfolgenden Wörtern.",
+   when:"Schlagzeilen, Werbetexte, literarische Texte. Erzeugt Rhythmus und Einprägsamkeit.",
+   ex:'"Krach, Krise, Kollaps" — betont negativen Effekt durch Klang',
+   how:"The alliteration in [phrase] creates rhythmic emphasis, reinforcing the [negative/urgent] tone"},
+  {de:"Anekdote",en:"Anecdote",
+   what:"Eine kurze persönliche Geschichte als Einstieg oder Beleg für ein Argument.",
+   when:"Artikel, Blogs, persuasive Texte. Schafft emotionale Verbindung und Authentizität.",
+   ex:"Joachims persönliche Rückkehrergeschichte verankert die Diskussion über Heimat und Identität, 2022 Q9",
+   how:"The anecdote about [event] creates personal connection and supports [claim] through lived experience"},
+  {de:"Ironie",en:"Irony",
+   what:"Diskrepanz zwischen dem Gesagten und dem Gemeinten oder zwischen Erwartung und Realität.",
+   when:"Erzähltexte, formelle Artikel. Zeigt oft Widersprüche oder unerwartete Ergebnisse.",
+   ex:"Joachim kehrt 'heim' nach Deutschland und fühlt sich fremd — ironisch da er die Sprache verlernt hat, 2022 Q9",
+   how:"The irony in [situation/phrase] highlights the contradiction between [X] and [Y], suggesting..."},
+];
+
+const VOCAB={
+  identity:{label:"Persönliche Identität",icon:"👤",words:[
+    {de:"die Zugehörigkeit",en:"sense of belonging"},
+    {de:"die Heimat",en:"homeland (emotional connection)"},
+    {de:"die Herkunft",en:"origin / background"},
+    {de:"die Überzeugung",en:"conviction / belief"},
+    {de:"das Selbstbewusstsein",en:"self-confidence"},
+    {de:"die Reife",en:"maturity"},
+    {de:"die Einsamkeit",en:"loneliness"},
+    {de:"die Zufriedenheit",en:"contentment / satisfaction"},
+    {de:"das Vertrauen",en:"trust"},
+    {de:"prägen",en:"to shape / leave a mark on"},
+    {de:"sich entfalten",en:"to develop / to blossom"},
+    {de:"sich identifizieren mit",en:"to identify with"},
+    {de:"vertraut",en:"familiar (emotionally)"},
+    {de:"die Gemeinschaft",en:"community"},
+    {de:"die Kindheit / Jugend",en:"childhood / youth"},
+    {de:"die Persönlichkeit",en:"personality"},
+    {de:"die Werte (Pl.)",en:"values"},
+    {de:"die Beziehung",en:"relationship"},
+  ]},
+  education:{label:"Bildung & Beruf",icon:"🎓",words:[
+    {de:"die Leistung",en:"achievement / performance"},
+    {de:"die Berufsausbildung",en:"vocational training"},
+    {de:"das Praktikum",en:"internship / work placement"},
+    {de:"der Abschluss",en:"qualification / degree"},
+    {de:"die Fähigkeit",en:"skill / ability"},
+    {de:"das Studium",en:"university studies"},
+    {de:"die Bewerbung",en:"(job) application"},
+    {de:"das Vorstellungsgespräch",en:"job interview"},
+    {de:"der Notendurchschnitt",en:"grade average"},
+    {de:"die Herausforderung",en:"challenge"},
+    {de:"der Fortbildungskurs",en:"professional development course"},
+    {de:"das Wunschdenken",en:"wishful thinking"},
+    {de:"sich vornehmen",en:"to resolve to do / to set a goal"},
+    {de:"durchhalten",en:"to persevere / stick it out"},
+    {de:"die Zukunftspläne (Pl.)",en:"plans for the future"},
+    {de:"sich bewerben um",en:"to apply for"},
+    {de:"das Stipendium",en:"scholarship / bursary"},
+    {de:"die Karriere",en:"career"},
+  ]},
+  leisure:{label:"Freizeit & Lebensstil",icon:"🎯",words:[
+    {de:"die Ernährung",en:"nutrition / diet"},
+    {de:"die Bewegung",en:"physical activity / exercise"},
+    {de:"das Gleichgewicht",en:"balance"},
+    {de:"die Entspannung",en:"relaxation"},
+    {de:"der Ausgleich",en:"balance / counterbalance"},
+    {de:"die Leidenschaft",en:"passion"},
+    {de:"das Fitnessstudio",en:"gym"},
+    {de:"der Verein",en:"club / association"},
+    {de:"nachhaltig",en:"sustainable / lasting"},
+    {de:"sich erholen",en:"to recover / to relax"},
+    {de:"ausgeglichen",en:"balanced / level-headed"},
+    {de:"das Wohlbefinden",en:"wellbeing"},
+    {de:"der Lebensstil",en:"lifestyle"},
+    {de:"ehrenamtlich",en:"on a voluntary basis"},
+    {de:"gesellig",en:"sociable"},
+    {de:"die Freizeitgestaltung",en:"organisation of leisure time"},
+    {de:"die Gesundheit",en:"health"},
+    {de:"sich fit halten",en:"to keep fit"},
+  ]},
+  tourism:{label:"Tourismus & Gastgewerbe",icon:"✈️",words:[
+    {de:"das Reiseziel",en:"destination"},
+    {de:"die Unterkunft",en:"accommodation"},
+    {de:"das Angebot",en:"range of options / what's on offer"},
+    {de:"die Sehenswürdigkeit (-en)",en:"tourist attraction / sight"},
+    {de:"die Besichtigung",en:"sightseeing visit"},
+    {de:"das Gastgewerbe",en:"hospitality industry"},
+    {de:"die Überfüllung",en:"overcrowding"},
+    {de:"der Massentourismus",en:"mass tourism"},
+    {de:"die Nachhaltigkeit",en:"sustainability"},
+    {de:"einheimisch",en:"local / native (adj.)"},
+    {de:"die Geldquelle",en:"source of income / revenue"},
+    {de:"profitieren von",en:"to profit / benefit from"},
+    {de:"die Obergrenze",en:"upper limit / cap"},
+    {de:"überschwemmen",en:"to flood / to overwhelm"},
+    {de:"der Fremdenverkehr",en:"tourism (formal term)"},
+    {de:"die Tourismusbranche",en:"tourism industry"},
+    {de:"der Stadtführer",en:"city guide (person or book)"},
+    {de:"der Ausflug",en:"excursion / day trip"},
+  ]},
+  arts:{label:"Kunst & Unterhaltung",icon:"🎨",words:[
+    {de:"das Werk",en:"work (of art / literature)"},
+    {de:"die Erzählweise",en:"narrative style"},
+    {de:"das Genre",en:"genre"},
+    {de:"die Handlung",en:"plot / storyline"},
+    {de:"die Figur",en:"character (fictional)"},
+    {de:"die Aussage",en:"message / statement"},
+    {de:"die Rezension",en:"review"},
+    {de:"fesselnd",en:"gripping / captivating"},
+    {de:"enttäuschend",en:"disappointing"},
+    {de:"begeistert (von)",en:"enthusiastic (about)"},
+    {de:"nüchtern",en:"flat / sober (writing style)"},
+    {de:"die Atmosphäre",en:"atmosphere"},
+    {de:"die Spannung",en:"tension / suspense"},
+    {de:"der Schauplatz",en:"setting"},
+    {de:"überzeugen",en:"to convince / to be convincing"},
+    {de:"der Stil",en:"style"},
+    {de:"die Beschreibung",en:"description"},
+    {de:"der Autor / die Autorin",en:"author"},
+  ]},
+  society:{label:"Gesellschaft & Wandel",icon:"🌍",words:[
+    {de:"die Vielfalt",en:"diversity"},
+    {de:"die Integration",en:"integration"},
+    {de:"die Verantwortung",en:"responsibility"},
+    {de:"der Wandel",en:"change"},
+    {de:"das Ehrenamt",en:"voluntary work"},
+    {de:"die Gleichberechtigung",en:"equality (of rights)"},
+    {de:"der Generationsunterschied",en:"generational gap"},
+    {de:"der Zusammenhalt",en:"cohesion / solidarity"},
+    {de:"die Gerechtigkeit",en:"justice / fairness"},
+    {de:"benachteiligen",en:"to disadvantage"},
+    {de:"fördern",en:"to promote / support"},
+    {de:"der soziale Aufstieg",en:"social mobility"},
+    {de:"die Mehrheit / Minderheit",en:"majority / minority"},
+    {de:"umweltfreundlich",en:"environmentally friendly"},
+    {de:"der Klimawandel",en:"climate change"},
+    {de:"die Gesellschaft",en:"society"},
+    {de:"die Einwanderung",en:"immigration"},
+    {de:"die Urbanisierung",en:"urbanisation"},
+  ]},
+  work:{label:"Arbeit & Technologie",icon:"💻",words:[
+    {de:"die Digitalisierung",en:"digitalisation"},
+    {de:"die sozialen Medien",en:"social media"},
+    {de:"das Homeoffice",en:"working from home"},
+    {de:"die Erreichbarkeit",en:"always being contactable"},
+    {de:"die Vernetzung",en:"networking / connectivity"},
+    {de:"die Produktivität",en:"productivity"},
+    {de:"die Überstunden (Pl.)",en:"overtime"},
+    {de:"der Arbeitgeber / -nehmer",en:"employer / employee"},
+    {de:"flexibel",en:"flexible"},
+    {de:"die Automatisierung",en:"automation"},
+    {de:"die Datensicherheit",en:"data security"},
+    {de:"das Start-up",en:"start-up"},
+    {de:"die Work-Life-Balance",en:"work-life balance"},
+    {de:"die Unternehmenskultur",en:"corporate culture"},
+    {de:"der Fachkräftemangel",en:"skilled labour shortage"},
+    {de:"das Burnout",en:"burnout"},
+    {de:"sich weiterqualifizieren",en:"to upskill / further qualify"},
+    {de:"der Algorithmus",en:"algorithm"},
+  ]},
+  pastpresent:{label:"Vergangenheit & Gegenwart",icon:"📅",words:[
+    {de:"die Erinnerung",en:"memory / recollection"},
+    {de:"die Vergangenheit",en:"the past"},
+    {de:"die Veränderung",en:"change"},
+    {de:"die Entwicklung",en:"development"},
+    {de:"der Fortschritt",en:"progress"},
+    {de:"das Erbe",en:"heritage / legacy"},
+    {de:"zeitgemäß",en:"contemporary / appropriate for the times"},
+    {de:"der Rückblick",en:"retrospective / looking back"},
+    {de:"die Nostalgie",en:"nostalgia"},
+    {de:"verglichen mit",en:"compared to"},
+    {de:"der Generationenwechsel",en:"generational change"},
+    {de:"die Heimkehr",en:"homecoming / return home"},
+    {de:"die Wiedervereinigung",en:"(German) reunification 1990"},
+    {de:"die Auswanderung",en:"emigration"},
+    {de:"fremd",en:"unfamiliar / foreign / strange"},
+    {de:"zurückversetzen",en:"to transport back in time"},
+    {de:"vertraut",en:"familiar"},
+    {de:"prägen",en:"to shape / leave a mark"},
+  ]},
+};
+
+const PHRASES=[
+  {cat:"Meinungsäußerung",en:"Expressing Opinion",items:[
+    {de:"Meiner Meinung nach…",en:"In my opinion…"},
+    {de:"Ich bin der Meinung / Ansicht, dass…",en:"I am of the opinion that…"},
+    {de:"Ich finde, dass…",en:"I find that… / I think that…"},
+    {de:"Ich halte es für [wichtig / problematisch]…",en:"I consider it to be [important / problematic]…"},
+    {de:"Meines Erachtens…",en:"In my view… (formal)"},
+    {de:"Ich bin davon überzeugt, dass…",en:"I am convinced that…"},
+    {de:"Es scheint mir, dass…",en:"It seems to me that…"},
+    {de:"Es ist unbestreitbar, dass…",en:"It is undeniable that…"},
+  ]},
+  {cat:"Einräumung / Konzession",en:"Concession",items:[
+    {de:"Obwohl / Obgleich…",en:"Although…"},
+    {de:"Zwar… aber…",en:"Admittedly… but…"},
+    {de:"Einerseits… andererseits…",en:"On the one hand… on the other…"},
+    {de:"Es stimmt zwar, dass… aber…",en:"It is true that… but…"},
+    {de:"Trotzdem / Dennoch / Gleichwohl…",en:"Nevertheless / However…"},
+    {de:"Auch wenn… bleibt es wahr, dass…",en:"Even if… it remains true that…"},
+    {de:"Wenngleich…",en:"Although… (formal)"},
+  ]},
+  {cat:"Hinzufügung",en:"Adding a Point",items:[
+    {de:"Außerdem…",en:"Moreover / In addition…"},
+    {de:"Darüber hinaus…",en:"Furthermore / Beyond that…"},
+    {de:"Nicht nur… sondern auch…",en:"Not only… but also…"},
+    {de:"Zudem…",en:"In addition… / Moreover…"},
+    {de:"Des Weiteren…",en:"Furthermore…"},
+    {de:"Hinzu kommt, dass…",en:"Added to this is the fact that…"},
+  ]},
+  {cat:"Kontrast & Vergleich",en:"Contrast & Comparison",items:[
+    {de:"Im Gegensatz dazu / Im Vergleich dazu…",en:"In contrast / In comparison…"},
+    {de:"Jedoch / Allerdings…",en:"However…"},
+    {de:"Während… (+ Subj.)…",en:"While…"},
+    {de:"Anders als…",en:"Unlike…"},
+    {de:"Verglichen mit…",en:"Compared with…"},
+    {de:"Im Gegensatz zu [Noun]…",en:"In contrast to [Noun]…"},
+  ]},
+  {cat:"Folge & Grund",en:"Consequence & Reason",items:[
+    {de:"Deshalb / Daher / Deswegen…",en:"Therefore / That's why…"},
+    {de:"Infolgedessen…",en:"As a result / Consequently…"},
+    {de:"Das führt dazu, dass…",en:"This leads to the fact that…"},
+    {de:"Aufgrund dessen / Aufgrund [+ Gen.]…",en:"Because of this / Because of…"},
+    {de:"Dies liegt daran, dass…",en:"This is due to the fact that…"},
+    {de:"Weil / Da / Denn…",en:"Because / Since / For…"},
+  ]},
+  {cat:"Beispiel",en:"Examples",items:[
+    {de:"Zum Beispiel (z.B.) / Beispielsweise…",en:"For example…"},
+    {de:"Das zeigt sich darin, dass…",en:"This is evident in the fact that…"},
+    {de:"Als Beleg dafür gilt…",en:"As evidence for this…"},
+    {de:"Das verdeutlicht, dass…",en:"This illustrates that…"},
+  ]},
+  {cat:"Zusammenfassung",en:"Summary / Conclusion",items:[
+    {de:"Zusammenfassend lässt sich sagen, dass…",en:"In summary, it can be said that…"},
+    {de:"Insgesamt…",en:"Overall / On the whole…"},
+    {de:"Letztendlich / Letztlich…",en:"Ultimately / In the end…"},
+    {de:"Alles in allem…",en:"All in all…"},
+    {de:"Abschließend möchte ich betonen, dass…",en:"In conclusion, I would like to emphasise…"},
+  ]},
+  {cat:"Betonung",en:"Emphasis",items:[
+    {de:"Vor allem / Insbesondere / Besonders…",en:"Above all / In particular / Especially…"},
+    {de:"Es ist wichtig zu betonen, dass…",en:"It is important to emphasise that…"},
+    {de:"Tatsächlich / In der Tat…",en:"In fact / Indeed…"},
+    {de:"Es ist bezeichnend, dass…",en:"It is telling / revealing that…"},
+    {de:"Gerade deshalb…",en:"Precisely because of this…"},
+  ]},
+  {cat:"Zeitliche Abfolge",en:"Sequence / Time",items:[
+    {de:"Erstens… zweitens… schließlich…",en:"Firstly… secondly… finally…"},
+    {de:"Zunächst… dann… danach… schließlich…",en:"First… then… after that… finally…"},
+    {de:"Am Anfang… im Laufe der Zeit… schließlich…",en:"At first… over time… eventually…"},
+    {de:"Seitdem / Seither…",en:"Since then…"},
+    {de:"Im Anschluss daran…",en:"Following that…"},
+  ]},
+];
+
+const VERBS=[
+  ["sein","ist","war","gewesen","to be"],
+  ["haben","hat","hatte","gehabt","to have"],
+  ["werden","wird","wurde","geworden","to become"],
+  ["gehen","geht","ging","gegangen","to go"],
+  ["kommen","kommt","kam","gekommen","to come"],
+  ["fahren","fährt","fuhr","gefahren","to drive / travel"],
+  ["fliegen","fliegt","flog","geflogen","to fly"],
+  ["laufen","läuft","lief","gelaufen","to run / walk"],
+  ["stehen","steht","stand","gestanden","to stand"],
+  ["liegen","liegt","lag","gelegen","to lie (position)"],
+  ["sehen","sieht","sah","gesehen","to see"],
+  ["lesen","liest","las","gelesen","to read"],
+  ["schreiben","schreibt","schrieb","geschrieben","to write"],
+  ["sprechen","spricht","sprach","gesprochen","to speak"],
+  ["essen","isst","aß","gegessen","to eat"],
+  ["trinken","trinkt","trank","getrunken","to drink"],
+  ["schlafen","schläft","schlief","geschlafen","to sleep"],
+  ["geben","gibt","gab","gegeben","to give"],
+  ["nehmen","nimmt","nahm","genommen","to take"],
+  ["finden","findet","fand","gefunden","to find"],
+  ["halten","hält","hielt","gehalten","to hold / stop"],
+  ["treffen","trifft","traf","getroffen","to meet"],
+  ["helfen","hilft","half","geholfen","to help"],
+  ["wissen","weiß","wusste","gewusst","to know (fact)"],
+  ["kennen","kennt","kannte","gekannt","to know (person)"],
+  ["bringen","bringt","brachte","gebracht","to bring"],
+  ["denken","denkt","dachte","gedacht","to think"],
+  ["verbringen","verbringt","verbrachte","verbracht","to spend (time)"],
+  ["verstehen","versteht","verstand","verstanden","to understand"],
+  ["verlassen","verlässt","verließ","verlassen","to leave"],
+  ["entscheiden","entscheidet","entschied","entschieden","to decide"],
+  ["bleiben","bleibt","blieb","geblieben","to stay / remain"],
+  ["ziehen","zieht","zog","gezogen","to move / pull"],
+  ["anfangen","fängt an","fing an","angefangen","to begin / start"],
+  ["aufgeben","gibt auf","gab auf","aufgegeben","to give up"],
+  ["steigen","steigt","stieg","gestiegen","to rise / climb"],
+  ["bitten","bittet","bat","gebeten","to ask / request"],
+  ["heißen","heißt","hieß","geheißen","to be called"],
+  ["wachsen","wächst","wuchs","gewachsen","to grow"],
+  ["erscheinen","erscheint","erschien","erschienen","to appear"],
+];
+
+const PAST_PAPERS=[
+  {year:2018,id:"2018",sections:[
+    {title:"Section II Part A — Reading Texts",qs:[
+      {num:"Q8 (10 marks)",topic:"Jugendsprache / Generationen / Arbeitswelt",
+       text:`Leo / Oma — WhatsApp-Gespräch
+
+Leo schreibt mit Jugendsprache: "I bims" (= ich bin es), "Job ist cool".
+Oma versteht kaum etwas, freut sich aber über schnelle Kommunikation.
+Leo: neuer Job — von zu Hause, trägt T-Shirt & Jeans, flexible Zeiten, bestellt Pizza statt zu kochen.
+Oma: besorgt über Ernährung und Gesundheit, bietet Spaghetti an.
+Leo: frustriert — "Ich bin nicht mehr 10 Jahre alt! Sag mir bitte nicht, wie ich mein Leben leben soll!"`,
+       qlist:[
+         {q:"What does this text reveal about Leo's and Oma's values and attitudes?",tip:"Leo: independence, modernity, flexible work. Oma: care, tradition, nutrition/health. The generational contrast plays out in BOTH language AND values."},
+         {q:"How does the language used by each character reveal their attitudes?",tip:"Leo: colloquialisms ('I bims', 'Job ist cool') = youth register, informality, modernity. Oma: standard German, full sentences = traditional, slightly formal. The contrast itself IS the point — it enacts the generational gap."},
+         {q:"To what extent does the conversation reveal tension between independence and care?",tip:"Both perspectives are valid: Leo wants autonomy; Oma expresses genuine concern. Neither is entirely wrong — the complexity is the point."},
+       ],
+       tip:"Key devices: Umgangssprache (Leo), Kontrast (Leo vs. Oma), Direkte Anrede. Topic: Personal World, Work & Technology."
+      },
+      {num:"Q9 (15 marks)",topic:"Tourismus / Berlin / Gesellschaft",
+       text:`"Wenn die Touristen nach Berlin kommen" — Artikel von Thomas Neubauer
+
+Berlin: Hauptstadt seit Wiedervereinigung 1990. Sehr beliebt bei jungen Touristen.
+Herr Müller (34, Sprecher der Stadt, aus Hamburg): stolz — "Berlin ist das New York von Europa." Über 6 Mio. Touristen im ersten Halbjahr. "Schließlich profitieren alle."
+Elisabeth M. (Berlinerin): frustriert — Touristen überschwemmen Kneipen/Restaurants. Nachts kein Schlaf, keine Kontrolle. Will Obergrenze. Schlägt vor: Touristen in unbekanntere Stadtteile schicken.
+Fazit: Ohne Maßnahmen könnte die Touristenwelle für die Stadt gefährlich werden.`,
+       qlist:[
+         {q:"Compare and contrast the views of Herr Müller and Elisabeth M.",tip:"Müller: politician, optimistic, economic benefit, outsider (from Hamburg). Elisabeth: resident, frustrated, quality-of-life focus, Berlinerin. Use direct contrast structure — don't just describe each separately."},
+         {q:"How does the author use language to present different perspectives?",tip:"Stats ('über 6 Millionen') for Müller's view. Direct quotes from both speakers. Simile ('das New York von Europa'). Personification ('die Stadt schläft nie'). Elisabeth's rhetorical questions ('Wo soll das alles hinführen?')."},
+         {q:"What is revealed about the impact of tourism on Berlin?",tip:"Positive: economic revenue, cultural diversity, international reputation. Negative: noise, loss of community identity, lack of control, locals feel like guests in own city."},
+       ],
+       tip:"Perfect contrast text. Topic: Tourism & Hospitality, Society. Key devices: statistics, direct speech, rhetorical questions, metaphor, personification, simile."
+      },
+    ]},
+  ]},
+  {year:2022,id:"2022",sections:[
+    {title:"Section II Part A — Reading Texts",qs:[
+      {num:"Q9 (11 marks)",topic:"Vergangenheit & Identität / Einwanderung",
+       text:`"Joachims Begegnung mit der Vergangenheit"
+
+Joachim (72) wanderte 1962 im Alter von 12 Jahren von Hannover nach Australien aus. Jetzt zurück.
+Positiv: multikulturell, viele Sprachen, Restaurants, offener gegenüber Fremden. "Dieses neue Hannover weiß ich auch zu schätzen."
+Problem: Kellner geben ihm englische Speisekarte — seine Sprache ist veraltet. Peinlich, Freunde bestellen für ihn.
+Früher in Australien: wegen Akzent ausgelacht. Fand Halt in Theater und klassischer Musik.
+Fazit: kann jetzt darüber lachen und schätzt seine Erfahrungen.`,
+       qlist:[
+         {q:"What aspects of modern Hannover does Joachim appreciate, and what challenges does he face?",tip:"Appreciate: diversity, openness, multicultural atmosphere. Challenge: language has evolved — he feels outdated, embarrassed by menus. Core irony: he's German but feels like a foreigner in Germany."},
+         {q:"How does the text explore the theme of belonging and identity?",tip:"Joachim is a native German who feels like a stranger in his homeland. Key concepts: Heimat, Zugehörigkeit, Identität. Two layers of not-belonging: in Australia (accent bullying) AND back in Germany (language gap)."},
+         {q:"What is the tone and how does it convey Joachim's emotional journey?",tip:"Tone shifts: nostalgic (opening) → appreciative (multicultural Hannover) → embarrassed (language problem) → philosophical/accepting (closing). Overall: bittersweet."},
+       ],
+       tip:"Devices: Kontrast (past vs present Hannover), Ironie (German feeling foreign), Anekdote (Australia bullying story). Topic: Past & Present, Personal Identity."
+      },
+      {num:"Q10 (14 marks)",topic:"Neujahrsvorsätze / Bildung & Lebensstil",
+       text:`"Im neuen Jahr wird alles anders" — Drei Perspektiven
+
+Umfrage: Mehrheit 18–30 macht keine Neujahrsvorsätze. Weniger als 10% halten länger als einen Monat durch.
+
+Birgit (32): Vorsatz — mehr Zeit für sich. Sofort gescheitert. Immer am Computer, immer erreichbar. Gibt Job die Schuld. "Neujahrsvorsätze, was für ein Witz!"
+
+Horst (21): Früher: Computerspiele ganz aufgeben — gescheitert. Jetzt realistischer: nur bis 22 Uhr, nach Uniarbeit. Ein Semester durchgehalten, Notendurchschnitt verbessert.
+
+Silke (27): Wollte mehr verdienen — gleicher Job. Änderte Strategie: Fortbildungskurs abgeschlossen, weiteren begonnen, Vorstellungsgespräch gehabt. Noch kein Ergebnis, aber zuversichtlich.`,
+       qlist:[
+         {q:"Compare Birgit's and Horst's approaches to their resolutions.",tip:"Birgit: unrealistic goal, blames external factors, gives up, dismissive. Horst: previously unrealistic → adapted to realistic goal, persevered, objective evidence of success (grades). Key contrast: attitude toward failure."},
+         {q:"What does the text suggest about how to make resolutions succeed?",tip:"Silke and Horst: realistic + achievable goals, adapt when original plan fails, take concrete steps, don't give up. Birgit: counter-example — blaming others, no adaptation."},
+         {q:"How does the survey data frame the personal accounts?",tip:"Stats establish failure is the norm — makes Horst's and Silke's success more impressive by contrast. Also frames Birgit as the typical case. Adds credibility (scientific framing vs. personal anecdote)."},
+       ],
+       tip:"Key vocab from text: Neujahrsvorsätze, das Wunschdenken, durchhalten, sich vornehmen, der Notendurchschnitt. Topic: Education & Aspirations, Lifestyle."
+      },
+    ]},
+  ]},
+  {year:2025,id:"2025",sections:[
+    {title:"Section I — Key Listening Questions",qs:[
+      {num:"Q6 (5 marks) — Persönliche Identität",topic:"Personal Identity / Face-to-face",
+       text:"Jürgen does not want to move to Lake Constance with his father.",
+       qlist:[{q:"To what extent is Jürgen's attitude justified? Support your answer with reference to the text.",tip:""}],
+       sample:`SAMPLE ANSWER (full marks):
+Although Jürgen has valid reasons — he would leave behind his friends, job, and sports team — his attitude is NOT fully justified.
+
+He is selfish: focuses only on what he loses, not what his father would gain (working from home, better lifestyle). Since he's going to university next year anyway, everything is going to change regardless. He ignores his father's dream and is insensitive to what the move could offer.
+
+MARK SCHEME: 5=perceptive (nuanced, clear position, both sides) → 4=thorough → 3=sound → 2=some understanding → 1=some info`
+      },
+      {num:"Q7 (5 marks) — Arbeitswelt",topic:"World of Work / Face-to-face",
+       text:"Katja is frustrated at work — always asked to work weekends. Leo offers to take her shift.",
+       qlist:[{q:"Justify Katja's change of emotions throughout the conversation. In your answer, refer to language and content.",tip:""}],
+       sample:`SAMPLE ANSWER (full marks):
+START — Angry / frustrated:
+• Content: always asked to work weekends, can't change plans
+• Emotive language: "unglaublich", "Ich habe die Nase voll", "das ist mir wirklich zu viel"
+• Rhetorical questions + sarcasm: "Warum bin ich immer Diejenige, die den Kaffee holen muss?" / "Deswegen bin ich nicht zur Uni gegangen, oder?"
+
+SHIFT — Surprised:
+• Content: Leo offers to take her shift — first act of kindness at work
+• Rhetorical question: "Wirklich? Das würdest du echt tun?"
+
+END — Overjoyed:
+• Exclamatory language: "Wirklich!", "Juhu!"
+
+KEY: Track emotions CHRONOLOGICALLY. Name the device AND explain its effect at each stage.`
+      },
+    ]},
+    {title:"Section II — Key Reading Question",qs:[
+      {num:"Q9d (5 marks) — Kunst & Unterhaltung",topic:"Arts & Entertainment / Blog post",
+       text:"Three bloggers (Paula, Quentin, Renate) review Oskar B.'s latest novel. Renate has mixed feelings.",
+       qlist:[{q:"How does Renate use language to convey her point of view? (5 marks)",tip:""}],
+       sample:`SAMPLE ANSWER (full marks):
+Renate has MIXED feelings — language tracks a shift from enthusiasm to disillusionment:
+
+POSITIVE:
+• Idiomatic expression: "springe in die Luft" (jump for joy) — shows anticipation
+• Repetitive hyperbole: "etwas so Verzauberndes, so Entzückendes" — appreciates landscape descriptions
+• Identifies with familiar characters from Oskar B.'s previous novels
+
+NEGATIVE:
+• Exclamation: "verrückt!" — finds familiar characters implausible in new jungle setting
+• Rhetorical questions: "Im Ernst? Was zum Teufel...?" — frustration with the author
+• Sarcasm: "der liebe Oskar B." — ironic, conveys disappointment
+
+5 marks = PERCEPTIVE: name device + explain effect + link to her specific viewpoint for each point.`
+      },
+    ]},
+    {title:"Section III — Writing Tasks",qs:[
+      {num:"Q11 (5 marks) — Short Message",topic:"Personal Identity",
+       text:"Write a short message in German (~60–100 words). Must suit audience, purpose and context.",
+       qlist:[{q:"Write a message in German appropriate to the task context.",tip:""}],
+       sample:`MARKING CRITERIA:
+5: Writes effectively + appropriately; authentic/creative language; fully meets audience/purpose/context
+4: Good understanding; good vocab + structures
+2–3: Some awareness of audience/purpose
+1: Some comprehensible language
+
+TIPS:
+• Get register RIGHT (formal = Sie, informal = du)
+• Cover ALL bullet points, even briefly
+• ~60–80 words is enough
+• Standard format: greeting → content → sign-off
+• As a native speaker — this is your advantage. Use it.`
+      },
+      {num:"Q12 (10 marks) — Extended Writing",topic:"Varies (diary, letter, article, blog)",
+       text:"Longer writing task based on a stimulus text. ~150–200 words.",
+       qlist:[{q:"Write an extended German text appropriate to the task.",tip:""}],
+       sample:`MARKING CRITERIA:
+10: Excellent — authentic/creative; coherent structure; fully meets requirements
+8–9: Good — excellent language structures; well organised
+6–7: Good understanding; organises ideas
+4–5: Rudimentary structures; attempts organisation
+2–3: Single words/formulae
+1: Some comprehensible language
+
+TIPS:
+• Read stimulus carefully — reference it specifically (names, events, ideas)
+• Number bullet points first, tick as you go
+• Match the format exactly (diary ≠ letter ≠ article)
+• Show personality and opinion — not just facts
+• Vary sentence structure
+• Diary: reflect, don't just list events
+• Formal letter: Sie-form, correct salutation/sign-off`
+      },
+    ]},
+  ]},
+];
+
+const WRITING_TEMPLATES=[
+  {id:"diary",title:"Tagebucheintrag",en:"Diary Entry",marks:"Q12 (10 marks)",reg:"informal / personal (ich-Form)",
+   template:`[Ort], den [Datum]
+
+Lieber Tagebuch,
+
+[Opening — how you're feeling / what happened]
+Heute war ein [besonderer / anstrengender / unvergesslicher] Tag, denn…
+
+[Body — describe events + feelings. Perfekt for events, Präsens for reflections.]
+[Event]… Das hat mich [sehr gefreut / überrascht / nachdenklich gestimmt].
+Was mich dabei besonders beeindruckt hat, ist…
+
+[Reflection — what it means to you]
+Rückblickend muss ich sagen, dass…
+Das hat mich zum Nachdenken gebracht, ob…
+
+[Closing thought]
+Bis zum nächsten Mal,
+[Dein Name]`,
+   tips:["Tense: Perfekt for events, Präsens for reflections/opinions","First person throughout (ich, mir, mich, mein)","Emotional, personal tone — show feelings, not just facts","Address ALL bullet points from the prompt","~150–200 words; vary sentence length","Don't list events — reflect on them"]
+  },
+  {id:"formal",title:"Formeller Brief",en:"Formal Letter",marks:"Q10/Q12",reg:"formal (Sie-Form)",
+   template:`[Dein Vor- und Nachname]
+[Deine Adresse]
+[Stadt], den [Datum]
+
+[Name / Firma des Empfängers]
+[Adresse]
+
+Sehr geehrte Frau [Name] / Sehr geehrter Herr [Name],
+Sehr geehrte Damen und Herren,
+
+ich schreibe Ihnen, um… / Hiermit möchte ich…
+
+[Body — present points clearly and formally]
+Erstens möchte ich betonen, dass…
+Darüber hinaus bin ich der Meinung, dass…
+Ich wäre Ihnen sehr dankbar, wenn…
+
+Ich freue mich auf Ihre Rückmeldung. / Ich hoffe auf eine baldige Antwort.
+
+Mit freundlichen Grüßen,
+[Dein Name]`,
+   tips:["ALWAYS Sie-form — never du in formal letters","Salutation: 'Sehr geehrte/r' — NEVER 'Liebe/r' for formal","Sign-off: 'Mit freundlichen Grüßen' (standard) or 'Hochachtungsvoll' (very formal)","One main point per paragraph","No contractions, no colloquialisms","Include date and address"]
+  },
+  {id:"informal",title:"Informeller Brief / E-Mail",en:"Informal Letter / Email",marks:"Q11/Q12",reg:"informal (du-Form)",
+   template:`[Stadt], den [Datum]
+
+Liebe [Name] / Lieber [Name],
+
+vielen Dank für deinen letzten Brief! / Es war so schön, dich zu sehen!
+Wie geht es dir?
+
+Ich wollte dir eigentlich schon lange schreiben, aber…
+Stell dir vor, was mir passiert ist!
+Ich muss dir unbedingt erzählen, dass…
+
+Ich hoffe, von dir bald zu hören!
+Schreib mir bald zurück! / Bis bald!
+
+Viele Grüße / Herzliche Grüße,
+[Dein Name]`,
+   tips:["du-Form throughout (du, dich, dir, dein)","Salutation: 'Liebe' (female) / 'Lieber' (male) [Name]","Sign-off: 'Viele Grüße', 'Herzliche Grüße', 'Bis bald'","Conversational tone — contractions OK","Ask questions to show interest in the recipient","Reference the stimulus context from the exam"]
+  },
+  {id:"blog",title:"Blogeintrag / Artikel",en:"Blog Post / Article",marks:"Q12",reg:"informal-neutral",
+   template:`[Schlagzeile / Titel]
+
+[Opening hook — question, fact, or bold statement]
+Habt ihr euch schon mal gefragt, warum…?
+Stellt euch vor, dass… / [Überraschende Tatsache].
+
+[Body — argument with examples + opinions]
+Einerseits… Andererseits…
+Meiner Meinung nach… / Tatsächlich…
+Zum Beispiel… / Das zeigt sich darin, dass…
+
+[Conclusion — clear stance]
+Zusammenfassend lässt sich sagen, dass…
+Letztendlich liegt es an uns, ob…
+
+Schreibt eure Meinung in die Kommentare!`,
+   tips:["Headline: short, punchy, relevant","Address reader directly: 'ihr' or 'Sie'","Mix facts and opinions — argue, don't just describe","Use rhetorical questions to engage","Präsens typical; Präteritum for newspaper-style","Take a clear position — nuance is good, but have a view"]
+  },
+  {id:"message",title:"Nachricht / SMS",en:"Short Message",marks:"Q11 (5 marks)",reg:"informal",
+   template:`Hallo [Name]! / Hey [Name],
+
+[Core message — brief, direct]
+[Cover all bullet points concisely]
+[Ask question or add a reaction]
+
+Bis dann! / LG / Meld dich!
+[Dein Name]`,
+   tips:["~60–80 words for Q11","Address ALL bullet points — even a brief mention","Informal register fine — contractions, casual language OK","No date or address needed","Stay on topic — don't pad","Double-check: is the audience and purpose correct?"]
+  },
+];
+
+const ERRORS=[
+  {cat:"Prüfungstechnik",items:[
+    {title:"Keine konkreten Textnachweise",detail:"Language analysis questions (Q7/Q9d) need SPECIFIC German words/phrases from the text. Saying 'the tone is frustrated' without quoting scores poorly.",fix:"Quote exact German → name the device → explain the effect. E.g. 'The emotive language in \"Ich habe die Nase voll\" conveys intense frustration by...'"},
+    {title:"Zu allgemeine Charakterantworten",detail:"'X is a good person' or 'X is happy' won't score well. Character questions need textual evidence.",fix:"Trait → quote → what it reveals. Every claim needs a textual anchor."},
+    {title:"Nicht alle Teile einer Frage beantwortet",detail:"'To what extent…', 'Compare and contrast…', 'Account for feelings' all require covering MULTIPLE aspects.",fix:"Underline key verbs in the question. For 'to what extent': argue a position BUT acknowledge the other side."},
+    {title:"Emotionale Entwicklung nicht verfolgt",detail:"Questions asking to track emotional shifts need the CHANGE shown, not just the final emotion.",fix:"Structure: Emotion 1 + evidence → Trigger → Emotion 2 + evidence. Track chronologically."},
+    {title:"Zu kurze Antworten bei hoch bewerteten Fragen",detail:"A 5-mark question needs a substantial, perceptive answer — not 2 sentences.",fix:"Aim for 4–5 distinct points with evidence for a 5-mark question. 'Perceptive' means going beyond the surface."},
+  ]},
+  {cat:"Schreiben auf Deutsch",items:[
+    {title:"Falsches Register im formellen Brief",detail:"Du-Form or casual language in a formal letter (Sehr geehrte…) costs marks immediately.",fix:"Formal = Sie-Form throughout. Rule: company / institution / stranger → formal."},
+    {title:"Falsche Anrede oder fehlendes Format",detail:"'Liebe Damen und Herren' is wrong. Missing date or address in formal letters.",fix:"Formal: 'Sehr geehrte/r [Name]' or 'Sehr geehrte Damen und Herren'. Sign-off: 'Mit freundlichen Grüßen'."},
+    {title:"Nicht alle Stichpunkte bearbeitet",detail:"Section III prompts have multiple bullet points. Missing even one loses marks regardless of quality elsewhere.",fix:"Number each bullet point before writing. Tick them off as you go."},
+    {title:"Nur Ereignisse aufzählen (kein Tagebuch-Ton)",detail:"In diary entries — listing events ('Ich habe X gemacht, dann Y') without personal reflection misses the genre.",fix:"After each event: 'Das hat mir gezeigt, dass…' / 'Ich war überrascht, weil…' / 'Rückblickend denke ich…'"},
+    {title:"Präteritum vs. Perfekt verwechselt",detail:"Formal writing/newspapers use Präteritum. Informal/diary/letter use Perfekt. Mixing them looks inconsistent.",fix:"Diary/informal letter: Perfekt. Article/formal report: Präteritum."},
+    {title:"Nicht genug auf den Stimulus eingehen (Sek. II Part B)",detail:"Section II Part B requires responding TO the text you just read — not a generic response.",fix:"Reference at least 2–3 specific details from the stimulus (names, events, ideas)."},
+    {title:"Zu wenig Wortanzahl",detail:"Writing too little limits the language competence you can demonstrate.",fix:"Q11: ~60–100 words. Q12: ~150–200 words. Practise to these limits under timed conditions."},
+  ]},
+  {cat:"Mündliche Prüfung",items:[
+    {title:"Zu kurze Antworten",detail:"One-word or very short answers kill conversation momentum and limit marks.",fix:"Expand every answer: Ja, weil… / Das stimmt, aber… / Zum Beispiel… / Im Vergleich dazu…"},
+    {title:"Nur beschreiben, nicht reflektieren",detail:"Just saying what you do ('Ich spiele Fußball') without opinions misses higher-level marks.",fix:"Add opinion + comparison + hypothetical: 'Ich finde, dass…' / 'Im Vergleich zu früher…' / 'Wenn ich die Wahl hätte…'"},
+    {title:"Thema nicht weiterentwickeln",detail:"Answering the question and stopping — instead of developing ideas and showing range.",fix:"After answering: add an example, mention a contrasting view, ask yourself 'and why?' or 'what does that mean for me?'"},
+  ]},
+];
+
+const ORAL_TOPICS=[
+  {id:"family",label:"Familie & Beziehungen",
+   starters:["Erzähl mir von deiner Familie.","Wie ist dein Verhältnis zu deinen Eltern/Geschwistern?","Wer hat dich in deiner Familie am meisten geprägt?","Wie wichtig ist dir Familie im Vergleich zu Freundschaften?"],
+   phrases:["Meine Familie ist mir sehr wichtig, weil…","Ich verstehe mich gut mit [Person], da…","Was mich an meiner Familie besonders beeindruckt…","Im Vergleich zu anderen Familien…","Mein [Familienmitglied] hat mich insofern geprägt, als…"]
+  },
+  {id:"school",label:"Schule & Lernen",
+   starters:["Wie findest du das Schulsystem hier in Australien?","Was ist dein Lieblingsfach und warum?","Welche Herausforderungen hast du in der Schule?","Was würdest du an deiner Schule ändern?","Wie bereitest du dich auf die HSC-Prüfungen vor?"],
+   phrases:["Was mich am Schulsystem hier auffällt…","Im Vergleich zu Deutschland ist das Schulsystem hier…","Ich finde, dass Schule nicht nur Wissen, sondern auch…","Leistungsdruck ist ein Thema, das mich…","Nach dem HSC plane ich…"]
+  },
+  {id:"hobbies",label:"Freizeit & Interessen",
+   starters:["Was machst du in deiner Freizeit am liebsten?","Bist du Mitglied in einem Verein?","Wie wichtig ist Sport/Musik/Kunst für dich?","Hat sich deine Freizeitgestaltung verändert?"],
+   phrases:["In meiner Freizeit beschäftige ich mich vor allem mit…","Das gibt mir die Möglichkeit, mich zu entspannen…","Ich bin der Meinung, dass Hobbys wichtig sind, weil…","Früher habe ich… aber jetzt…","Wenn ich mehr Zeit hätte, würde ich…"]
+  },
+  {id:"future",label:"Zukunftspläne & Karriere",
+   starters:["Was möchtest du nach dem HSC machen?","Hast du schon konkrete Berufspläne?","Was ist dir in einem Beruf am wichtigsten?","Welche Rolle spielt Deutsch in deinen Plänen?","Würdest du gerne ins Ausland gehen?"],
+   phrases:["Nach der Schule plane ich, zu…","Mein Berufsziel ist es, als… zu arbeiten, weil…","Was mir im Beruf wichtig ist…","Ich glaube, dass meine Deutschkenntnisse mir dabei helfen werden…","Es ist schwer zu sagen, aber ich könnte mir vorstellen…"]
+  },
+  {id:"identity",label:"Identität & Herkunft",
+   starters:["Was bedeutet es für dich, in Australien mit deutschen Wurzeln aufgewachsen zu sein?","Wann fühlst du dich eher australisch, wann eher deutsch?","Was schätzt du an der deutschen Kultur?","Wie hat deine Herkunft deine Persönlichkeit geprägt?"],
+   phrases:["Meine Identität ist geprägt von…","Für mich ist es interessant, zwischen zwei Kulturen zu navigieren…","Was mich an der deutschen Mentalität beeindruckt…","Ich identifiziere mich mit…, weil…","In Deutschland fühle ich mich… während ich in Australien…"]
+  },
+  {id:"technology",label:"Technologie & Soziale Medien",
+   starters:["Welche Rolle spielen soziale Medien in deinem Leben?","Glaubst du, dass Technologie unser Leben verbessert?","Was denkst du über das Thema Datensicherheit?","Wie nutzt du das Internet für die Schule?"],
+   phrases:["Einerseits ermöglicht Technologie… andererseits…","Ich bin der Meinung, dass soziale Medien…","Ein Problem ist die ständige Erreichbarkeit…","Im Vergleich zu früheren Generationen…","Ohne Smartphone wäre mein Alltag…"]
+  },
+  {id:"health",label:"Gesundheit & Lebensstil",
+   starters:["Wie achtest du auf deine Gesundheit?","Was denkst du über Work-Life-Balance?","Welche Rolle spielt Sport in deinem Leben?","Was ist für dich eine gesunde Ernährung?"],
+   phrases:["Ich versuche, auf eine ausgewogene Ernährung zu achten…","Für mich ist es wichtig, einen Ausgleich zum Schulstress zu finden…","Ich glaube, dass mentale Gesundheit genauso wichtig ist wie…","Mit dem Leistungsdruck der Schule heutzutage…"]
+  },
+  {id:"culture",label:"Deutsch-australische Kultur",
+   starters:["Was sind die größten Unterschiede zwischen deutscher und australischer Kultur?","Vermisst du manchmal Deutschland?","Welche deutschen Traditionen feierst du noch in Australien?","Was würdest du einem Deutschen über Australien erzählen?"],
+   phrases:["Was ich an Deutschland besonders vermisse / schätze…","Ein wichtiger kultureller Unterschied ist…","Deutsche sind dafür bekannt, dass… während Australier eher…","Wenn ich nach Deutschland reise, fällt mir immer auf…","Meine zweikulturelle Erfahrung hat mir gezeigt, dass…"]
+  },
+];
+
+const QUIZ_ITEMS=[
+  {cat:"vocab",topic:"Persönliche Identität",q:"die Zugehörigkeit",a:"sense of belonging\n\nUse: identity, integration, community topics"},
+  {cat:"vocab",topic:"Persönliche Identität",q:"prägen",a:"to shape / to leave a mark on\n\n'Das hat mich geprägt' — experiences/people that formed you"},
+  {cat:"vocab",topic:"Persönliche Identität",q:"die Heimat",a:"homeland (emotional connection)\n\nStronger than 'Zuhause' — implies belonging, not just location"},
+  {cat:"vocab",topic:"Persönliche Identität",q:"die Reife",a:"maturity\n\nUse: discussing personal growth, coming of age"},
+  {cat:"vocab",topic:"Bildung & Beruf",q:"das Vorstellungsgespräch",a:"job interview\n\nFrom 2022: 'Ich hatte schon ein Vorstellungsgespräch'"},
+  {cat:"vocab",topic:"Bildung & Beruf",q:"sich vornehmen",a:"to resolve to do / to set a goal\n\nFrom 2022: 'Ich habe mir vorgenommen, Computerspiele aufzugeben'"},
+  {cat:"vocab",topic:"Bildung & Beruf",q:"das Wunschdenken",a:"wishful thinking\n\nFrom 2022: 'Das war alles nur Wunschdenken' — Horst on his failed first resolution"},
+  {cat:"vocab",topic:"Bildung & Beruf",q:"durchhalten",a:"to persevere / to stick it out\n\nFrom 2022: Horst 'hat schon ein Semester durchgehalten'"},
+  {cat:"vocab",topic:"Tourismus",q:"die Sehenswürdigkeit (-en)",a:"tourist attraction / sight\n\nPlural: die Sehenswürdigkeiten"},
+  {cat:"vocab",topic:"Tourismus",q:"einheimisch",a:"local / native (adjective)\n\n'die Einheimischen' = the locals (contrast with tourists)"},
+  {cat:"vocab",topic:"Tourismus",q:"die Obergrenze",a:"upper limit / cap\n\nFrom 2018: Elisabeth wants an Obergrenze on tourist numbers"},
+  {cat:"vocab",topic:"Gesellschaft",q:"der Zusammenhalt",a:"cohesion / solidarity\n\nUse: community, social bonds — 'gesellschaftlicher Zusammenhalt'"},
+  {cat:"vocab",topic:"Gesellschaft",q:"die Gleichberechtigung",a:"equality (of rights)\n\nUse: gender equality, social justice discussions"},
+  {cat:"vocab",topic:"Arbeit & Technologie",q:"die Erreichbarkeit",a:"always being contactable\n\nContext: work-life balance — the burden of always being reachable"},
+  {cat:"vocab",topic:"Arbeit & Technologie",q:"die Digitalisierung",a:"digitalisation\n\nKey term for Work & Technology topic"},
+  {cat:"vocab",topic:"Vergangenheit",q:"vertraut",a:"familiar (emotionally)\n\nFrom 2022: 'Vieles klingt und sieht so vertraut aus' — Joachim in Hannover"},
+  {cat:"vocab",topic:"Vergangenheit",q:"der Rückblick",a:"retrospective / looking back\n\n'Im Rückblick…' or adverb 'rückblickend'"},
+  {cat:"vocab",topic:"Kunst & Unterhaltung",q:"fesselnd",a:"gripping / captivating\n\nPositive — use to describe a compelling book or film"},
+  {cat:"vocab",topic:"Kunst & Unterhaltung",q:"enttäuschend",a:"disappointing\n\nUse in critical reviews — 'Ich fand den Roman enttäuschend, weil…'"},
+  {cat:"phrase",topic:"Konzession",q:"Start a sentence conceding the other view, then make your own point.",a:"Zwar… aber…\nObwohl…\nEinerseits… andererseits…\nEs stimmt zwar, dass… aber…\nTrotzdem / Dennoch…"},
+  {cat:"phrase",topic:"Folge",q:"Express a consequence or result.",a:"Deshalb / Daher / Deswegen…\nInfolgedessen…\nDas führt dazu, dass…\nAufgrund dessen…"},
+  {cat:"phrase",topic:"Meinung",q:"Express your opinion formally.",a:"Meiner Meinung nach…\nIch bin der Meinung, dass…\nMeines Erachtens…\nIch bin davon überzeugt, dass…"},
+  {cat:"phrase",topic:"Hinzufügung",q:"Add another point to your argument.",a:"Außerdem…\nDarüber hinaus…\nNicht nur… sondern auch…\nZudem…\nHinzu kommt, dass…"},
+  {cat:"phrase",topic:"Kontrast",q:"Contrast two ideas or perspectives.",a:"Im Gegensatz dazu…\nJedoch / Allerdings…\nWährend…\nAnders als…\nVerglichen mit…"},
+  {cat:"phrase",topic:"Zusammenfassung",q:"Conclude or summarise your argument.",a:"Zusammenfassend lässt sich sagen, dass…\nInsgesamt…\nLetztendlich…\nAlles in allem…"},
+  {cat:"phrase",topic:"Betonung",q:"Emphasise a key point.",a:"Vor allem / Besonders / Insbesondere…\nEs ist wichtig zu betonen, dass…\nTatsächlich…\nGerade deshalb…"},
+  {cat:"device",topic:"Analyse",q:"Was ist eine Rhetorische Frage? Wann taucht sie in HSC-Texten auf?",a:"A question posed for effect — not expecting an answer.\n\nAppears: emotional conversations (Q7), persuasive texts.\nEffect: signals frustration, conviction, irony.\n\nExample 2025 Q7: 'Warum bin ich immer Diejenige, die den Kaffee holen muss?'\n\nHow to cite: 'The rhetorical question underlines [emotion] by implying that…'"},
+  {cat:"device",topic:"Analyse",q:"Was ist Hyperbel und wie wirkt sie?",a:"Deliberate exaggeration for effect — not meant literally.\n\nEffect: shows intensity of feeling, emphasises a point.\n\nExample 2025 Q9d: 'etwas so Verzauberndes, so Entzückendes' — Renate's enthusiasm\n\nHow to cite: 'The hyperbole in [phrase] emphasises [emotion] to an extreme degree, conveying…'"},
+  {cat:"device",topic:"Analyse",q:"Was ist der Unterschied zwischen Sarkasmus und Ironie?",a:"Sarkasmus: saying the OPPOSITE of what you mean, with scorn/mockery.\nIronie: broader discrepancy between said/meant OR expectation/reality.\n\nSarcasm example 2025 Q9d: 'der liebe Oskar B.' — ironic, conveys disappointment\nIrony example 2022 Q9: German Joachim feeling foreign in Germany\n\nEffect: reveals negative attitude or unexpected contradiction"},
+  {cat:"device",topic:"Analyse",q:"Was ist Umgangssprache / Jugendsprache? Warum ist sie bedeutsam?",a:"Colloquial / youth language — informal speech, slang.\n\nSignificance: reveals character age, social background, relationship, register.\n\nExample 2018 Q8: 'I bims', 'Job ist cool' — Leo vs. Oma's standard German\n→ Shows generational AND linguistic gap"},
+  {cat:"device",topic:"Analyse",q:"Was ist emotive Sprache und wie identifiziert man sie?",a:"Language chosen to evoke strong emotional responses.\n\nIdentify: words with strong emotional charge.\n\nExample 2025 Q7: 'unglaublich', 'Ich habe die Nase voll', 'das ist mir wirklich zu viel'\n\nHow to cite: 'The emotive language [phrase] conveys [specific emotion] by…'"},
+  {cat:"oral",topic:"Familie",q:"Erzähl mir von deiner Familie.",a:"Expand with:\n• Wer in deiner Familie lebt / Familiendynamik\n• Besondere Beziehung: 'Ich verstehe mich besonders gut mit… weil…'\n• Wie Familie dich geprägt hat: 'Was mich… am meisten beeinflusst hat…'\n• Vergleich/Kontrast: 'Im Vergleich zu australischen Familien…'\n\nDon't just describe — add opinion and reflection."},
+  {cat:"oral",topic:"Zukunft",q:"Was möchtest du nach dem HSC machen?",a:"Expand with:\n• Konkrete Pläne: 'Ich plane, [Studium/Beruf] zu…'\n• Warum: 'weil mich das Thema… schon immer interessiert hat'\n• Deutschbezug: 'Meine Deutschkenntnisse werden mir helfen, weil…'\n• Hypothetisch: 'Wenn ich die Chance hätte…'\n• Unsicherheit OK: 'Ich bin noch unentschlossen, aber…'"},
+  {cat:"oral",topic:"Identität",q:"Was bedeutet es für dich, in Australien mit deutschen Wurzeln zu leben?",a:"Expand with:\n• Bereicherung: 'Es ist eine bereichernde Erfahrung, weil ich zwischen zwei Kulturen navigieren kann…'\n• Herausforderungen: 'Manchmal ist es schwierig…'\n• Konkrete Beispiele: Traditionen, Sprache zuhause, Besuche in Deutschland\n• Kulturvergleich: 'Was mich an der deutschen Mentalität fasziniert…'\n• Identitätsfrage: 'Ich identifiziere mich mit beiden, aber…'"},
+  {cat:"oral",topic:"Technologie",q:"Welche Rolle spielen soziale Medien in deinem Leben?",a:"Expand with:\n• Konkrete Nutzung: 'Ich nutze soziale Medien hauptsächlich für…'\n• Vorteile: 'Einerseits ermöglichen sie…'\n• Nachteile: 'Andererseits ist die ständige Erreichbarkeit…'\n• Meinung: 'Ich bin der Meinung, dass…'\n• Generationsvergleich: 'Im Vergleich zu meinen Eltern…'\n\nTip: nuanced answer scores better than pure positive OR negative."},
+];
+
+/* ==================== RENDER FUNCTIONS ==================== */
+
+function renderLang(m){
+  m.innerHTML=`
+  <div class="page-head"><div><h1>🔍 Language Devices</h1><p>What each is · when it appears in HSC texts · how to cite it</p></div></div>
+  <div class="block amber" style="margin-bottom:16px"><span class="bl">How to use in analysis questions</span>
+  <b>Quote</b> the specific German word/phrase → <b>Name</b> the device → <b>Explain</b> the effect → <b>Link</b> to character state or author's purpose. Never just name a device without explaining what it does.</div>
+  <div class="device-grid">
+  ${DEVICES.map(d=>`
+  <div class="device-card">
+    <div class="dname">${esc(d.de)}</div>
+    <div class="den">${esc(d.en)}</div>
+    <div class="drow"><b>What</b>${esc(d.what)}</div>
+    <div class="drow"><b>When / HSC context</b>${esc(d.when)}</div>
+    <div class="drow"><b>How to cite</b><span class="muted small">${esc(d.how)}</span></div>
+    <div class="ex">${esc(d.ex)}</div>
+  </div>`).join('')}
+  </div>
+  <div class="card" style="margin-top:20px"><h3>My Notes — Language Devices</h3>
+  <textarea class="notes" rows="5" placeholder="Notes on specific devices, teacher feedback…" onchange="saveNote('lang',this.value)">${esc(state.notes['lang']||'')}</textarea>
+  </div>`;
+}
+
+function renderOral(m){
+  m.innerHTML=`
+  <div class="page-head"><div><h1>🎙️ Oral Exam Prep</h1><p>20 marks · 20 minutes · conversation about your personal world</p></div></div>
+  <div class="grid g3" style="margin-bottom:20px">
+    <div class="card" style="margin:0"><div class="muted small" style="margin-bottom:4px">Duration</div><b>20 minutes</b></div>
+    <div class="card" style="margin:0"><div class="muted small" style="margin-bottom:4px">Marks</div><b>20 marks</b></div>
+    <div class="card" style="margin:0"><div class="muted small" style="margin-bottom:4px">Format</div><b>Free conversation</b></div>
+  </div>
+  <div class="block green" style="margin-bottom:16px"><span class="bl">Key strategies</span>
+• Prepare 6–8 topics, but be ready to go off-script<br>
+• Elaborate every answer — don't just answer, <b>develop</b><br>
+• Add opinions, comparisons, hypotheticals after facts<br>
+• Use connectives and discourse markers naturally<br>
+• Self-correcting is fine — native speakers do it<br>
+• Short answers kill marks — always expand with "weil…", "zum Beispiel…", "im Vergleich…"
+  </div>
+  <div class="tabs">
+    ${ORAL_TOPICS.map((t,i)=>`<button class="tab${i===0?' on':''}" onclick="showOralTab('${t.id}',this)">${esc(t.label)}</button>`).join('')}
+  </div>
+  ${ORAL_TOPICS.map((t,i)=>`
+  <div id="oral-${t.id}" ${i>0?'class="hidden"':''}>
+    <div class="block amber"><span class="bl">Sample conversation starters</span>
+    ${t.starters.map(s=>`<div class="oral-starter">${esc(s)}</div>`).join('')}
+    </div>
+    <div class="card"><h3>Useful phrases for this topic</h3>
+    ${t.phrases.map(p=>`<div style="padding:6px 0;border-bottom:1px solid var(--line);font-size:13.5px">${esc(p)}</div>`).join('')}
+    </div>
+  </div>`).join('')}
+  <div class="card" style="margin-top:16px"><h3>My Oral Notes</h3>
+  <textarea class="notes" rows="8" placeholder="Personal anecdotes to use, topic notes, teacher feedback…" onchange="saveNote('oral',this.value)">${esc(state.notes['oral']||'')}</textarea>
+  </div>`;
+}
+
+function showOralTab(id,btn){
+  ORAL_TOPICS.forEach(t=>document.getElementById('oral-'+t.id).classList.add('hidden'));
+  document.getElementById('oral-'+id).classList.remove('hidden');
+  btn.closest('.tabs').querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+function renderVocab(m){
+  const keys=Object.keys(VOCAB);
+  m.innerHTML=`
+  <div class="page-head"><div><h1>📚 Topic Vocab Banks</h1><p>Exam-relevant vocabulary by syllabus topic</p></div></div>
+  <div class="tabs">
+    ${keys.map((k,i)=>`<button class="tab${i===0?' on':''}" onclick="showVocabTab('${k}',this)">${VOCAB[k].icon} ${esc(VOCAB[k].label)}</button>`).join('')}
+  </div>
+  ${keys.map((k,i)=>`
+  <div id="vocab-${k}" ${i>0?'class="hidden"':''}>
+    <div class="vocab-grid">
+    ${VOCAB[k].words.map(w=>`<div class="vocab-item"><span class="de">${esc(w.de)}</span><span class="en">${esc(w.en)}</span></div>`).join('')}
+    </div>
+    <div class="card" style="margin-top:14px"><h3>My Notes — ${esc(VOCAB[k].label)}</h3>
+    <textarea class="notes" rows="4" placeholder="Extra vocab, usage notes…" onchange="saveNote('vocab_${k}',this.value)">${esc(state.notes['vocab_'+k]||'')}</textarea>
+    </div>
+  </div>`).join('')}`;
+}
+
+function showVocabTab(k,btn){
+  Object.keys(VOCAB).forEach(key=>document.getElementById('vocab-'+key).classList.add('hidden'));
+  document.getElementById('vocab-'+k).classList.remove('hidden');
+  btn.closest('.tabs').querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+function renderPhrases(m){
+  m.innerHTML=`
+  <div class="page-head"><div><h1>💬 Phrases & Connectives</h1><p>Use these in writing tasks and oral responses for top marks</p></div></div>
+  ${PHRASES.map(p=>`
+  <div class="phrase-cat">
+    <h3>${esc(p.cat)} <span class="pill">${esc(p.en)}</span></h3>
+    ${p.items.map(i=>`<div class="phrase-row"><span class="pde">${esc(i.de)}</span><span class="pen">${esc(i.en)}</span></div>`).join('')}
+  </div>`).join('')}
+  <div class="card"><h3>My Notes — Phrases</h3>
+  <textarea class="notes" rows="5" placeholder="Favourite phrases, ones to practise…" onchange="saveNote('phrases',this.value)">${esc(state.notes['phrases']||'')}</textarea>
+  </div>`;
+}
+
+function renderVerbs(m){
+  m.innerHTML=`
+  <div class="page-head"><div><h1>🔄 Irregular Verbs</h1><p>Strong and mixed verbs — Infinitiv · 3. Sg. Präsens · Präteritum · Partizip II</p></div></div>
+  <div class="card" style="overflow-x:auto">
+  <table class="verb-table">
+    <thead><tr><th>Infinitiv</th><th>3. Sg. Präsens</th><th>Präteritum</th><th>Partizip II</th><th>English</th></tr></thead>
+    <tbody>
+    ${VERBS.map(v=>`<tr><td>${esc(v[0])}</td><td>${esc(v[1])}</td><td>${esc(v[2])}</td><td>${esc(v[3])}</td><td>${esc(v[4])}</td></tr>`).join('')}
+    </tbody>
+  </table>
+  </div>
+  <div class="card"><h3>My Notes — Verbs</h3>
+  <textarea class="notes" rows="4" placeholder="Verbs to practise, tricky ones…" onchange="saveNote('verbs',this.value)">${esc(state.notes['verbs']||'')}</textarea>
+  </div>`;
+}
+
+function renderPastPapers(m){
+  m.innerHTML=`
+  <div class="page-head"><div><h1>📋 Past Paper Questions</h1><p>2018 · 2022 · 2025 — texts, questions, sample answers</p></div></div>
+  <div class="tabs">
+    ${PAST_PAPERS.map((p,i)=>`<button class="tab${i===0?' on':''}" onclick="showPPTab('${p.id}',this)">${p.year}</button>`).join('')}
+  </div>
+  ${PAST_PAPERS.map((paper,i)=>`
+  <div id="pp-${paper.id}" ${i>0?'class="hidden"':''}>
+  ${paper.sections.map(sec=>`
+    <div class="card"><h3>${esc(sec.title)}</h3>
+    ${sec.qs.map((q,qi)=>`
+    <div class="dot">
+      <div class="dot-h" onclick="toggleDot(this)">
+        <span class="ttl">${esc(q.num)} <span class="pill amber">${esc(q.topic)}</span></span>
+        <span class="chev">▶</span>
+      </div>
+      <div class="dot-body">
+        ${q.text?`<div class="block muted"><span class="bl">Text summary</span><pre style="white-space:pre-wrap;font-family:inherit;margin:0;font-size:13px">${esc(q.text)}</pre></div>`:''}
+        <div style="margin:10px 0">
+          ${q.qlist.map(ql=>`<div class="qa">
+            <div class="qq">${esc(ql.q)}</div>
+            ${ql.tip?`<button class="reveal" onclick="this.closest('.qa').classList.toggle('show');this.textContent=this.closest('.qa').classList.contains('show')?'Hide tip':'Show tip'">Show tip</button>
+            <div class="ans">${esc(ql.tip)}</div>`:''}
+          </div>`).join('')}
+        </div>
+        ${q.sample?`<div class="block green"><span class="bl">Sample answer / marking guidelines</span><pre style="white-space:pre-wrap;font-family:inherit;margin:0;font-size:13px">${esc(q.sample)}</pre></div>`:''}
+        ${q.tip?`<div class="block blue"><span class="bl">Analysis tips</span>${esc(q.tip)}</div>`:''}
+        ${q.criteria?`<div class="block amber"><span class="bl">Marking criteria</span><pre style="white-space:pre-wrap;font-family:inherit;margin:0;font-size:13px">${esc(q.criteria)}</pre></div>`:''}
+      </div>
+    </div>`).join('')}
+    </div>`).join('')}
+  </div>`).join('')}
+  <div class="card"><h3>My Past Paper Notes</h3>
+  <textarea class="notes" rows="6" placeholder="Patterns noticed, things to watch, teacher feedback…" onchange="saveNote('pastpapers',this.value)">${esc(state.notes['pastpapers']||'')}</textarea>
+  </div>`;
+}
+
+function showPPTab(id,btn){
+  PAST_PAPERS.forEach(p=>document.getElementById('pp-'+p.id).classList.add('hidden'));
+  document.getElementById('pp-'+id).classList.remove('hidden');
+  btn.closest('.tabs').querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+function renderQuiz(m){
+  buildQuizOrder();quizCurrent=0;renderQuizCard(m);
+}
+function buildQuizOrder(){
+  let filtered=quizFilter==='all'?QUIZ_ITEMS:QUIZ_ITEMS.filter(q=>q.cat===quizFilter);
+  quizOrder=shuffleArr(filtered.map((_,i)=>i));
+}
+function renderQuizCard(m){
+  if(!quizOrder.length){m.innerHTML=`<div class="page-head"><h1>⚡ Quiz</h1></div><div class="card">No items for this filter.</div>`;return;}
+  const filtered=quizFilter==='all'?QUIZ_ITEMS:QUIZ_ITEMS.filter(q=>q.cat===quizFilter);
+  const q=filtered[quizOrder[quizCurrent%quizOrder.length]];
+  const catLabel={vocab:"Vocab",phrase:"Phrase",device:"Language Device",oral:"Oral Practice"}[q.cat]||q.cat;
+  const catColor={vocab:"amber",phrase:"blue",device:"purple",oral:"green"}[q.cat]||"";
+  m.innerHTML=`
+  <div class="page-head"><div><h1>⚡ Quiz Mode</h1><p>Vocab · Phrases · Devices · Oral practice</p></div></div>
+  <div style="text-align:center;margin-bottom:16px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+    <select onchange="quizFilter=this.value;renderQuiz(document.getElementById('main'))" style="font-size:13px;background:var(--surface2);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px 10px">
+      <option value="all" ${quizFilter==='all'?'selected':''}>All categories</option>
+      <option value="vocab" ${quizFilter==='vocab'?'selected':''}>Vocab</option>
+      <option value="phrase" ${quizFilter==='phrase'?'selected':''}>Phrases</option>
+      <option value="device" ${quizFilter==='device'?'selected':''}>Language Devices</option>
+      <option value="oral" ${quizFilter==='oral'?'selected':''}>Oral Practice</option>
+    </select>
+    <button class="btn ghost sm" onclick="renderQuiz(document.getElementById('main'))">🔀 Shuffle</button>
+  </div>
+  <div class="quiz-card">
+    <div class="qnum"><span class="pill ${catColor}">${esc(catLabel)}</span> &nbsp; ${esc(q.topic)} &nbsp;·&nbsp; ${(quizCurrent%quizOrder.length)+1} / ${quizOrder.length}</div>
+    <div class="qtext">${esc(q.q)}</div>
+    <div class="hint" id="qhint">${esc(q.a)}</div>
+    <div class="quiz-btns">
+      <button class="btn ghost" onclick="document.getElementById('qhint').classList.toggle('show');this.textContent=document.getElementById('qhint').classList.contains('show')?'Hide Answer':'Show Answer'">Show Answer</button>
+      <button class="btn" onclick="quizCurrent++;renderQuizCard(document.getElementById('main'))">Next →</button>
+    </div>
+  </div>`;
+}
+function shuffleArr(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function renderWriting(m){
+  m.innerHTML=`
+  <div class="page-head"><div><h1>✍️ Writing Templates</h1><p>Section II Part B · Section III · annotated formats</p></div></div>
+  <div class="tabs">
+    ${WRITING_TEMPLATES.map((t,i)=>`<button class="tab${i===0?' on':''}" onclick="showWTTab('${t.id}',this)">${esc(t.title)}</button>`).join('')}
+  </div>
+  ${WRITING_TEMPLATES.map((t,i)=>`
+  <div id="wt-${t.id}" ${i>0?'class="hidden"':''}>
+    <div class="grid g2" style="margin-bottom:14px">
+      <div class="card" style="margin:0"><div class="muted small">Marks</div><b>${esc(t.marks)}</b></div>
+      <div class="card" style="margin:0"><div class="muted small">Register</div><b>${esc(t.reg)}</b></div>
+    </div>
+    <div class="card">
+      <h3>Template</h3>
+      <div class="template-box">${esc(t.template)}</div>
+    </div>
+    <div class="card">
+      <h3>Key Tips</h3>
+      ${t.tips.map(tip=>`<div style="padding:7px 0;border-bottom:1px solid var(--line);font-size:13.5px;display:flex;gap:8px"><span style="color:var(--accent)">→</span>${esc(tip)}</div>`).join('')}
+    </div>
+    <div class="card"><h3>My Notes — ${esc(t.title)}</h3>
+    <textarea class="notes" rows="5" placeholder="Practice pieces, feedback…" onchange="saveNote('wt_${t.id}',this.value)">${esc(state.notes['wt_'+t.id]||'')}</textarea>
+    </div>
+  </div>`).join('')}`;
+}
+
+function showWTTab(id,btn){
+  WRITING_TEMPLATES.forEach(t=>document.getElementById('wt-'+t.id).classList.add('hidden'));
+  document.getElementById('wt-'+id).classList.remove('hidden');
+  btn.closest('.tabs').querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+function renderErrors(m){
+  m.innerHTML=`
+  <div class="page-head"><div><h1>⚠️ Common Errors</h1><p>Exam technique · writing · oral — what to avoid and how to fix it</p></div></div>
+  ${ERRORS.map(cat=>`
+  <div class="card">
+    <h3>${esc(cat.cat)}</h3>
+    ${cat.items.map(item=>`
+    <div class="error-item">
+      <div class="etitle">${esc(item.title)}</div>
+      <div class="edetail">${esc(item.detail)}</div>
+      <div class="efix">${esc(item.fix)}</div>
+    </div>`).join('')}
+  </div>`).join('')}
+  <div class="card"><h3>My Notes — Errors to Watch</h3>
+  <textarea class="notes" rows="5" placeholder="Personal patterns, teacher corrections…" onchange="saveNote('errors',this.value)">${esc(state.notes['errors']||'')}</textarea>
+  </div>`;
+}
+
+/* ==================== HELPERS ==================== */
+function toggleDot(h){h.closest('.dot').classList.toggle('open');}
+function saveNote(key,val){state.notes[key]=val;save();}
+
+/* ==================== COUNTDOWN ==================== */
+function updateCountdown(){
+  const d=document.getElementById('countdown');
+  const ei=document.getElementById('examDate');
+  if(!d||!ei)return;
+  ei.value=state.examDate||'2026-10-14';
+  const diff=Math.ceil((new Date(state.examDate)-new Date())/86400000);
+  d.textContent=diff>0?diff+' days':diff===0?'Today!':'Past';
+}
+document.getElementById('examDate').addEventListener('change',function(){state.examDate=this.value;save();updateCountdown();});
+
+/* ==================== THEME ==================== */
+document.getElementById('themeBtn').onclick=function(){
+  const h=document.documentElement;
+  const t=h.getAttribute('data-theme')==='dark'?'light':'dark';
+  h.setAttribute('data-theme',t);state.theme=t;save();
+  this.textContent=t==='dark'?'☀ Theme':'🌙 Theme';
+};
+if(state.theme==='light'){document.documentElement.setAttribute('data-theme','light');document.getElementById('themeBtn').textContent='🌙 Theme';}
+
+/* ==================== BACKUP ==================== */
+document.getElementById('ioBtn').onclick=function(){
+  const menu=document.createElement('div');
+  menu.style.cssText='position:fixed;bottom:60px;left:50%;transform:translateX(-50%);background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:10px;z-index:200;display:flex;gap:8px;flex-wrap:wrap';
+  menu.innerHTML=`<button class="btn sm" onclick="exportData()">⬇ Export</button><button class="btn ghost sm" onclick="document.getElementById('importFile').click()">⬆ Import</button><button class="btn ghost sm" onclick="this.closest('div').remove()">✕</button>`;
+  document.body.appendChild(menu);
+};
+function exportData(){
+  const a=document.createElement('a');
+  a.href='data:application/json,'+encodeURIComponent(JSON.stringify(state));
+  a.download='hsc-german-backup.json';a.click();
+  document.querySelectorAll('[style*="position:fixed"][style*="bottom:60px"]').forEach(e=>e.remove());
+}
+const imp=document.createElement('input');imp.type='file';imp.accept='.json';imp.id='importFile';imp.style.display='none';
+imp.addEventListener('change',function(){
+  const f=this.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=e=>{try{const d=JSON.parse(e.target.result);state=Object.assign({},DEFAULT_STATE,d);save();render();toast('Backup restored!');}catch(err){toast('Import failed.');}};
+  r.readAsText(f);
+});
+document.body.appendChild(imp);
+
+/* ==================== SEARCH ==================== */
+document.getElementById('globalSearch').addEventListener('input',function(){
+  const q=this.value.toLowerCase().trim();if(!q)return;
+  const pages=[
+    {label:'Language Devices',id:'lang'},{label:'Oral Exam Prep',id:'oral'},
+    {label:'Topic Vocab Banks',id:'vocab'},{label:'Phrases Connectives',id:'phrases'},
+    {label:'Irregular Verbs',id:'verbs'},{label:'Past Paper Questions',id:'pastpapers'},
+    {label:'Quiz Mode',id:'quiz'},{label:'Writing Templates',id:'writing'},
+    {label:'Common Errors',id:'errors'},
+  ];
+  const match=pages.find(x=>x.label.toLowerCase().includes(q));
+  if(match){goto(match.id);this.value='';}
+});
+
+/* ==================== INIT ==================== */
+buildNav();render();updateCountdown();
+</script>
+</body>
+</html>
