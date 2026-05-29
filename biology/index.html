@@ -912,7 +912,12 @@ function buildNav(){const nav=document.getElementById('nav');nav.innerHTML=NAV.m
   else if(n.id==='flashcards'){const d=dueCount();if(d)badge=`<span class="badge" style="background:var(--accent);color:#042">${d}</span>`;}
   return`<button class="navbtn ${n.id===CURRENT?'active':''}" data-nav="${n.id}"><span class="ic">${n.ic}</span>${esc(n.label)}${badge}</button>`;
 }).join('');}
-function go(view){CURRENT=view;buildNav();render();window.scrollTo(0,0);}
+function go(view){
+  if(view==='quiz'){quiz=null;}
+  if(view==='flashcards'){fc.deck=null;fc.i=0;fc.flipped=false;}
+  if(view==='drills'){drill.current=null;drill.revealed=false;}
+  if(view==='revision'){revFilter={mod:"all",status:"all"};}
+  CURRENT=view;buildNav();render();window.scrollTo(0,0);}
 
 /* ========================= RENDER ROUTER ========================= */
 function render(){
