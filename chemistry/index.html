@@ -99,6 +99,21 @@ a{color:var(--accent)}
 .pbul{display:flex;gap:7px;padding:5px 0;border-bottom:1px solid rgba(128,128,128,.08);font-size:13.5px;line-height:1.55;align-items:flex-start}
 .pbul:last-child{border-bottom:none}
 .pbul-dot{color:var(--accent);font-size:10px;flex-shrink:0;padding-top:4px;opacity:.7}
+/* flashcard back layouts */
+.fc-vs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:2px 0}
+.fc-vs-col{background:var(--surface2);border-radius:9px;padding:10px 12px;text-align:left}
+.fc-vs-hd{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:7px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.fc-row{display:flex;gap:8px;padding:5px 0;border-bottom:1px solid rgba(128,128,128,.1);font-size:13px;line-height:1.55;align-items:flex-start;text-align:left}
+.fc-row:last-child{border-bottom:none}
+.fc-rl{font-weight:700;min-width:75px;max-width:110px;flex-shrink:0;font-size:11.5px;color:var(--accent);padding-top:1px;line-height:1.4}
+.fc-rv{flex:1}
+.fc-bul{display:flex;gap:7px;padding:4px 0;border-bottom:1px solid rgba(128,128,128,.08);font-size:13px;line-height:1.55;align-items:flex-start;text-align:left}
+.fc-bul:last-child{border-bottom:none}
+.fc-bd{color:var(--accent);font-size:10px;flex-shrink:0;padding-top:4px;opacity:.8}
+.fc-step{display:flex;gap:8px;padding:4px 0;font-size:13px;line-height:1.55;border-bottom:1px solid rgba(128,128,128,.08);text-align:left}
+.fc-step:last-child{border-bottom:none}
+.fc-sn{color:var(--accent);font-weight:700;min-width:16px;font-size:11px;padding-top:2px;flex-shrink:0}
+.fc-def{font-size:14px;line-height:1.7;text-align:left}
 .psteps{display:flex;flex-direction:column;gap:3px}
 .pstep{display:flex;gap:10px;padding:4px 0;border-bottom:1px solid rgba(128,128,128,.08);align-items:flex-start;font-family:"IBM Plex Mono",monospace;font-size:13px}
 .pstep:last-child{border-bottom:none}
@@ -1080,6 +1095,56 @@ function viewGlossary(){
 }
 function filterGloss(){let shown=0;document.querySelectorAll('#glossList [data-gloss]').forEach(c=>{const m=!glossFilter||c.dataset.gloss.includes(glossFilter);c.style.display=m?'':'none';if(m)shown++;});const e=document.getElementById('glossEmpty');if(e)e.classList.toggle('hidden',shown>0);}
 
+/* ---------- FLASHCARD FORMATTER ---------- */
+function fcFormat(card){
+  const raw=(card.back||'').trim();
+  const front=(card.front||'');
+  const fl=front.toLowerCase();
+  const be=s=>{const t=(s||'').replace(/^[•▸\-–\s]+/,'').trim();return t?`<div class="fc-bul"><span class="fc-bd">▸</span><span>${esc(t)}</span></div>`:''};
+  const buls=arr=>arr.filter(s=>(s||'').trim().length>3).map(be).join('');
+  const sideItems=t=>{
+    const c=t.replace(/^[A-Z][a-zA-Z\s\-]+:\s+/,'');
+    const dotIdx=c.search(/\.\s+[A-Z]/);
+    const first=dotIdx>0?c.slice(0,dotIdx):c;
+    return first.split(/;\s+/).map(s=>s.replace(/\.$/,'').trim()).filter(s=>s.length>3).slice(0,3);
+  };
+  // 1. VS comparison (front has exactly one " vs ")
+  const vi=fl.indexOf(' vs ');
+  if(vi>=0&&!fl.slice(vi+4).includes(' vs ')){
+    const lblA=front.slice(0,vi).trim(), lblB=front.slice(vi+4).trim();
+    const keyB=lblB.split(/[\s(]/)[0].replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    const sm=raw.match(new RegExp('\\.\\s+(?='+keyB+'[a-z]*[\\s:,])','i'));
+    if(sm){
+      const idx=raw.indexOf(sm[0]);
+      const tA=raw.slice(0,idx),tB=raw.slice(idx+sm[0].length);
+      const sA=sideItems(tA),sB=sideItems(tB);
+      return `<div class="fc-vs"><div class="fc-vs-col"><div class="fc-vs-hd">${esc(lblA)}</div>${buls(sA)}</div><div class="fc-vs-col"><div class="fc-vs-hd">${esc(lblB)}</div>${buls(sB)}</div></div>`;
+    }
+  }
+  // 2. Labeled types: "Label: text. Label2: text2." — ≥3 parts
+  const typeParts=raw.split(/\.\s+(?=[A-Z][a-zA-Z \/\-]{1,30}: )/);
+  if(typeParts.length>=3){
+    const rows=typeParts.filter(p=>p.trim().length>3).map(p=>{
+      const m=p.match(/^([A-Z][a-zA-Z \/\-\(\)]{0,35}?):\s+([\s\S]+)/);
+      return m?`<div class="fc-row"><span class="fc-rl">${esc(m[1].trim())}</span><span class="fc-rv">${esc(m[2].replace(/\.$/,'').trim())}</span></div>`:be(p);
+    }).join('');
+    if(rows)return rows;
+  }
+  // 3. Numbered: (1) ... (2) ...
+  if(/\(1\)/.test(raw)){
+    const nParts=raw.split(/\([1-9]\)\s*/).filter(p=>p.trim().length>3);
+    if(nParts.length>=2)return nParts.map((p,i)=>`<div class="fc-step"><span class="fc-sn">${i+1}</span><span>${esc(p.replace(/\.$/,'').trim())}</span></div>`).join('');
+  }
+  // 4. Semicolons ≥3
+  const semParts=raw.split(/;\s+/);
+  if(semParts.length>=3)return buls(semParts);
+  // 5. Sentence bullets ≥3
+  const sentParts=raw.split(/\.\s+(?=[A-Z])/).filter(s=>s.trim().length>8);
+  if(sentParts.length>=3)return buls(sentParts.slice(0,5));
+  // 6. Default
+  return `<div class="fc-def">${esc(raw)}</div>`;
+}
+
 /* ---------- FLASHCARDS / SPACED REPETITION ---------- */
 let fc={deck:null,i:0,flipped:false,scope:"due",mod:"all"};
 function buildDeck(){let cards=srsCards();if(fc.mod!=="all")cards=cards.filter(c=>c.mod===+fc.mod);
@@ -1095,10 +1160,10 @@ function viewFlashcards(){
   let body;
   if(!fc.deck.length){body=`<div class="card" style="text-align:center;padding:40px"><div style="font-size:40px">✅</div><h3>${fc.scope==='due'?'No cards due — you are caught up!':'No cards in this selection.'}</h3><p class="muted">${fc.scope==='due'?'Spaced repetition will resurface cards on their due dates. Switch to "Whole deck" to review anything now.':''}</p></div>`;}
   else{const c=fc.deck[Math.min(fc.i,fc.deck.length-1)];const r=state.srs[c.id];
-    body=`<div class="card" style="min-height:230px;cursor:pointer;display:flex;flex-direction:column;justify-content:center;text-align:center" data-fcflip>
+    body=`<div class="card" style="min-height:230px;cursor:pointer;display:flex;flex-direction:column;justify-content:${fc.flipped?'flex-start':'center'};text-align:center;position:relative;${fc.flipped?'padding-top:46px;':''}" data-fcflip>
       <div class="row" style="justify-content:space-between;position:absolute;top:14px;left:16px;right:16px"><span class="tag ${c.kind==='Question'?'syl':''}">${esc(c.kind)} · Mod ${c.mod}</span><span class="muted small">${r?('seen '+r.reps+'× · next +'+r.interval+'d'):'new card'}</span></div>
-      <div style="font-size:${fc.flipped?'15px':'18px'};padding:14px 10px">${fc.flipped?esc(c.back):'<b>'+esc(c.front)+'</b>'}</div>
-      <div class="muted small">${fc.flipped?'':'click to flip ↩'}</div></div>
+      ${fc.flipped?`<div style="text-align:left">${fcFormat(c)}</div>`:`<div style="font-size:18px;padding:14px 10px"><b>${esc(c.front)}</b></div>`}
+      <div class="muted small" style="margin-top:8px;text-align:center">${fc.flipped?'':'click to flip ↩'}</div></div>
     ${fc.flipped?`<div class="row" style="justify-content:center"><span class="muted small" style="align-self:center">How well did you know it?</span>
       <button class="cbtn weak" data-fcrate="again">Again</button>
       <button class="cbtn shaky" data-fcrate="hard">Hard</button>
