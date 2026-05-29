@@ -149,8 +149,9 @@ const NAV=[
   {id:"dash",label:"Dashboard",ic:"⊞"},
   {sep:"ESSAYS"},
   {id:"common",label:"Common Module — 1984",ic:"📖"},
-  {id:"moda_tempest",label:"Module A — The Tempest",ic:"🎭",sub:true},
-  {id:"moda_hagseed",label:"Module A — Hagseed",ic:"🎭",sub:true},
+  {id:"moda",label:"Module A — Textual Conversations",ic:"🎭"},
+  {id:"moda_tempest",label:"The Tempest",ic:"↳",sub:true},
+  {id:"moda_hagseed",label:"Hagseed",ic:"↳",sub:true},
   {id:"modb",label:"Module B — T.S. Eliot",ic:"✒️"},
   {sep:"WRITING"},
   {id:"modc",label:"Module C — Discursive",ic:"✍️"},
@@ -491,6 +492,7 @@ function render(){
   const m=document.getElementById('main');
   if(currentPage==='dash') return renderDash(m);
   if(currentPage==='common') return renderCommon(m);
+  if(currentPage==='moda') return renderModA(m);
   if(currentPage==='moda_tempest') return renderTempest(m);
   if(currentPage==='moda_hagseed') return renderHagseed(m);
   if(currentPage==='modb') return renderEliot(m);
@@ -572,6 +574,32 @@ function renderCommon(m){
     <div class="card"><h3>My Notes — Common Module</h3>
     <textarea class="notes" rows="14" placeholder="Add your own notes, extra quotes, teacher feedback…" onchange="saveNote('cm',this.value)">${esc(state.notes['cm']||'')}</textarea>
     </div>
+  </div>`;
+}
+
+/* ==================== MODULE A — OVERVIEW ==================== */
+function renderModA(m){
+  m.innerHTML=`
+  <div class="page-head"><div><h1>🎭 Module A — Textual Conversations</h1><p>The Tempest (Shakespeare) &amp; Hagseed (Atwood)</p></div></div>
+  <div class="grid g2" style="margin-bottom:16px">
+    <div class="card" style="cursor:pointer" onclick="goto('moda_tempest')">
+      <h3>📜 The Tempest</h3>
+      <p style="color:var(--muted);font-size:13px;margin:4px 0 10px">William Shakespeare · c.1610–11</p>
+      <button class="btn ghost sm">Open Essay →</button>
+    </div>
+    <div class="card" style="cursor:pointer" onclick="goto('moda_hagseed')">
+      <h3>📗 Hagseed</h3>
+      <p style="color:var(--muted);font-size:13px;margin:4px 0 10px">Margaret Atwood · 2016</p>
+      <button class="btn ghost sm">Open Essay →</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Resonances &amp; Dissonances</h3>
+    ${HAGSEED_ESSAY.resonancesDissonances.map(r=>`<div class="kv"><span class="pill ${r.type==='Resonance'?'green':'blue'}">${r.type}</span><span style="flex:1;padding-left:10px;font-size:13.5px">${esc(r.point)}</span></div>`).join('')}
+  </div>
+  <div class="card">
+    <h3>Introduction (shared)</h3>
+    <div class="block intro"><span class="bl">Intro${wcpill(TEMPEST_ESSAY.intro)}</span><pre style="white-space:pre-wrap;font-family:inherit;margin:0;font-size:13.5px">${esc(TEMPEST_ESSAY.intro)}</pre></div>
   </div>`;
 }
 
