@@ -185,6 +185,7 @@ svg.diagram{width:100%;max-width:540px;height:auto;display:block;margin:10px 0;b
     <div class="sb-foot">
       <button id="themeBtn">☀ Theme</button>
       <button id="ioBtn">⇅ Backup</button>
+      <button onclick="location.href='/'" style="flex:1 1 100%">⌂ Home</button>
     </div>
   </aside>
   <main class="main" id="main"></main>
@@ -1017,13 +1018,13 @@ function prettyBox(raw,cls){
   // Step 3: render each segment
   return segments.map(seg=>{
     // <b>Label</b>: content  OR  <b>Label</b> — content
-    const lm=seg.match(/^<b>([^<]{1,40})<\/b>\s*[:—–]\s*([\s\S]+)/);
+    // match <b>Label</b> followed by any separator (colon, em-dash, en-dash, space)
+    const lm=seg.match(/^<b>([^<]{1,50})<\/b>\s*[:—–\-]?\s*([\s\S]+)/);
     if(lm)return ROW(lm[1],lm[2]);
-    // plain text — strip any stray leading <b>...</b> from mid-sentence splits
+    // no label — strip stray leading period, render as bullet
     const clean=seg.replace(/^\.\s*/,'').trim();
     if(!clean)return'';
-    // if long prose, render as bullet; if short, render as plain row
-    return clean.length>60?BULLET(clean):`<div class="pval" style="padding:3px 0">${clean}</div>`;
+    return BULLET(clean);
   }).join('');}
 
 function box(tid,cls,label,name,base,editable){
