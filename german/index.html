@@ -1291,7 +1291,7 @@ function showGramTab(idx,btn){
   btn.classList.add('on');
 }
 
-/* ==================== RENDER FUNCTIONS ====================
+/* ==================== RENDER FUNCTIONS ==================== */
 
 function renderLang(m){
   m.innerHTML=`
@@ -1602,6 +1602,49 @@ document.getElementById('globalSearch').addEventListener('input',function(){
 
 /* ==================== INIT ==================== */
 buildNav();render();updateCountdown();
+</script>
+<div id="ft" style="position:fixed;bottom:18px;right:18px;z-index:9999;background:rgba(10,10,20,.92);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:10px 14px;display:flex;align-items:center;gap:10px;backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(0,0,0,.4);cursor:pointer" onclick="window.location='/'" title="Back to Dashboard">
+  <div id="ft-dot" style="width:8px;height:8px;border-radius:50%;background:#e8a020;flex-shrink:0;transition:background .3s"></div>
+  <div style="display:flex;flex-direction:column;gap:2px">
+    <div id="ft-time" style="font-size:15px;font-weight:700;font-family:'Bricolage Grotesque',system-ui,sans-serif;color:#f0f0ff;letter-spacing:-.02em;line-height:1">00:00:00</div>
+    <div id="ft-sub" style="font-size:10px;color:rgba(240,240,255,.4);line-height:1">← Dashboard</div>
+  </div>
+</div>
+<script>
+(function(){
+  const TK='hsc_timer_v2';
+  const COLORS={eng:'#a855f7',math:'#3b82f6',bio:'#22c55e',chem:'#f59e0b',ger:'#e8a020'};
+  const NAMES={eng:'English',math:'Maths',bio:'Biology',chem:'Chemistry',ger:'German'};
+  function fmt(s){return[Math.floor(s/3600),Math.floor((s%3600)/60),s%60].map(n=>String(n).padStart(2,'0')).join(':');}
+  function tick(){
+    let ts;try{ts=JSON.parse(localStorage.getItem(TK));}catch(e){return;}
+    if(!ts)return;
+    const dot=document.getElementById('ft-dot');
+    const timeEl=document.getElementById('ft-time');
+    const subEl=document.getElementById('ft-sub');
+    if(!timeEl)return;
+    const c=COLORS[ts.subject]||'#e8a020';
+    dot.style.background=c;
+    if(ts.running){
+      dot.style.boxShadow='0 0 7px '+c;
+      const sec=ts.elapsed+Math.floor((Date.now()-ts.startedAt)/1000);
+      timeEl.style.color=c;
+      timeEl.textContent=fmt(sec);
+      subEl.textContent=(NAMES[ts.subject]||'Timer')+' running ← Dashboard';
+    } else if(ts.elapsed>0){
+      dot.style.boxShadow='none';
+      timeEl.style.color='rgba(240,240,255,.55)';
+      timeEl.textContent=fmt(ts.elapsed);
+      subEl.textContent=(NAMES[ts.subject]||'Timer')+' paused ← Dashboard';
+    } else {
+      dot.style.boxShadow='none';
+      timeEl.style.color='rgba(240,240,255,.3)';
+      timeEl.textContent='00:00:00';
+      subEl.textContent='← Dashboard';
+    }
+  }
+  tick();setInterval(tick,1000);
+})();
 </script>
 </body>
 </html>
