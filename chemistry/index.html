@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HSC Chemistry Y12 — Study Tool</title>
+<style>
+:root{
+  --bg:#0a0f14; --surface:#121b24; --surface2:#16222e; --accent:#2dd4bf; --accent2:#22a89a;
+  --text:#e7eef4; --muted:#8aa0b0; --line:#1e2c38;
+  --blue:#3b82f6; --green:#22c55e; --amber:#f59e0b; --red:#ef4444; --purple:#a855f7;
+  --blueb:#0e2336; --greenb:#0e2a1c; --amberb:#2c2210; --redb:#2c1414; --purpleb:#221331;
+}
+html[data-theme="light"]{
+  --bg:#eef3f7; --surface:#ffffff; --surface2:#eef4f8; --accent:#0d9488; --accent2:#0f766e;
+  --text:#10212e; --muted:#51677a; --line:#d7e1ea;
+  --blueb:#e6f0fb; --greenb:#e7f7ec; --amberb:#fdf3e1; --redb:#fbe9e9; --purpleb:#f4e9fc;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.55}
+h1,h2,h3,h4,.brand{font-family:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif;font-weight:700;letter-spacing:-.01em}
+a{color:var(--accent)}
+.app{display:flex;min-height:100vh}
+.sidebar{width:250px;background:var(--surface);border-right:1px solid var(--line);position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:14px 12px;gap:10px;overflow-y:auto;flex-shrink:0}
+.brand{font-size:18px;display:flex;align-items:center;gap:8px}
+.brand .logo{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;color:#04201c;font-weight:800;font-size:13px}
+.brand small{display:block;color:var(--muted);font-size:11px;font-weight:500;letter-spacing:0}
+.search{display:flex;flex-direction:column;gap:4px;position:relative}
+.search input{width:100%;background:var(--surface2);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:8px 10px;font-size:13px}
+.search input:focus{outline:none;border-color:var(--accent)}
+.searchres{position:absolute;top:42px;left:0;right:0;background:var(--surface2);border:1px solid var(--line);border-radius:9px;max-height:320px;overflow-y:auto;z-index:30;box-shadow:0 12px 30px rgba(0,0,0,.45)}
+.searchres .r{padding:8px 10px;border-bottom:1px solid var(--line);cursor:pointer;font-size:13px}
+.searchres .r:hover{background:var(--surface)} .searchres .r:last-child{border-bottom:none}
+.navlist{display:flex;flex-direction:column;gap:3px;margin-top:4px}
+.navbtn{display:flex;align-items:center;gap:9px;background:none;border:none;color:var(--muted);text-align:left;padding:9px 11px;border-radius:9px;cursor:pointer;font-size:14px;font-family:inherit;width:100%;transition:.12s}
+.navbtn .ic{width:18px;text-align:center}
+.navbtn:hover{background:var(--surface2);color:var(--text)}
+.navbtn.active{background:linear-gradient(90deg,rgba(45,212,191,.16),transparent);color:var(--accent);font-weight:600}
+.navbtn .badge{margin-left:auto;font-size:10px;background:var(--surface2);color:var(--muted);padding:1px 7px;border-radius:20px}
+.exampill{margin-top:auto;background:var(--surface2);border:1px solid var(--line);border-radius:11px;padding:10px}
+.exampill label{font-size:11px;color:var(--muted);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em}
+.exampill .cd{font-size:22px;font-weight:700;color:var(--accent);font-family:"Bricolage Grotesque",sans-serif}
+.exampill input{width:100%;margin-top:7px;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:7px;padding:5px 7px;font-size:12px}
+.sb-foot{display:flex;gap:6px;flex-wrap:wrap}
+.sb-foot button{flex:1;font-size:11px;padding:6px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);border-radius:8px;cursor:pointer;min-width:60px}
+.sb-foot button:hover{color:var(--text);border-color:var(--accent)}
+.main{flex:1;min-width:0;padding:26px 32px 90px;max-width:1120px}
+.page-head{margin-bottom:18px;display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.page-head h1{font-size:27px;margin:0 0 4px} .page-head p{color:var(--muted);margin:0;font-size:14px}
+.page-head .spacer{flex:1}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.bar{height:9px;background:var(--surface2);border-radius:20px;overflow:hidden}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:20px;transition:width .4s}
+.stat{display:flex;flex-direction:column;gap:6px}
+.stat .big{font-size:30px;font-weight:700;font-family:"Bricolage Grotesque",sans-serif}
+.stat .lbl{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+.ring{--p:0;width:140px;height:140px;border-radius:50%;background:conic-gradient(var(--accent) calc(var(--p)*3.6deg),var(--surface2) 0);display:grid;place-items:center;margin:0 auto}
+.ring .inner{width:108px;height:108px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center}
+.ring .inner b{font-size:28px;font-family:"Bricolage Grotesque",sans-serif;line-height:1}
+.ring .inner small{color:var(--muted);font-size:11px}
+.mod-h{display:flex;align-items:center;gap:12px;cursor:pointer;padding:15px 18px;background:var(--surface);border:1px solid var(--line);border-radius:14px;margin-bottom:10px}
+.mod-h:hover{border-color:var(--accent)}
+.mod-h .num{width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;font-weight:700;color:var(--accent);font-family:"Bricolage Grotesque",sans-serif}
+.mod-h h2{font-size:17px;margin:0} .mod-h .sub{color:var(--muted);font-size:12.5px}
+.mod-h .chev{color:var(--muted);transition:.2s;font-size:13px}
+.mod-h.open .chev{transform:rotate(90deg)}
+.mini{height:7px;width:110px;background:var(--surface2);border-radius:20px;overflow:hidden}
+.mini>i{display:block;height:100%;background:var(--accent)}
+.dot{background:var(--surface);border:1px solid var(--line);border-radius:13px;margin:0 0 11px;overflow:hidden}
+.dot.flash{border-color:var(--accent);box-shadow:0 0 0 2px rgba(45,212,191,.35)}
+.dot-h{display:flex;align-items:flex-start;gap:11px;padding:14px 16px;cursor:pointer}
+.dot-h:hover{background:var(--surface2)}
+.dot-h .chk{margin-top:3px;width:17px;height:17px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.dot-h .ttl{flex:1;font-weight:600;font-size:15px}
+.dot-h .conf-dot{width:11px;height:11px;border-radius:50%;margin-top:5px;flex-shrink:0;background:var(--line)}
+.conf-good{background:var(--green)!important} .conf-shaky{background:var(--amber)!important} .conf-weak{background:var(--red)!important}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+.tag{font-size:10px;padding:1.5px 7px;border-radius:20px;background:var(--surface2);color:var(--muted);border:1px solid var(--line)}
+.tag.hsc{color:#fda4af;border-color:#5b2330} .tag.syl{color:#7dd3fc;border-color:#1e4a63} .tag.custom{color:#d8b4fe;border-color:#3d2350}
+.dot-body{padding:0 16px 16px;display:none} .dot.open .dot-body{display:block}
+.box{border-radius:10px;padding:11px 13px;margin:9px 0;font-size:14px;border-left:3px solid}
+.box .bx-l{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;font-weight:700;display:block;margin-bottom:4px;opacity:.9}
+.box.def{background:var(--blueb);border-color:var(--blue)} .box.def .bx-l{color:#93c5fd}
+.box.eqn{background:var(--greenb);border-color:var(--green);font-family:"IBM Plex Mono",ui-monospace,monospace} .box.eqn .bx-l{color:#86efac;font-family:inherit}
+.box.tip{background:var(--amberb);border-color:var(--amber)} .box.tip .bx-l{color:#fcd34d}
+.box.trap{background:var(--redb);border-color:var(--red)} .box.trap .bx-l{color:#fca5a5}
+.box.mnem{background:var(--purpleb);border-color:var(--purple)} .box.mnem .bx-l{color:#d8b4fe}
+.box.calc{background:var(--surface2);border-color:var(--accent)} .box.calc .bx-l{color:var(--accent)}
+.box.calc .body{white-space:pre-wrap;font-family:"IBM Plex Mono",monospace;font-size:13px}
+.box [contenteditable]{outline:none}
+.box.editing{box-shadow:inset 0 0 0 1px var(--accent)}
+.q{border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin:9px 0;background:var(--surface2)}
+.q .qq{font-size:14px;margin-bottom:7px;font-weight:500}
+.q .ans{display:none;border-top:1px dashed var(--line);margin-top:9px;padding-top:9px;font-size:13.5px;color:#bfe;white-space:pre-wrap}
+.q.show .ans{display:block}
+.q .reveal{font-size:12px;background:var(--surface);border:1px solid var(--line);color:var(--accent);padding:4px 11px;border-radius:7px;cursor:pointer}
+.confrow{display:flex;gap:7px;align-items:center;margin:12px 0 5px;flex-wrap:wrap}
+.confrow span{font-size:12px;color:var(--muted);margin-right:3px}
+.cbtn{font-size:12.5px;padding:5px 13px;border-radius:8px;border:1px solid var(--line);background:var(--surface2);color:var(--muted);cursor:pointer}
+.cbtn.good.on{background:rgba(34,197,94,.18);color:#86efac;border-color:var(--green)}
+.cbtn.shaky.on{background:rgba(245,158,11,.18);color:#fcd34d;border-color:var(--amber)}
+.cbtn.weak.on{background:rgba(239,68,68,.18);color:#fca5a5;border-color:var(--red)}
+textarea.notes{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:9px;font-family:inherit;font-size:13px;resize:vertical;min-height:58px;margin-top:6px}
+textarea.notes:focus{outline:none;border-color:var(--accent)}
+.btn{background:var(--accent);color:#042;border:none;border-radius:9px;padding:9px 15px;font-weight:600;cursor:pointer;font-family:inherit;font-size:14px}
+.btn:hover{background:var(--accent2)} .btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.ghost{background:var(--surface2);color:var(--text);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn.sm{padding:6px 11px;font-size:12.5px} .btn.on{background:var(--accent);color:#042}
+.pill{display:inline-block;font-size:11px;padding:2px 9px;border-radius:20px;background:var(--surface2);border:1px solid var(--line);color:var(--muted)}
+select,input[type=number],input[type=text]{background:var(--surface2);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:7px 9px;font-family:inherit;font-size:13px}
+select:focus,input:focus{outline:none;border-color:var(--accent)}
+.chips{display:flex;gap:7px;flex-wrap:wrap}
+.chip{font-size:13px;padding:6px 12px;border-radius:20px;border:1px solid var(--line);background:var(--surface2);color:var(--muted);cursor:pointer}
+.chip.on{background:rgba(45,212,191,.16);color:var(--accent);border-color:var(--accent)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.muted{color:var(--muted)} .accent{color:var(--accent)} .small{font-size:12.5px}
+.divider{height:1px;background:var(--line);margin:14px 0}
+.kv{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);font-size:13.5px} .kv:last-child{border:none}
+.tablebox{width:100%;border-collapse:collapse;font-size:13px}
+.tablebox th,.tablebox td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+.tablebox th{background:var(--surface2);color:var(--accent)}
+.collapse-h{cursor:pointer;display:flex;align-items:center;gap:10px}
+.collapse-h .chev{margin-left:auto;color:var(--muted);transition:.2s} .collapse-h.open .chev{transform:rotate(90deg)}
+.hidden{display:none!important}
+svg.diagram{width:100%;max-width:540px;height:auto;display:block;margin:10px 0;background:var(--bg);border:1px solid var(--line);border-radius:12px}
+.diagram text{fill:var(--text);font-family:"IBM Plex Sans",sans-serif;font-size:13px}
+.diagram .ax{stroke:var(--muted);stroke-width:1.5;fill:none}
+.diagram .gl{stroke:var(--line);stroke-width:1}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--surface2);border:1px solid var(--accent);color:var(--text);padding:11px 20px;border-radius:11px;z-index:100;box-shadow:0 10px 30px rgba(0,0,0,.4);opacity:0;transition:.25s;pointer-events:none}
+.toast.show{opacity:1}
+::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:grid;place-items:center;z-index:90;padding:20px}
+.modal .box2{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;max-width:560px;width:100%;max-height:85vh;overflow:auto}
+.modal textarea{width:100%;min-height:160px;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:10px;font-family:"IBM Plex Mono",monospace;font-size:12px}
+@media(max-width:820px){.app{flex-direction:column}.sidebar{position:relative;width:100%;height:auto}.main{padding:18px 16px 60px}.ring{width:120px;height:120px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><span class="logo">Cl</span><div>HSC Chemistry<small>Year 12 · Modules 5–8</small></div></div>
+    <div class="search">
+      <input id="globalSearch" type="text" placeholder="🔍 Search topics & terms…" autocomplete="off"/>
+      <div id="searchRes" class="searchres hidden"></div>
+    </div>
+    <nav class="navlist" id="nav"></nav>
+    <div class="exampill">
+      <label>HSC Exam Countdown</label>
+      <div class="cd" id="countdown">— days</div>
+      <input id="examDate" type="date" />
+    </div>
+    <div class="sb-foot">
+      <button id="themeBtn">☀ Theme</button>
+      <button id="ioBtn">⇅ Backup</button>
+    </div>
+  </aside>
+  <main class="main" id="main"></main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* =====================================================================
+   HSC CHEMISTRY Y12 STUDY TOOL — vanilla JS, zero dependencies, offline
+   Progress + in-app content edits persist to localStorage as an overlay,
+   so you can refine in-app and just refresh after the file is updated.
+   ===================================================================== */
+const LS_KEY="hscchem_progress";
+const DEFAULT_STATE={check:{},conf:{},notes:{},examDate:"2026-10-30",quizLog:[],theme:"dark",streak:[],
+  edits:{},addedDots:{},addedQ:{},editMode:false,
+  quizStats:{},srs:{},history:[],bookmarks:{}};
+const TODAY=()=>new Date().toISOString().slice(0,10);
+const daysBetween=(a,b)=>Math.round((new Date(b)-new Date(a))/86400000);
+const addDays=(iso,n)=>{const d=new Date(iso);d.setDate(d.getDate()+n);return d.toISOString().slice(0,10);};
+let state=load();
+function load(){try{const s=JSON.parse(localStorage.getItem(LS_KEY));if(s)return Object.assign({},JSON.parse(JSON.stringify(DEFAULT_STATE)),s);}catch(e){}return JSON.parse(JSON.stringify(DEFAULT_STATE));}
+let saveT;function save(){clearTimeout(saveT);saveT=setTimeout(()=>localStorage.setItem(LS_KEY,JSON.stringify(state)),350);}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1700);}
+function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function streakToday(){const d=new Date().toISOString().slice(0,10);if(!state.streak.includes(d)){state.streak.push(d);save();}}
+
+/* ============================ CONTENT ============================ */
+/* Each topic: id,title,tags[],def,eqn,tip,trap,mnem,calc,diagram,questions[{q,a,type}] */
+const MODULES=[
+{id:"m5",num:5,title:"Equilibrium & Acid Reactions",sub:"Static/dynamic equilibrium · Le Chatelier · Keq · solubility",full:true,topics:[
+  {id:"m5.1",title:"Static vs Dynamic Equilibrium (incl. the tennis-ball model)",tags:["Syllabus"],
+   def:"A <b>reversible reaction</b> can proceed in both forward and reverse directions. <b>Dynamic equilibrium</b> is reached in a CLOSED system when the forward and reverse reactions occur at EQUAL rates, so macroscopic properties (concentration, colour, pressure) stay CONSTANT while change continues at the molecular level. Contrast with <b>static equilibrium</b> (no movement at all, e.g. a book on a table).",
+   eqn:"N₂O₄(g) ⇌ 2NO₂(g)   (colourless ⇌ brown)\nrate(forward) = rate(reverse) ,  rate > 0",
+   tip:"Tennis-ball model: 5 students each with 5 balls and a ~10 m² zone throw balls IN while collecting and throwing thrown balls back OUT at an equal, constant rate. The NUMBER of balls in the zone stays constant (equilibrium) even though individual balls constantly enter & leave (dynamic). Speed/number per throw doesn't matter as long as in-rate = out-rate. No balls may be lost to the room → models a CLOSED system.",
+   trap:"\"Equal rates\" does NOT mean \"equal concentrations\". Reactant and product concentrations are constant at equilibrium but are usually NOT equal. Also: equilibrium requires a CLOSED system — if it's open (gas escapes), equilibrium can't be established.",
+   mnem:"<b>C-R-E-C-C</b>: Closed system · Reversible · Equal rates · Constant macroscopic conditions · Continuous molecular change.",
+   diagram:"equilibrium",
+   questions:[
+     {q:"Outline a procedure to model dynamic equilibrium and state the conditions it demonstrates.",a:"Use the tennis-ball model: a group of ~5 students each hold 5 balls in a defined ~10 m² area. Each student continuously throws balls into the area while collecting and re-throwing balls out at an equal rate (in-rate = out-rate). The throw rate per student can differ but must stay constant. Result: the number of balls in the area stays constant (equilibrium reached) while balls continuously move in and out (dynamic). Demonstrates: closed system (no balls lost), reversible process, non-zero rate, constant conditions → dynamic equilibrium.",type:"Syllabus"},
+     {q:"Explain why a sealed bottle of NO₂/N₂O₄ reaches a constant brown colour but an open beaker does not.",a:"In a sealed (closed) bottle no gas escapes, so forward and reverse rates can equalise and [NO₂] becomes constant → constant colour (dynamic equilibrium). In an open beaker NO₂ escapes, the reverse reaction is starved of NO₂, the system never reaches equal rates, so no equilibrium is established.",type:"HSC"}
+   ]},
+  {id:"m5.2",title:"Collision theory, enthalpy & entropy in equilibrium systems",tags:["Syllabus"],
+   def:"For a reaction, particles must collide with sufficient energy (≥ activation energy, Eₐ) and correct orientation. <b>Enthalpy (ΔH)</b> is heat change: exothermic ΔH<0 (releases heat), endothermic ΔH>0 (absorbs heat). <b>Entropy (ΔS)</b> is the degree of disorder; systems tend toward higher entropy. Equilibrium position reflects the balance between minimising enthalpy and maximising entropy.",
+   eqn:"Exothermic: reactants → products + heat  (ΔH < 0)\nEndothermic: reactants + heat → products  (ΔH > 0)\nΔS > 0 = increased disorder (e.g. fewer→more gas moles, solid→gas)",
+   tip:"Treat heat as a 'reagent': for an exothermic forward reaction, write heat on the product side. This makes Le Chatelier temperature predictions easy.",
+   trap:"A catalyst lowers Eₐ for BOTH directions equally — it speeds attainment of equilibrium but does NOT change the equilibrium position or Keq.",
+   mnem:"ENDO = ENergy enters; EXO = EXits.",
+   diagram:"energy",
+   questions:[
+     {q:"State the effect of a catalyst on the position of equilibrium and on Keq.",a:"None. A catalyst lowers the activation energy of the forward and reverse reactions equally, so it increases the rate at which equilibrium is reached but does not shift the position or change the value of Keq.",type:"Syllabus"}
+   ]},
+  {id:"m5.3",title:"Le Chatelier's Principle — factors affecting equilibrium",tags:["Syllabus"],
+   def:"<b>Le Chatelier's Principle:</b> if a system at equilibrium is disturbed, the system shifts to partially counteract (oppose) the change and restore equilibrium. Factors: concentration, temperature, pressure/volume (gases), and addition of inert gas (no effect at constant volume).",
+   eqn:"↑[reactant] → shift RIGHT (toward products)\n↑Temperature → shifts in ENDOthermic direction\n↑Pressure (↓volume) → shifts toward side with FEWER gas moles",
+   tip:"Make a table: write the equation, mark ΔH sign, count gas moles each side, then apply each stress. Only TEMPERATURE changes the value of Keq.",
+   trap:"Adding an inert gas at CONSTANT VOLUME does nothing (partial pressures unchanged). Changing pressure only matters when the two sides have DIFFERENT numbers of gas moles. Catalysts never shift position.",
+   mnem:"\"<b>System opposes the stress</b>\" — add it, it's removed; remove it, it's replaced; heat it, it absorbs heat.",
+   questions:[
+     {q:"For N₂(g)+3H₂(g) ⇌ 2NH₃(g), ΔH = −92 kJ/mol, predict and explain the effect of (i) increasing pressure (ii) increasing temperature on NH₃ yield.",a:"(i) ↑Pressure shifts toward the side with fewer gas moles (4 mol → 2 mol), i.e. RIGHT, increasing NH₃ yield. (ii) The forward reaction is exothermic, so ↑temperature shifts the system in the endothermic (reverse) direction, decreasing NH₃ yield and decreasing Keq. (This is the yield/temperature trade-off Mr Ford emphasises in the Haber process.)",type:"HSC"},
+     {q:"Why does adding argon (inert) to a fixed-volume equilibrium mixture not shift the position?",a:"At constant volume the partial pressures and concentrations of the reacting gases are unchanged, so the reaction quotient Q is unchanged and the system stays at equilibrium — no shift.",type:"Syllabus"}
+   ]},
+  {id:"m5.4",title:"The equilibrium constant Keq and reaction quotient Q",tags:["Syllabus"],
+   def:"For aA+bB ⇌ cC+dD, the <b>equilibrium constant</b> Keq = [C]ᶜ[D]ᵈ / [A]ᵃ[B]ᵇ (products over reactants, each raised to its coefficient). Pure solids and liquids are EXCLUDED. The <b>reaction quotient Q</b> uses the same expression with non-equilibrium concentrations.",
+   eqn:"Keq = [C]^c [D]^d / [A]^a [B]^b\nQ < K → shifts right ; Q > K → shifts left ; Q = K → at equilibrium\nKeq depends ONLY on temperature.",
+   tip:"Use an ICE table (Initial, Change, Equilibrium). Large Keq (>10³) ⇒ products favoured; small Keq (<10⁻³) ⇒ reactants favoured.",
+   trap:"Do NOT include solids or pure liquids (e.g. H₂O(l)) in the expression. Coefficients become POWERS, not multipliers. Keq is unitless at HSC level.",
+   calc:"WORKED TEMPLATE — Keq from equilibrium concentrations\nGiven: H₂ + I₂ ⇌ 2HI ; at eqm [H₂]=0.20, [I₂]=0.20, [HI]=1.6 M\nKeq = [HI]² / ([H₂][I₂])\n    = (1.6)² / (0.20 × 0.20)\n    = 2.56 / 0.040\n    = 64  (no units; products strongly favoured)",
+   questions:[
+     {q:"Write the Keq expression for: 2SO₂(g)+O₂(g) ⇌ 2SO₃(g).",a:"Keq = [SO₃]² / ([SO₂]² [O₂])",type:"Syllabus"},
+     {q:"At equilibrium [SO₃]=0.80, [SO₂]=0.20, [O₂]=0.10 M. Calculate Keq.",a:"Keq = (0.80)² / ((0.20)²×0.10) = 0.64 / (0.04×0.10) = 0.64/0.004 = 160.",type:"HSC"}
+   ]},
+  {id:"m5.5",title:"Solubility equilibria and the solubility product Ksp",tags:["Syllabus"],
+   def:"A saturated solution of a sparingly soluble salt is in equilibrium with its undissolved solid. The <b>solubility product Ksp</b> is the equilibrium constant for dissolution. A larger Ksp generally means greater solubility (for salts of the same ion ratio).",
+   eqn:"AgCl(s) ⇌ Ag⁺(aq)+Cl⁻(aq) ,  Ksp = [Ag⁺][Cl⁻]\nPbI₂(s) ⇌ Pb²⁺ + 2I⁻ ,  Ksp = [Pb²⁺][I⁻]²\nPredict precipitation: if ionic product Q > Ksp → precipitate forms.",
+   tip:"The <b>common ion effect</b>: adding an ion already in the equilibrium (e.g. adding NaCl to AgCl solution) shifts left and DECREASES solubility.",
+   trap:"Watch the stoichiometry power: for PbI₂, if solubility = s, then [Pb²⁺]=s and [I⁻]=2s, so Ksp = s(2s)² = 4s³ — not s². Forgetting the '2' and the cube is the classic error.",
+   calc:"WORKED TEMPLATE — Ksp → molar solubility\nFor PbI₂, Ksp = 7.1×10⁻⁹. Find molar solubility s.\nLet [Pb²⁺]=s, [I⁻]=2s\nKsp = [Pb²⁺][I⁻]² = s(2s)² = 4s³\n4s³ = 7.1×10⁻⁹\ns³ = 1.775×10⁻⁹\ns = (1.775×10⁻⁹)^(1/3) = 1.21×10⁻³ mol L⁻¹",
+   questions:[
+     {q:"Will a precipitate form when equal volumes of 0.002 M AgNO₃ and 0.002 M NaCl are mixed? (Ksp AgCl = 1.8×10⁻¹⁰)",a:"On mixing equal volumes each ion is halved: [Ag⁺]=[Cl⁻]=0.001 M. Q = (0.001)(0.001)=1×10⁻⁶. Since Q (1×10⁻⁶) > Ksp (1.8×10⁻¹⁰), a precipitate of AgCl forms.",type:"HSC"}
+   ]}
+]},
+{id:"m6",num:6,title:"Acid/Base Reactions",sub:"Acid-base theories · pH & Kw · titration · standard solutions · buffers",full:true,topics:[
+  {id:"m6.1",title:"Properties of acids & bases; types of acids (mono/di/amphiprotic)",tags:["Syllabus"],
+   def:"Acids taste sour, conduct electricity, turn litmus red, react with metals/carbonates/bases. Bases feel slippery, turn litmus blue, neutralise acids. <b>Monoprotic acid</b>: donates only ONE proton (H⁺) per molecule (e.g. HCl). <b>Diprotic acid</b>: donates TWO protons per molecule (e.g. H₂SO₄). <b>Amphiprotic substance</b>: can both donate AND accept a proton, acting as Brønsted–Lowry acid OR base depending on environment (e.g. HCO₃⁻, H₂O).",
+   eqn:"Acid + base → salt + water:   HCl + NaOH → NaCl + H₂O\nAcid + carbonate → salt + water + CO₂\nAcid + active metal → salt + H₂",
+   tip:"Diprotic doesn't mean 'twice as strong' — it means twice as many donatable protons per mole, so neutralisation needs twice the moles of base.",
+   trap:"Concentration ≠ strength. A concentrated weak acid can have a higher pH than a dilute strong acid. 'Strong' = degree of ionisation; 'concentrated' = mol per litre.",
+   mnem:"AMPHI = 'both' (Greek) → both donates and accepts.",
+   questions:[
+     {q:"Define monoprotic, diprotic and amphiprotic and give an example of each.",a:"Monoprotic: donates one H⁺ per molecule (HCl). Diprotic: donates two H⁺ per molecule (H₂SO₄). Amphiprotic: can both donate and accept a proton, acting as a Brønsted–Lowry acid or base depending on its environment (HCO₃⁻ or H₂O).",type:"Syllabus"}
+   ]},
+  {id:"m6.2",title:"Brønsted–Lowry theory & conjugate acid–base pairs",tags:["Syllabus"],
+   def:"<b>Brønsted–Lowry:</b> an acid is a proton (H⁺) DONOR; a base is a proton ACCEPTOR. Reactions form <b>conjugate pairs</b> differing by one H⁺. The species history: Arrhenius (H⁺/OH⁻ in water) → Brønsted–Lowry (proton transfer) extended the model to non-aqueous systems.",
+   eqn:"HA + B ⇌ A⁻ + HB⁺\nacid  base  conj.base  conj.acid\nExample: NH₃ + H₂O ⇌ NH₄⁺ + OH⁻  (H₂O acts as acid here)",
+   tip:"A strong acid has a weak conjugate base, and vice versa. Identify pairs by spotting which species differs by exactly one proton.",
+   trap:"Water is amphiprotic — it can be the acid OR the base in different reactions. Don't assume H₂O is always the base.",
+   mnem:"<b>BAAD</b>: Base Accepts, Acid Donates.",
+   questions:[
+     {q:"In HCO₃⁻ + H₂O ⇌ H₂CO₃ + OH⁻, identify each acid, base and conjugate.",a:"HCO₃⁻ accepts a proton → it is the base; H₂O donates a proton → it is the acid. H₂CO₃ is the conjugate acid of HCO₃⁻; OH⁻ is the conjugate base of H₂O.",type:"HSC"}
+   ]},
+  {id:"m6.3",title:"pH, Kw, and strong vs weak acids",tags:["Syllabus"],
+   def:"pH measures hydrogen-ion concentration: pH = −log₁₀[H⁺]. Water self-ionises: Kw = [H⁺][OH⁻] = 1.0×10⁻¹⁴ at 25 °C. A <b>strong</b> acid ionises completely; a <b>weak</b> acid ionises only partially (equilibrium). The acid dissociation constant Ka measures weak-acid strength.",
+   eqn:"pH = −log₁₀[H⁺]      [H⁺] = 10^(−pH)\npOH = −log₁₀[OH⁻]    pH + pOH = 14 (at 25 °C)\nKw = [H⁺][OH⁻] = 1.0×10⁻¹⁴",
+   tip:"Each whole pH unit = a 10× change in [H⁺]. pH 3 has 100× the [H⁺] of pH 5. Strong vs weak can be distinguished by conductivity, rate of reaction with metals, and pH at equal concentration.",
+   trap:"For bases you usually find [OH⁻] first, then use Kw or pOH — don't plug [OH⁻] straight into the pH formula. Also: diluting an acid by 10× changes pH by ~1 unit only for strong acids.",
+   calc:"WORKED TEMPLATE — pH of a strong base\nFind pH of 0.010 mol L⁻¹ NaOH.\n[OH⁻] = 0.010 M (strong, fully dissociated)\n[H⁺] = Kw/[OH⁻] = 1.0×10⁻¹⁴ / 0.010 = 1.0×10⁻¹²\npH = −log(1.0×10⁻¹²) = 12.0\n(or: pOH = −log0.010 = 2, pH = 14−2 = 12)",
+   diagram:"ph",
+   questions:[
+     {q:"Calculate the pH of 0.005 mol L⁻¹ HCl.",a:"HCl is a strong monoprotic acid → [H⁺] = 0.005 M. pH = −log(0.005) = 2.30.",type:"Syllabus"},
+     {q:"Two acids have the same concentration but acid X has pH 1 and acid Y has pH 3. Explain.",a:"Acid X has a much higher [H⁺] (100× that of Y) at the same concentration, so X ionises to a far greater extent → X is a strong acid and Y is a weak acid (only partially ionised, sitting at equilibrium).",type:"HSC"}
+   ]},
+  {id:"m6.4",title:"Titration, standard solutions & the 2016 HSC Q28 worked example",tags:["Syllabus"],
+   def:"A <b>standard solution</b> has accurately known concentration, prepared from a primary standard (pure, stable, known molar mass — e.g. anhydrous Na₂CO₃) in a <b>volumetric flask</b>. <b>Titration</b> finds an unknown concentration by reacting it with a standard to the <b>equivalence point</b>, signalled by an indicator's <b>end point</b>.",
+   eqn:"n = c × V       c(unknown) = n(unknown) / V(unknown)\nNa₂CO₃(aq) + 2HCl(aq) → 2NaCl(aq) + CO₂(g) + H₂O(l)\nTitre = final burette reading − initial reading",
+   tip:"Equipment: volumetric flask (standard solution), pipette + pipette filler (aliquot), burette (titrant), conical flask, retort stand & clamp. Rinse pipette/burette with the solution they'll hold; rinse the conical flask with distilled water only. Average only CONCORDANT titres (within 0.10 mL).",
+   trap:"Choose the indicator to match the equivalence-point pH: strong acid–strong base → any (bromothymol blue); weak base/strong acid (Na₂CO₃ vs HCl) → equivalence pH is acidic, use methyl orange, NOT phenolphthalein. Don't rinse the conical flask with the solution (changes moles).",
+   calc:"WORKED EXAMPLE — 2016 HSC Q28 (8 marks): concentration of unknown HCl\nSTEP A — Make 500 mL of 0.100 mol L⁻¹ Na₂CO₃ standard solution.\n  n = c×V = 0.100 × 0.500 = 0.0500 mol\n  m = n×M = 0.0500 × 105.99 = 5.30 g\n  Weigh 5.30 g dried Na₂CO₃ on a tared balance, dissolve in deionised water in a beaker with a stirring rod, transfer via funnel into a 500 mL volumetric flask (rinse beaker/rod into flask), fill to the calibration mark at eye level using the bottom of the meniscus, stopper and invert to mix.\nSTEP B — Titration.\n  Pipette 25.0 mL of standard Na₂CO₃ into a conical flask; add 2–3 drops methyl orange. Fill a rinsed burette with the unknown HCl to the zero mark (meniscus at eye level). Titrate, slowing to drops near the end point, swirling and rinsing the flask walls, until a permanent colour change. Repeat for concordant titres; average titre = 21.4 mL.\nSTEP C — Calculation.\n  n(Na₂CO₃) = 0.100 × 0.0250 = 2.50×10⁻³ mol\n  mole ratio Na₂CO₃ : HCl = 1 : 2 → n(HCl) = 2 × 2.50×10⁻³ = 5.00×10⁻³ mol\n  c(HCl) = n/V = 5.00×10⁻³ / 0.0214 = 0.234 mol L⁻¹",
+   diagram:"titration",
+   questions:[
+     {q:"Why is the average titre based on repeated trials, and which titres are averaged?",a:"Repeating improves reliability and reduces random error. Only concordant titres (typically within 0.10 mL of each other) are averaged; the rough/trial titre and any outliers are discarded.",type:"HSC"},
+     {q:"Why is methyl orange (not phenolphthalein) chosen for titrating Na₂CO₃ against HCl?",a:"The equivalence point of a strong acid with the weak-base carbonate solution is acidic (~pH 4). Methyl orange changes colour in the acidic range (3.1–4.4) so its end point matches the equivalence point; phenolphthalein (8.3–10) would change far too early.",type:"HSC"},
+     {q:"Calculate c(HCl) if 25.0 mL of 0.100 M Na₂CO₃ needs an average titre of 21.4 mL HCl.",a:"n(Na₂CO₃)=0.100×0.0250=2.50×10⁻³ mol; ratio 1:2 → n(HCl)=5.00×10⁻³ mol; c=5.00×10⁻³/0.0214=0.234 mol L⁻¹.",type:"HSC"}
+   ]},
+  {id:"m6.5",title:"Neutralisation enthalpy & buffers",tags:["Syllabus"],
+   def:"Neutralisation is exothermic; the molar enthalpy of neutralisation can be found by calorimetry (q=mcΔT). A <b>buffer</b> resists pH change on adding small amounts of acid/base; it contains a weak acid and its conjugate base (or weak base + conjugate acid) in comparable amounts.",
+   eqn:"q = mcΔT      ΔH = −q / n   (kJ mol⁻¹)\nBuffer: CH₃COOH ⇌ CH₃COO⁻ + H⁺  (added H⁺ mopped up by CH₃COO⁻; added OH⁻ neutralised by CH₃COOH)",
+   tip:"For neutralisation calorimetry, m is the mass of the combined solution (assume density ≈ 1 g mL⁻¹, c ≈ 4.18 J g⁻¹ K⁻¹). ΔH is negative (heat released).",
+   trap:"Buffers don't keep pH perfectly constant and have limited capacity — once one component is used up the pH changes sharply. A strong acid + its salt is NOT a buffer.",
+   questions:[
+     {q:"50.0 mL of 1.0 M HCl is neutralised by 50.0 mL of 1.0 M NaOH; temperature rises 6.8 °C. Calculate ΔH of neutralisation.",a:"q=mcΔT=(100 g)(4.18)(6.8)=2842 J=2.84 kJ. n(H₂O)=n(HCl)=0.0500 mol. ΔH=−q/n=−2.84/0.0500=−56.8 kJ mol⁻¹ (exothermic).",type:"HSC"}
+   ]}
+]},
+{id:"m7",num:7,title:"Organic Chemistry",sub:"Nomenclature · hydrocarbons · IMFs · alcohols · esters/soaps · polymers",full:true,topics:[
+  {id:"m7.1",title:"IUPAC nomenclature, the priority list & isomers",tags:["Syllabus"],
+   def:"Organic names = (substituent prefixes) + (longest-chain root: meth/eth/prop/but…) + (suffix for the main functional group). Number the chain from the end giving the LOWEST locant to the highest-priority group. <b>Isomers</b> share a molecular formula but differ in arrangement.",
+   eqn:"Roots: meth(1) eth(2) prop(3) but(4) pent(5) hex(6)\nSaturation suffix: -ane (single) / -ene (C=C) / -yne (C≡C)\nExamples: propan-2-ol, but-1-ene, 2-chlorobutane",
+   tip:"Priority list (highest = main suffix): 1 Alkane → 2 Alkene → 3 Alkyne → 4 Halogens (ALWAYS prefixes: fluoro/chloro/bromo/iodo) → 5 Alcohol / Amine → 6 Carboxylic acid / Amide. The longest chain must contain ALL functional groups. When an –OH is NOT the highest priority it becomes a 'hydroxy' prefix; a lower-priority amine becomes an 'amino' prefix (with locant). 'Iso' goes in front of a branched group's name (isopropyl).",
+   trap:"Halogens are named as prefixes but they do NOT outrank alcohols/acids for numbering the suffix. Carboxylic acids/aldehydes sit on chain ENDS (so they get position 1). Aldehyde suffix = -anal. Number to give the suffix the lowest locant, not the prefix.",
+   mnem:"Numbering: 'lowest locant to the suffix (main group) wins.'",
+   questions:[
+     {q:"Give the IUPAC priority order for choosing the principal functional group and state which groups are always prefixes.",a:"Alkane < Alkene < Alkyne < Halogen < Alcohol/Amine < Carboxylic acid/Amide (later = higher priority for the suffix). Halogens are always named as prefixes (chloro-, bromo- etc) regardless of position.",type:"Syllabus"},
+     {q:"Name and classify the three structural isomer types, with an example formula.",a:"Chain isomers — same formula, different carbon-chain branching (e.g. C₄H₁₀: butane vs 2-methylpropane). Positional isomers — same functional group in a different position (e.g. C₅H₁₂O: pentan-1-ol vs pentan-2-ol). Functional-group isomers — same formula, different functional group (e.g. C₄H₈O: an aldehyde vs a ketone).",type:"HSC"}
+   ]},
+  {id:"m7.2",title:"Hydrocarbons: alkanes, alkenes, alkynes & their sources",tags:["Syllabus"],
+   def:"<b>Hydrocarbons</b> contain only C and H. Alkanes (saturated, CₙH₂ₙ₊₂) are relatively unreactive (combustion, substitution). Alkenes/alkynes (unsaturated) undergo addition. Sourced from coal (mining) and crude oil (drilling), separated by fractional distillation.",
+   eqn:"Alkane CₙH₂ₙ₊₂ · Alkene CₙH₂ₙ · Alkyne CₙH₂ₙ₋₂\nComplete combustion: CₓHᵧ + O₂ → CO₂ + H₂O\nAddition (test): C₂H₄ + Br₂ → C₂H₄Br₂ (decolourises bromine water)",
+   tip:"Bromine water test distinguishes saturated from unsaturated: alkenes/alkynes rapidly DECOLOURISE orange bromine water (addition); alkanes do not (only slow substitution in UV).",
+   trap:"Environmental/economic/sociocultural implications: combustion → CO₂ (enhanced greenhouse effect), incomplete combustion → CO + soot; oil spills; but hydrocarbons are also cheap feedstock and energy-dense. A balanced answer needs all three dimensions.",
+   questions:[
+     {q:"Describe a chemical test to distinguish hexane from hex-1-ene.",a:"Add bromine water to each. Hex-1-ene (unsaturated) rapidly decolourises the orange bromine water via an addition reaction; hexane (saturated) does not decolourise it (no reaction in the dark).",type:"Syllabus"},
+     {q:"Examine one environmental and one economic implication of using hydrocarbons from the Earth.",a:"Environmental: combustion of fossil hydrocarbons releases CO₂, intensifying the greenhouse effect and contributing to climate change; extraction risks oil spills/habitat damage. Economic: hydrocarbons are an energy-dense, relatively cheap fuel and a feedstock for plastics/chemicals, but reserves are finite and price-volatile, and clean-up/health costs are externalised.",type:"HSC"}
+   ]},
+  {id:"m7.3",title:"Functional groups, intermolecular forces & physical properties",tags:["Syllabus"],
+   def:"Functional groups determine reactivity and the intermolecular forces (IMFs) present, which set boiling point and solubility. IMF strength order: <b>dispersion (DF) < dipole–dipole (DD) < hydrogen bonding (HB)</b> (ion–dipole is strong and case-dependent). Stronger IMFs → higher boiling point and (for polar/H-bonding groups) greater water solubility.",
+   eqn:"Boiling point ↑ with: stronger IMFs and larger molecular size (more surface area → more DF).",
+   tip:"IMF by functional group (with itself): Alkane/ene/yne → DF only. Halogenated → DD + DF. Alcohols → HB (+DD,DF). Amines → DF + HB. Ketones → DD + DF. Aldehydes → DD + DF. Carboxylic acids → HB + DD + DF. Amides → HB + DD + DF (+ID). HB needs H bonded to N, O or F attracted to a lone pair on N/O/F of another molecule.",
+   trap:"Compare boiling points only at similar molar mass — otherwise dispersion forces (size) can outweigh a stronger but smaller IMF. Carboxylic acids H-bond as DIMERS, giving unusually high boiling points.",
+   mnem:"IMF ladder (weak→strong): DF → DD → HB; ion–dipole is the wildcard.",
+   questions:[
+     {q:"Explain why ethanol (C₂H₅OH) has a much higher boiling point than ethane (C₂H₆) of similar size.",a:"Ethane has only weak dispersion forces. Ethanol's –OH group allows hydrogen bonding (H bonded to O attracted to O lone pair on neighbouring molecules), a much stronger IMF, so far more energy is needed to separate the molecules → higher boiling point.",type:"HSC"},
+     {q:"List the intermolecular forces present in a pure sample of (i) butanal (ii) butanoic acid.",a:"(i) Butanal (aldehyde): dipole–dipole and dispersion forces. (ii) Butanoic acid (carboxylic acid): hydrogen bonding, dipole–dipole and dispersion forces.",type:"Syllabus"}
+   ]},
+  {id:"m7.4",title:"Alcohols: production, combustion & reactions",tags:["Syllabus"],
+   def:"Alcohols (–OH) are produced by fermentation of sugars or hydration of alkenes. They undergo complete/incomplete combustion (used as fuels), dehydration to alkenes, substitution, and oxidation (primary → aldehyde → carboxylic acid; secondary → ketone).",
+   eqn:"Fermentation: C₆H₁₂O₆ →(yeast) 2C₂H₅OH + 2CO₂\nHydration: C₂H₄ + H₂O →(H₃PO₄ cat.) C₂H₅OH\nCombustion: C₂H₅OH + 3O₂ → 2CO₂ + 3H₂O\nOxidation: primary alcohol → aldehyde → carboxylic acid (acidified K₂Cr₂O₇, orange→green)",
+   tip:"Heat of combustion measured by calorimetry (spirit burner heating water): q=mcΔT, ΔH=−q/n. Longer-chain alcohols release more energy per mole.",
+   trap:"Major sources of error in alcohol combustion practicals: heat loss to surroundings, incomplete combustion (soot), evaporation of alcohol — all make the EXPERIMENTAL ΔH less exothermic (lower magnitude) than the data value.",
+   diagram:null,
+   questions:[
+     {q:"Write the equation for the complete combustion of methanol and outline how its molar heat of combustion is measured.",a:"2CH₃OH + 3O₂ → 2CO₂ + 4H₂O. Method: burn a measured mass of methanol in a spirit burner under a metal can holding a known mass of water; measure ΔT; q=mcΔT (water); ΔH=−q/n(methanol burnt, from mass loss). Compare to the data-book value and account for heat loss.",type:"HSC"}
+   ]},
+  {id:"m7.5",title:"Esters, esterification & soaps (saponification)",tags:["Syllabus"],
+   def:"<b>Esterification</b>: a carboxylic acid + an alcohol react (conc. H₂SO₄ catalyst, reflux) to form an ester + water — a reversible condensation. <b>Saponification</b>: base hydrolysis of fats/oils (triglycerides) produces soap (fatty-acid salts) + glycerol. A soap ion has a polar/ionic hydrophilic head and a non-polar hydrophobic hydrocarbon tail; in water it forms <b>micelles</b> that emulsify grease.",
+   eqn:"Esterification: RCOOH + R'OH ⇌ RCOOR' + H₂O\nSaponification: fat + 3NaOH → 3 soap (RCOO⁻Na⁺) + glycerol",
+   tip:"Reflux heats the mixture without losing volatile reactants; conc. H₂SO₄ is catalyst AND dehydrating agent (drives equilibrium right). Esters have characteristic fruity smells (used to identify them).",
+   trap:"Esterification is an equilibrium with typically low yield — use excess of one reagent and remove water to push it. Don't write it as a one-way reaction.",
+   mnem:"Micelle: 'tails IN (away from water), heads OUT (love water)'.",
+   diagram:"micelle",
+   questions:[
+     {q:"Explain, using its structure, how soap removes grease from cloth.",a:"A soap ion has a non-polar hydrocarbon tail (hydrophobic) and an ionic carboxylate head (hydrophilic). Tails dissolve into the non-polar grease while ionic heads face the water, surrounding grease droplets as micelles. The micelles are suspended/emulsified in water and rinsed away.",type:"HSC"},
+     {q:"Write the equation for the esterification of ethanoic acid with ethanol and name the ester.",a:"CH₃COOH + C₂H₅OH ⇌ CH₃COOC₂H₅ + H₂O. The ester is ethyl ethanoate.",type:"Syllabus"}
+   ]},
+  {id:"m7.6",title:"Polymers: addition & condensation",tags:["Syllabus"],
+   def:"<b>Addition polymers</b> form from unsaturated monomers (C=C) adding together with no by-product (e.g. polyethylene from ethene). <b>Condensation polymers</b> form by joining monomers with two functional groups, eliminating a small molecule (usually water) each link (e.g. polyesters, nylon).",
+   eqn:"Addition: n(CH₂=CH₂) → –(CH₂–CH₂)–ₙ  (polyethylene)\nCondensation: diacid + diol → polyester + nH₂O",
+   tip:"Identify addition polymers by a C=C in the monomer; condensation by two reactive ends (–COOH, –OH, –NH₂) and a released small molecule.",
+   trap:"Addition polymerisation releases NO by-product; condensation ALWAYS releases a small molecule. Mixing these up is a common loss of marks.",
+   questions:[
+     {q:"Distinguish between addition and condensation polymerisation.",a:"Addition: unsaturated monomers (containing C=C) join by opening the double bond with no loss of atoms — no by-product (e.g. polyethene). Condensation: monomers with two functional groups join with the elimination of a small molecule (usually water) at each linkage (e.g. polyesters).",type:"Syllabus"}
+   ]}
+]},
+{id:"m8",num:8,title:"Applied Chemistry",sub:"Skeleton + basics — we deepen this as you cover the module",full:false,topics:[
+  {id:"m8.1",title:"Analysis of inorganic substances (qualitative & quantitative)",tags:["Syllabus"],
+   def:"BASICS: Identify ions by qualitative tests and measure amounts by instrumental/gravimetric methods. Qualitative: flame tests (Na yellow, K lilac, Cu green-blue, Ca brick-red), precipitation reactions for anions/cations, and tests for gases. Quantitative: gravimetric analysis, precipitation titrations, colourimetry, and atomic absorption spectroscopy (AAS) for trace metals.",
+   eqn:"Flame: Na⁺ yellow · K⁺ lilac · Ca²⁺ brick-red · Cu²⁺ blue-green · Ba²⁺ green\nPrecipitation: Ag⁺ + Cl⁻ → AgCl(s) white",
+   tip:"SKELETON — to expand as you study: add full cation/anion test tables, the role of standards/calibration curves in AAS and colourimetry, and gravimetric calculation worked examples.",
+   trap:"AAS measures concentration against a calibration curve of known standards — link back to standard solutions from Module 6.",
+   questions:[
+     {q:"Outline how AAS is used to determine the concentration of a metal ion in solution.",a:"Prepare standard solutions of known concentration of the metal; measure each one's absorbance in the AAS at the element's characteristic wavelength; plot a calibration curve (absorbance vs concentration); measure the sample's absorbance and read its concentration off the curve.",type:"Syllabus"}
+   ]},
+  {id:"m8.2",title:"Analysis of organic substances (spectroscopy)",tags:["Syllabus"],
+   def:"BASICS: Determine structure using degree of unsaturation and spectroscopy. Tests: bromine water / acidified KMnO₄ for unsaturation. Instrumental: mass spectrometry (molar mass + fragments), infrared (IR) spectroscopy (functional groups via bond absorptions), and ¹H NMR (proton environments).",
+   eqn:"IR (indicative): O–H broad ~3200–3550 · C=O ~1700 · C–H ~2900 cm⁻¹\nMass spec: molecular ion peak (M⁺) gives molar mass.",
+   tip:"SKELETON — to expand: add an IR absorption table, worked mass-spec fragment problems, and how ¹H NMR peak number/area indicates proton environments and ratios.",
+   questions:[
+     {q:"State what information the molecular ion peak in a mass spectrum provides.",a:"The m/z of the molecular ion (M⁺) peak gives the molar mass of the intact molecule, which helps determine the molecular formula.",type:"Syllabus"}
+   ]},
+  {id:"m8.3",title:"Chemical synthesis & design (industrial)",tags:["Syllabus"],
+   def:"BASICS: Designing a chemical synthesis balances yield, cost, energy, availability of reactants, and environmental impact. Case studies include the Haber process (NH₃) and the Solvay process / industrial acids — applying equilibrium (Module 5) to optimise conditions.",
+   eqn:"Haber: N₂(g) + 3H₂(g) ⇌ 2NH₃(g) , ΔH = −92 kJ/mol\n(compromise: ~400–450 °C, ~200–250 atm, Fe catalyst)",
+   tip:"SKELETON — to expand: full Haber-process conditions justification (Le Chatelier vs rate compromise), green-chemistry principles, and atom economy.",
+   trap:"The Haber temperature is a COMPROMISE: low T favours yield (exothermic) but is too slow; high T is fast but lowers yield. This is exactly the yield-vs-rate trade-off Mr Ford stresses.",
+   questions:[
+     {q:"Justify the use of a moderately high temperature in the Haber process despite the forward reaction being exothermic.",a:"Low temperature favours a higher equilibrium yield of NH₃ (exothermic forward reaction) but the rate is impractically slow. A moderately high temperature (~400–450 °C) is a compromise that gives an acceptable rate while keeping yield reasonable; the catalyst and high pressure further help.",type:"HSC"}
+   ]}
+]}
+];
+
+/* ============================ PRACTICALS (12) ============================ */
+const PRACTICALS=[
+ {mod:5,title:"Modelling dynamic equilibrium (tennis-ball model)",aim:"Model the features of a dynamic equilibrium (equal opposing rates, constant amount, closed system).",method:"~5 students each hold 5 tennis balls in a defined ~10 m² zone. Each continuously throws balls into the zone while collecting and re-throwing balls out at an equal, constant rate. Record the number of balls in the zone over time.",risks:"Tripping/being struck by balls — clear the area, controlled throwing, eye awareness.",errors:"Inconsistent throw/collect rates; balls lost to the room (breaks the closed system); difficulty counting moving balls. Mitigate by keeping rates constant and recovering all balls."},
+ {mod:5,title:"Le Chatelier's principle — Fe³⁺/SCN⁻ equilibrium",aim:"Investigate how concentration and temperature shift the position of an equilibrium.",method:"To the blood-red FeSCN²⁺ equilibrium (Fe³⁺ + SCN⁻ ⇌ FeSCN²⁺) add: extra Fe³⁺, extra SCN⁻, a chloride to remove Fe³⁺, and vary temperature. Observe colour intensity changes.",risks:"Iron(III) and thiocyanate solutions are irritants/toxic — gloves, goggles, no skin contact, wash spills.",errors:"Subjective colour judgement; uneven additions; temperature not held steady. Use a colour standard and equal volumes."},
+ {mod:5,title:"Determining the solubility / Ksp of a salt",aim:"Determine the solubility of a sparingly soluble salt and relate to Ksp.",method:"Prepare a saturated solution at known temperature, filter, evaporate a measured volume to dryness, weigh the residue, and calculate molar solubility and Ksp.",risks:"Hot apparatus during evaporation — use tongs/heatproof mat; eye protection.",errors:"Solution not fully saturated; residue not completely dry; loss of solid on transfer; temperature variation changes solubility."},
+ {mod:6,title:"Indicators and natural indicators",aim:"Investigate the colour range of indicators across a pH range.",method:"Test known buffer solutions (pH 1–14) with universal indicator and a natural indicator (e.g. red cabbage extract); tabulate colour vs pH.",risks:"Acids/bases are corrosive/irritant — goggles, gloves, dilute solutions.",errors:"Cross-contamination between wells; subjective colour matching; degraded natural indicator. Use clean droppers and fresh extract."},
+ {mod:6,title:"Measuring pH of common solutions",aim:"Compare the pH of household and laboratory solutions.",method:"Use a calibrated pH meter (or universal indicator) to measure pH of solutions (vinegar, ammonia, NaHCO₃, HCl etc). Calibrate the meter with buffers first.",risks:"Some solutions corrosive — handle with care, goggles.",errors:"Uncalibrated/dirty electrode; temperature effects; not rinsing the probe between samples."},
+ {mod:6,title:"Strong vs weak acids — conductivity & reactivity",aim:"Distinguish strong from weak acids of equal concentration.",method:"Compare equal-concentration HCl and ethanoic acid by electrical conductivity, pH, and rate of reaction with magnesium/carbonate.",risks:"Acids corrosive; H₂ gas flammable — no flames, ventilation, goggles.",errors:"Different acid concentrations; impure metal surface (oxide layer); temperature differences affecting rate."},
+ {mod:6,title:"Acid–base titration & standardisation",aim:"Determine the concentration of an unknown acid (or standardise a solution) by titration — see 2016 HSC Q28.",method:"Prepare a standard solution in a volumetric flask; pipette an aliquot into a conical flask with indicator; titrate against the unknown from a burette to a colour change; repeat for concordant titres; average and calculate.",risks:"Acids/bases corrosive — goggles, gloves; rinse spills immediately.",errors:"Rinsing the conical flask with the solution (changes moles); parallax in reading the meniscus; wrong indicator for the equivalence pH; over-shooting the end point; air bubble in the burette tip."},
+ {mod:6,title:"Enthalpy of neutralisation (calorimetry)",aim:"Determine the molar enthalpy of neutralisation of an acid–base reaction.",method:"Mix measured volumes of acid and base in an insulated polystyrene cup; record the maximum temperature rise; calculate q=mcΔT and ΔH=−q/n.",risks:"Corrosive solutions — goggles/gloves.",errors:"Heat loss to surroundings (use a lid/insulation), assuming density and specific heat of pure water, incomplete mixing, slow thermometer response."},
+ {mod:7,title:"Modelling organic molecules & isomers",aim:"Construct molecular models to explore structural isomerism and functional groups.",method:"Use a molecular model kit to build alkanes/alkenes and the isomers of a given molecular formula (e.g. C₄H₁₀, C₄H₈O); identify chain, positional and functional-group isomers.",risks:"Minimal — small parts (choking) and sharp connectors.",errors:"Miscounting valence/bonds; missing equivalent structures; confusing different representations."},
+ {mod:7,title:"Preparation & properties of an ester",aim:"Prepare an ester by esterification and identify it by smell.",method:"Reflux a carboxylic acid + alcohol with conc. H₂SO₄ catalyst; pour into sodium carbonate solution; note the characteristic fruity odour of the ester layer.",risks:"Conc. H₂SO₄ corrosive; flammable alcohols — no naked flame near vapours, reflux with care, fume cupboard.",errors:"Incomplete reaction (low yield, equilibrium); loss of volatile ester; residual acid smell masking the ester; overheating causing charring."},
+ {mod:7,title:"Saponification — making soap",aim:"Produce soap by base hydrolysis of a fat/oil and investigate its properties.",method:"Heat a fat/oil with concentrated NaOH (reflux), then salt out the soap with brine; filter and test lathering and emulsifying action.",risks:"Hot concentrated NaOH is highly corrosive (causes severe burns) — goggles, gloves, lab coat, careful heating.",errors:"Incomplete saponification (oily residue); contamination with excess NaOH (caustic soap); loss of product during salting-out/filtration."},
+ {mod:7,title:"Heat of combustion of alcohols",aim:"Compare the molar heats of combustion of a series of alcohols.",method:"Burn a measured mass of each alcohol in a spirit burner under a metal can of known mass of water; record ΔT; calculate q=mcΔT and ΔH=−q/n; relate to chain length.",risks:"Flammable alcohols — secure burner, no spills near flame, ventilation.",errors:"Heat loss to surroundings, incomplete combustion (soot lowers energy released), evaporation of alcohol, heat absorbed by the can — all reduce the experimental value below the data-book value."},
+ {mod:7,title:"Tests for unsaturation (bromine water)",aim:"Distinguish saturated from unsaturated hydrocarbons.",method:"Add orange bromine water to samples of a saturated and an unsaturated hydrocarbon; observe which rapidly decolourises (addition reaction).",risks:"Bromine water is toxic/corrosive — fume cupboard, gloves, goggles.",errors:"Insufficient mixing; slow substitution in alkanes under light giving a false positive; subjective end-colour judgement."}
+];
+
+/* ============================ FORMULAS ============================ */
+const FORMULAS=[
+ {group:"Module 5 — Equilibrium",items:[
+   {f:"Keq = [C]ᶜ[D]ᵈ / [A]ᵃ[B]ᵇ",d:"Equilibrium constant (exclude solids/liquids)"},
+   {f:"Q = same expression (non-eqm)",d:"Q<K → →right; Q>K → →left"},
+   {f:"Ksp = [Aⁿ⁺]ˣ[Bᵐ⁻]ʸ",d:"Solubility product; Q>Ksp → precipitate"},
+ ]},
+ {group:"Module 6 — Acids & Bases",items:[
+   {f:"pH = −log₁₀[H⁺]",d:"and [H⁺] = 10^(−pH)"},
+   {f:"Kw = [H⁺][OH⁻] = 1.0×10⁻¹⁴",d:"at 25 °C"},
+   {f:"pH + pOH = 14",d:"at 25 °C"},
+   {f:"c₁V₁ = c₂V₂",d:"Dilution"},
+   {f:"n = c × V",d:"moles from concentration"},
+ ]},
+ {group:"Module 7 — Organic",items:[
+   {f:"Alkane CₙH₂ₙ₊₂",d:"saturated"},
+   {f:"Alkene CₙH₂ₙ · Alkyne CₙH₂ₙ₋₂",d:"unsaturated"},
+   {f:"CₓHᵧ + O₂ → CO₂ + H₂O",d:"complete combustion"},
+ ]},
+ {group:"General / Calorimetry",items:[
+   {f:"q = m c ΔT",d:"heat (J); c(water)=4.18 J g⁻¹ K⁻¹"},
+   {f:"ΔH = −q / n",d:"molar enthalpy (kJ mol⁻¹)"},
+   {f:"n = m / M",d:"moles from mass"},
+   {f:"n = c × V",d:"moles in solution"},
+ ]}
+];
+
+/* ============================ GLOSSARY (41) ============================ */
+const GLOSSARY=[
+ ["Dynamic equilibrium","A state in a closed system where forward and reverse reactions occur at equal, non-zero rates, so macroscopic properties stay constant."],
+ ["Reversible reaction","A reaction that can proceed in both forward and reverse directions."],
+ ["Closed system","A system that can exchange energy but not matter with its surroundings — required for equilibrium."],
+ ["Le Chatelier's Principle","If a system at equilibrium is disturbed, it shifts to partially counteract the change."],
+ ["Equilibrium constant (Keq)","Ratio of product to reactant concentrations (each to its coefficient power) at equilibrium; depends only on temperature."],
+ ["Reaction quotient (Q)","The Keq expression evaluated at non-equilibrium concentrations; compared to K to predict the shift."],
+ ["Solubility product (Ksp)","The equilibrium constant for the dissolution of a sparingly soluble salt."],
+ ["Common ion effect","A decrease in solubility caused by adding an ion already present in the solubility equilibrium."],
+ ["Enthalpy (ΔH)","The heat change of a reaction at constant pressure; negative = exothermic."],
+ ["Entropy (ΔS)","A measure of disorder; systems tend toward higher entropy."],
+ ["Activation energy (Eₐ)","The minimum energy colliding particles need to react."],
+ ["Catalyst","A substance that lowers activation energy, speeding a reaction without being consumed or changing equilibrium position."],
+ ["Exothermic","A reaction that releases heat to the surroundings (ΔH < 0)."],
+ ["Endothermic","A reaction that absorbs heat from the surroundings (ΔH > 0)."],
+ ["Acid (Brønsted–Lowry)","A proton (H⁺) donor."],
+ ["Base (Brønsted–Lowry)","A proton (H⁺) acceptor."],
+ ["Conjugate acid–base pair","Two species differing by a single proton (H⁺)."],
+ ["Monoprotic acid","An acid that donates only one proton per molecule (e.g. HCl)."],
+ ["Diprotic acid","An acid that donates two protons per molecule (e.g. H₂SO₄)."],
+ ["Amphiprotic","A species that can both donate and accept a proton (e.g. HCO₃⁻, H₂O)."],
+ ["Strong acid","An acid that ionises completely in water."],
+ ["Weak acid","An acid that only partially ionises in water (an equilibrium)."],
+ ["pH","A measure of acidity: pH = −log₁₀[H⁺]."],
+ ["Kw","The self-ionisation constant of water: [H⁺][OH⁻] = 1.0×10⁻¹⁴ at 25 °C."],
+ ["Neutralisation","Reaction of an acid with a base to form salt and water; exothermic."],
+ ["Standard solution","A solution of accurately known concentration, prepared in a volumetric flask from a primary standard."],
+ ["Primary standard","A pure, stable substance of known molar mass used to make a standard solution (e.g. anhydrous Na₂CO₃)."],
+ ["Titration","A volumetric technique to find an unknown concentration by reacting it with a standard solution."],
+ ["Equivalence point","The point where reactants are present in exact stoichiometric amounts."],
+ ["End point","The point where the indicator changes colour, used to estimate the equivalence point."],
+ ["Concordant titres","Titres agreeing within ~0.10 mL, which are averaged for reliability."],
+ ["Buffer","A solution that resists pH change; a weak acid and its conjugate base (or vice versa)."],
+ ["Hydrocarbon","A compound containing only carbon and hydrogen."],
+ ["Functional group","An atom or group of atoms that gives a molecule its characteristic chemical properties."],
+ ["Isomer","Molecules with the same molecular formula but different structural arrangement."],
+ ["Intermolecular force","An attractive force between molecules (dispersion, dipole–dipole, hydrogen bonding, ion–dipole)."],
+ ["Hydrogen bonding","A strong dipole attraction when H bonded to N, O or F is attracted to a lone pair on N, O or F."],
+ ["Esterification","Condensation of a carboxylic acid and alcohol (acid catalyst) to form an ester and water."],
+ ["Saponification","Base hydrolysis of fats/oils to produce soap and glycerol."],
+ ["Micelle","A spherical aggregate of soap ions with hydrophobic tails inward and hydrophilic heads outward."],
+ ["Addition polymer","A polymer formed from unsaturated monomers with no by-product."],
+ ["Condensation polymer","A polymer formed with elimination of a small molecule (usually water) at each linkage."]
+];
+
+/* ============================ HSC QUESTION BANK ============================ */
+/* {year, mod, marks, q, criteria (marking guide / sample answer), tid} */
+const QBANK=[
+ {year:2016,mod:6,marks:8,tid:"m6.4",q:"A flowchart outlines determining the concentration of an unknown HCl solution: (A) prepare 500 mL of 0.100 mol L⁻¹ Na₂CO₃ standard solution; (B) titrate 25.0 mL of A against the HCl (average titre 21.4 mL); (C) calculate the HCl concentration. Describe steps A, B and C including correct techniques, equipment and calculations, and determine the concentration of the HCl.",
+  criteria:"Sample/criteria (8 marks): A — weigh 5.30 g dried Na₂CO₃ (n=0.0500 mol, M=105.99) on a tared balance, dissolve in deionised water, transfer to a 500 mL volumetric flask rinsing the beaker/rod in, make up to the mark at eye level (bottom of meniscus), stopper & invert. B — pipette 25.0 mL standard into a conical flask + methyl orange; fill a rinsed burette with HCl; titrate to a permanent colour change, slowing to drops near the end point; repeat for concordant titres; average titre 21.4 mL. C — n(Na₂CO₃)=0.100×0.0250=2.50×10⁻³ mol; ratio 1:2 (Na₂CO₃ + 2HCl → 2NaCl + CO₂ + H₂O) → n(HCl)=5.00×10⁻³ mol; c=5.00×10⁻³/0.0214 = 0.234 mol L⁻¹. Full marks: correct technique + equipment named for each step, balanced equation, correct stoichiometry and final concentration with units."},
+ {year:2019,mod:5,marks:5,tid:"m5.3",q:"For the equilibrium 2SO₂(g) + O₂(g) ⇌ 2SO₃(g), ΔH = −197 kJ mol⁻¹, explain the effect of increasing temperature and increasing pressure on both the rate of reaction and the equilibrium yield of SO₃.",
+  criteria:"Criteria (5): ↑T increases rate (more particles ≥ Eₐ) BUT shifts equilibrium in the endothermic (reverse) direction → lower yield of SO₃ and lower K. ↑Pressure increases rate (more frequent collisions) AND shifts toward fewer gas moles (3 mol → 2 mol), i.e. forward → higher yield. Must separate the rate effect from the equilibrium-position effect to gain full marks; note the industrial compromise temperature."},
+ {year:2018,mod:6,marks:4,tid:"m6.3",q:"A 0.10 mol L⁻¹ solution of hydrochloric acid and a 0.10 mol L⁻¹ solution of ethanoic acid are compared. Account for the difference in their pH values.",
+  criteria:"Criteria (4): HCl is a strong acid — ionises completely, so [H⁺]≈0.10 M, pH≈1.0. Ethanoic acid is weak — ionises only partially (equilibrium), so [H⁺]≪0.10 M, giving a higher pH (~2.9). The difference arises from the EXTENT of ionisation, not the concentration (which is equal). 'Account for' = state and explain the cause."},
+ {year:2020,mod:7,marks:6,tid:"m7.3",q:"Explain the trend in boiling points and water solubility across the homologous series: butane, butan-1-ol, and butanoic acid.",
+  criteria:"Criteria (6): butane — only dispersion forces → lowest boiling point, insoluble in water. butan-1-ol — hydrogen bonding via –OH → higher boiling point and soluble (H-bonds with water). butanoic acid — hydrogen bonding (forms dimers) + dipole–dipole → highest boiling point; soluble (smaller members) via H-bonding. Award marks for correctly identifying the IMF in each, linking stronger IMF → higher boiling point, and explaining solubility via H-bonding with water."},
+ {year:2021,mod:7,marks:5,tid:"m7.5",q:"Describe how soap acts to remove oily dirt from a surface, with reference to the structure of the soap molecule and the forces involved.",
+  criteria:"Criteria (5): soap ion has a non-polar hydrocarbon tail (hydrophobic) and an ionic carboxylate head (hydrophilic). Tails dissolve into the non-polar oil (dispersion forces); ionic heads face the water (ion–dipole). Soap ions surround the oil droplet forming a micelle (tails in, heads out); the micelle is suspended/emulsified in water and rinsed away. Marks for structure, the two interactions, micelle formation and emulsification."},
+ {year:2017,mod:6,marks:3,tid:"m6.5",q:"Calculate the molar enthalpy of neutralisation when 50.0 mL of 1.00 mol L⁻¹ HCl is neutralised by 50.0 mL of 1.00 mol L⁻¹ NaOH, producing a temperature rise of 6.8 °C. (Assume the solution has the density and specific heat capacity of water.)",
+  criteria:"Criteria (3): q = mcΔT = 100 g × 4.18 × 6.8 = 2843 J = 2.84 kJ; n(H₂O) = n(HCl) = 0.0500 mol; ΔH = −q/n = −2.84/0.0500 = −56.8 kJ mol⁻¹. Marks: correct q (using combined mass 100 g), correct n, and ΔH with negative sign + units."}
+];
+
+/* ============================ MC QUESTION BANK ============================ */
+const MC_BANK=[
+ {q:"Which statement correctly describes dynamic equilibrium?",choices:["A) [reactants] = [products]","B) The forward and reverse rates are equal and non-zero","C) The forward reaction has stopped completely","D) The system must be in an open container"],correct:1,a:"B — dynamic equilibrium requires both the forward and reverse reactions to continue at equal rates. Concentrations remain constant but are not necessarily equal to each other.",type:"HSC",mod:5,marks:1,qtype:"mc",tid:"m5.1"},
+ {q:"Which of the following does NOT change the value of Keq for a given reaction?",choices:["A) Increasing the temperature","B) Adding a catalyst","C) Decreasing the temperature","D) Raising the temperature from 25 °C to 80 °C"],correct:1,a:"B — a catalyst lowers the activation energy equally for both forward and reverse reactions. It increases the rate of reaching equilibrium but does not affect the equilibrium position or Keq. Only temperature changes Keq.",type:"HSC",mod:5,marks:1,qtype:"mc",tid:"m5.2"},
+ {q:"For the reaction N₂(g) + 3H₂(g) ⇌ 2NH₃(g), what is the effect of increasing pressure?",choices:["A) Shifts equilibrium left; decreases NH₃ yield","B) Shifts equilibrium right; increases NH₃ yield","C) No change to equilibrium position","D) Increases Keq"],correct:1,a:"B — increasing pressure shifts the equilibrium toward the side with fewer moles of gas. The left has 4 mol gas, the right has 2 mol, so the equilibrium shifts right, increasing NH₃ yield. Keq is unchanged.",type:"HSC",mod:5,marks:1,qtype:"mc",tid:"m5.3"},
+ {q:"A solution has [H⁺] = 1×10⁻⁴ mol L⁻¹. What is the pH?",choices:["A) −4","B) 4","C) 10","D) 0.0001"],correct:1,a:"B — pH = −log₁₀[H⁺] = −log₁₀(1×10⁻⁴) = −(−4) = 4.",type:"HSC",mod:6,marks:1,qtype:"mc",tid:"m6.3"},
+ {q:"Which of the following is amphiprotic?",choices:["A) HCl","B) NaOH","C) HCO₃⁻","D) SO₄²⁻"],correct:2,a:"C — HCO₃⁻ can donate a proton (acting as acid: HCO₃⁻ → CO₃²⁻ + H⁺) or accept a proton (acting as base: HCO₃⁻ + H⁺ → H₂CO₃). This makes it amphiprotic.",type:"HSC",mod:6,marks:1,qtype:"mc",tid:"m6.1"},
+ {q:"In the reaction NH₃ + H₂O ⇌ NH₄⁺ + OH⁻, which is the Brønsted–Lowry acid?",choices:["A) NH₃","B) H₂O","C) NH₄⁺","D) OH⁻"],correct:1,a:"B — H₂O donates a proton (H⁺) to NH₃ in this reaction, making it the Brønsted–Lowry acid. NH₃ accepts the proton, making it the base.",type:"HSC",mod:6,marks:1,qtype:"mc",tid:"m6.2"},
+ {q:"25.0 mL of 0.100 mol L⁻¹ NaOH is titrated against HCl with an average titre of 20.0 mL. What is the concentration of HCl?",choices:["A) 0.0500 mol L⁻¹","B) 0.100 mol L⁻¹","C) 0.125 mol L⁻¹","D) 0.200 mol L⁻¹"],correct:2,a:"C — n(NaOH) = 0.100 × 0.0250 = 2.50×10⁻³ mol. 1:1 ratio → n(HCl) = 2.50×10⁻³ mol. c(HCl) = 2.50×10⁻³ / 0.0200 = 0.125 mol L⁻¹.",type:"HSC",mod:6,marks:1,qtype:"mc",tid:"m6.4"},
+ {q:"What is the IUPAC name of CH₃CH(OH)CH₂CH₃?",choices:["A) Butan-1-ol","B) Butan-2-ol","C) 2-methylpropan-1-ol","D) Propan-2-ol"],correct:1,a:"B — the longest carbon chain contains 4 carbons (butane). The −OH group is on C2 when numbered from the end that gives the lowest locant. Name: butan-2-ol.",type:"HSC",mod:7,marks:1,qtype:"mc",tid:"m7.1"},
+ {q:"Which functional group gives the highest boiling point for molecules of similar molecular mass?",choices:["A) Alkane (C−C only)","B) Halogenoalkane (C−X)","C) Ketone (C=O)","D) Alcohol (−OH)"],correct:3,a:"D — alcohols form hydrogen bonds (H bonded to highly electronegative O), which are the strongest IMF among the options listed. Hydrogen bonding requires significantly more energy to break, giving higher boiling points.",type:"HSC",mod:7,marks:1,qtype:"mc",tid:"m7.3"},
+ {q:"Which statement about strong acids is correct?",choices:["A) Strong acids are highly concentrated","B) Strong acids ionise completely in water","C) Strong acids have a high pH","D) Strong acids form weak conjugate bases"],correct:1,a:"B — 'strong' refers to the degree of ionisation, not concentration. A strong acid ionises (dissociates) essentially 100% in water. Note: a strong acid actually has a WEAK conjugate base (option D is incorrect — strong acids have weak conjugate bases, not strong ones).",type:"HSC",mod:6,marks:1,qtype:"mc",tid:"m6.3"}
+];
+
+/* ============================ EXAM TECHNIQUE — NESA DIRECTIVE VERBS ============================ */
+const DIRECTIVES=[
+ ["Account for","State reasons for; give the cause of (a 'why' question)."],
+ ["Analyse","Identify components and the relationships between them; draw out and relate implications."],
+ ["Assess","Make a judgement of value, quality, outcomes, results or size — weigh up."],
+ ["Calculate","Determine a value from given facts, figures or information (show working)."],
+ ["Clarify","Make clear or plain; remove ambiguity."],
+ ["Compare","Show how things are similar AND different."],
+ ["Contrast","Show how things are different or opposite."],
+ ["Critically (analyse/evaluate)","Add a degree of depth/judgement to the analysis or evaluation."],
+ ["Deduce","Draw conclusions from the information given."],
+ ["Define","State the precise meaning of a word or phrase."],
+ ["Demonstrate","Show by example."],
+ ["Describe","Provide characteristics and features (a 'what' question — no reasons needed)."],
+ ["Discuss","Identify issues and provide points for AND/or against."],
+ ["Distinguish","Recognise or note/indicate as being distinct or different from; note differences between."],
+ ["Evaluate","Make a judgement based on criteria; determine the value of — weigh strengths vs weaknesses."],
+ ["Explain","Relate cause and effect; make the relationships between things evident; provide 'why' and/or 'how'."],
+ ["Identify","Recognise and name."],
+ ["Interpret","Draw meaning from."],
+ ["Justify","Support an argument or conclusion with evidence and reasoning."],
+ ["Outline","Sketch in general terms; indicate the main features."],
+ ["Predict","Suggest what may happen based on available information."],
+ ["Propose","Put forward (a point of view, idea, argument, suggestion) for consideration or action."],
+ ["Recall","Present remembered ideas, facts or experiences."],
+ ["Recommend","Provide reasons in favour of a course of action."],
+ ["Summarise","Express concisely the relevant details."]
+];
+
+/* ============================ NESA DATA SHEET ============================ */
+const DATASHEET=[
+ {group:"Physical constants & useful data",rows:[
+   ["Avogadro constant (Nₐ)","6.022 × 10²³ mol⁻¹"],
+   ["Molar volume of an ideal gas (STP, 0 °C, 100 kPa)","22.71 L mol⁻¹"],
+   ["Molar volume of an ideal gas (25 °C, 100 kPa)","24.79 L mol⁻¹"],
+   ["Specific heat capacity of water","4.18 × 10³ J kg⁻¹ K⁻¹ (4.18 J g⁻¹ K⁻¹)"],
+   ["Ionisation constant of water Kw (25 °C)","1.0 × 10⁻¹⁴"],
+   ["Density of water (25 °C)","0.997 g mL⁻¹ (≈ 1 g mL⁻¹)"]
+ ]},
+ {group:"Acid dissociation constants Ka (25 °C)",rows:[
+   ["Hydrochloric / nitric / sulfuric (1st)","strong — fully ionised"],
+   ["Hydrofluoric acid, HF","7.6 × 10⁻⁴ (pKa 3.12)"],
+   ["Ethanoic (acetic) acid, CH₃COOH","1.76 × 10⁻⁵ (pKa 4.76)"],
+   ["Carbonic acid, H₂CO₃ (1st)","4.4 × 10⁻⁷ (pKa 6.36)"],
+   ["Hydrogen carbonate, HCO₃⁻ (2nd)","4.7 × 10⁻¹¹ (pKa 10.33)"],
+   ["Ammonium ion, NH₄⁺","5.6 × 10⁻¹⁰ (pKa 9.25)"]
+ ]},
+ {group:"Indicators & colour-change (end-point) ranges",rows:[
+   ["Methyl orange","red 3.1 – 4.4 yellow (acidic equivalence)"],
+   ["Bromothymol blue","yellow 6.0 – 7.6 blue (neutral)"],
+   ["Phenolphthalein","colourless 8.3 – 10.0 pink (basic equivalence)"],
+   ["Litmus","red < 5.0 ; blue > 8.0"]
+ ]},
+ {group:"Solubility rules (aqueous)",rows:[
+   ["Group 1, ammonium (NH₄⁺), nitrate (NO₃⁻)","always soluble"],
+   ["Chlorides, bromides, iodides","soluble EXCEPT Ag⁺, Pb²⁺, Cu⁺"],
+   ["Sulfates (SO₄²⁻)","soluble EXCEPT Ba²⁺, Pb²⁺, Ca²⁺ (slightly)"],
+   ["Carbonates, phosphates, hydroxides","insoluble EXCEPT Group 1 & NH₄⁺ (OH⁻ also Ba²⁺)"]
+ ]},
+ {group:"Flame test colours",rows:[
+   ["Lithium / Strontium","crimson red"],["Sodium","intense yellow"],["Potassium","lilac"],
+   ["Calcium","brick / orange-red"],["Barium","apple green"],["Copper(II)","blue-green"]
+ ]}
+];
+
+/* periodic table: [Z, symbol, name, atomic weight, group(x 1-18), period(y 1-7) or 'La'/'Ac'] */
+const PTABLE=[
+[1,"H","Hydrogen","1.008",1,1,{en:2.20,config:"1s¹",state:"Gas",ox:"+1, −1"}],[2,"He","Helium","4.003",18,1,{en:null,config:"1s²",state:"Gas",ox:"none"}],
+[3,"Li","Lithium","6.941",1,2,{en:0.98,config:"[He] 2s¹",state:"Solid",ox:"+1"}],[4,"Be","Beryllium","9.012",2,2,{en:1.57,config:"[He] 2s²",state:"Solid",ox:"+2"}],[5,"B","Boron","10.81",13,2,{en:2.04,config:"[He] 2s² 2p¹",state:"Solid",ox:"+3"}],[6,"C","Carbon","12.01",14,2,{en:2.55,config:"[He] 2s² 2p²",state:"Solid",ox:"+4"}],[7,"N","Nitrogen","14.01",15,2,{en:3.04,config:"[He] 2s² 2p³",state:"Gas",ox:"−3"}],[8,"O","Oxygen","16.00",16,2,{en:3.44,config:"[He] 2s² 2p⁴",state:"Gas",ox:"−2"}],[9,"F","Fluorine","19.00",17,2,{en:3.98,config:"[He] 2s² 2p⁵",state:"Gas",ox:"−1"}],[10,"Ne","Neon","20.18",18,2,{en:null,config:"[He] 2s² 2p⁶",state:"Gas",ox:"none"}],
+[11,"Na","Sodium","22.99",1,3,{en:0.93,config:"[Ne] 3s¹",state:"Solid",ox:"+1"}],[12,"Mg","Magnesium","24.31",2,3,{en:1.31,config:"[Ne] 3s²",state:"Solid",ox:"+2"}],[13,"Al","Aluminium","26.98",13,3,{en:1.61,config:"[Ne] 3s² 3p¹",state:"Solid",ox:"+3"}],[14,"Si","Silicon","28.09",14,3,{en:1.90,config:"[Ne] 3s² 3p²",state:"Solid",ox:"+4"}],[15,"P","Phosphorus","30.97",15,3,{en:2.19,config:"[Ne] 3s² 3p³",state:"Solid",ox:"−3"}],[16,"S","Sulfur","32.07",16,3,{en:2.58,config:"[Ne] 3s² 3p⁴",state:"Solid",ox:"−2"}],[17,"Cl","Chlorine","35.45",17,3,{en:3.16,config:"[Ne] 3s² 3p⁵",state:"Gas",ox:"−1"}],[18,"Ar","Argon","39.95",18,3,{en:null,config:"[Ne] 3s² 3p⁶",state:"Gas",ox:"none"}],
+[19,"K","Potassium","39.10",1,4,{en:0.82,config:"[Ar] 4s¹",state:"Solid",ox:"+1"}],[20,"Ca","Calcium","40.08",2,4,{en:1.00,config:"[Ar] 4s²",state:"Solid",ox:"+2"}],[21,"Sc","Scandium","44.96",3,4,{en:1.36,config:"[Ar] 3d¹ 4s²",state:"Solid",ox:"+3"}],[22,"Ti","Titanium","47.87",4,4,{en:1.54,config:"[Ar] 3d² 4s²",state:"Solid",ox:"+4"}],[23,"V","Vanadium","50.94",5,4,{en:1.63,config:"[Ar] 3d³ 4s²",state:"Solid",ox:"+5"}],[24,"Cr","Chromium","52.00",6,4,{en:1.66,config:"[Ar] 3d⁵ 4s¹",state:"Solid",ox:"+6"}],[25,"Mn","Manganese","54.94",7,4,{en:1.55,config:"[Ar] 3d⁵ 4s²",state:"Solid",ox:"+7"}],[26,"Fe","Iron","55.85",8,4,{en:1.83,config:"[Ar] 3d⁶ 4s²",state:"Solid",ox:"+2, +3"}],[27,"Co","Cobalt","58.93",9,4,{en:1.88,config:"[Ar] 3d⁷ 4s²",state:"Solid",ox:"+3"}],[28,"Ni","Nickel","58.69",10,4,{en:1.91,config:"[Ar] 3d⁸ 4s²",state:"Solid",ox:"+2"}],[29,"Cu","Copper","63.55",11,4,{en:1.90,config:"[Ar] 3d¹⁰ 4s¹",state:"Solid",ox:"+2"}],[30,"Zn","Zinc","65.38",12,4,{en:1.65,config:"[Ar] 3d¹⁰ 4s²",state:"Solid",ox:"+2"}],[31,"Ga","Gallium","69.72",13,4,{en:1.81,config:"[Ar] 3d¹⁰ 4s² 4p¹",state:"Solid",ox:"+3"}],[32,"Ge","Germanium","72.63",14,4,{en:2.01,config:"[Ar] 3d¹⁰ 4s² 4p²",state:"Solid",ox:"+4"}],[33,"As","Arsenic","74.92",15,4,{en:2.18,config:"[Ar] 3d¹⁰ 4s² 4p³",state:"Solid",ox:"+5"}],[34,"Se","Selenium","78.97",16,4,{en:2.55,config:"[Ar] 3d¹⁰ 4s² 4p⁴",state:"Solid",ox:"+6"}],[35,"Br","Bromine","79.90",17,4,{en:2.96,config:"[Ar] 3d¹⁰ 4s² 4p⁵",state:"Liquid",ox:"+5"}],[36,"Kr","Krypton","83.80",18,4,{en:3.00,config:"[Ar] 3d¹⁰ 4s² 4p⁶",state:"Gas",ox:"none"}],
+[37,"Rb","Rubidium","85.47",1,5,{en:0.82,config:"[Kr] 5s¹",state:"Solid",ox:"+1"}],[38,"Sr","Strontium","87.62",2,5,{en:0.95,config:"[Kr] 5s²",state:"Solid",ox:"+2"}],[39,"Y","Yttrium","88.91",3,5,{en:1.22,config:"[Kr] 4d¹ 5s²",state:"Solid",ox:"+3"}],[40,"Zr","Zirconium","91.22",4,5,{en:1.33,config:"[Kr] 4d² 5s²",state:"Solid",ox:"+4"}],[41,"Nb","Niobium","92.91",5,5,{en:1.60,config:"[Kr] 4d⁴ 5s¹",state:"Solid",ox:"+5"}],[42,"Mo","Molybdenum","95.95",6,5,{en:2.16,config:"[Kr] 4d⁵ 5s¹",state:"Solid",ox:"+6"}],[43,"Tc","Technetium","(98)",7,5,{en:1.90,config:"[Kr] 4d⁵ 5s²",state:"Solid",ox:"+7"}],[44,"Ru","Ruthenium","101.1",8,5,{en:2.20,config:"[Kr] 4d⁷ 5s¹",state:"Solid",ox:"+4"}],[45,"Rh","Rhodium","102.9",9,5,{en:2.28,config:"[Kr] 4d⁸ 5s¹",state:"Solid",ox:"+3"}],[46,"Pd","Palladium","106.4",10,5,{en:2.20,config:"[Kr] 4d¹⁰",state:"Solid",ox:"+4"}],[47,"Ag","Silver","107.9",11,5,{en:1.93,config:"[Kr] 4d¹⁰ 5s¹",state:"Solid",ox:"+1"}],[48,"Cd","Cadmium","112.4",12,5,{en:1.69,config:"[Kr] 4d¹⁰ 5s²",state:"Solid",ox:"+2"}],[49,"In","Indium","114.8",13,5,{en:1.78,config:"[Kr] 4d¹⁰ 5s² 5p¹",state:"Solid",ox:"+3"}],[50,"Sn","Tin","118.7",14,5,{en:1.96,config:"[Kr] 4d¹⁰ 5s² 5p²",state:"Solid",ox:"+4"}],[51,"Sb","Antimony","121.8",15,5,{en:2.05,config:"[Kr] 4d¹⁰ 5s² 5p³",state:"Solid",ox:"+5"}],[52,"Te","Tellurium","127.6",16,5,{en:2.10,config:"[Kr] 4d¹⁰ 5s² 5p⁴",state:"Solid",ox:"+6"}],[53,"I","Iodine","126.9",17,5,{en:2.66,config:"[Kr] 4d¹⁰ 5s² 5p⁵",state:"Solid",ox:"+7"}],[54,"Xe","Xenon","131.3",18,5,{en:2.60,config:"[Kr] 4d¹⁰ 5s² 5p⁶",state:"Gas",ox:"none"}],
+[55,"Cs","Caesium","132.9",1,6,{en:0.79,config:"[Xe] 6s¹",state:"Solid",ox:"+1"}],[56,"Ba","Barium","137.3",2,6,{en:0.89,config:"[Xe] 6s²",state:"Solid",ox:"+2"}],[57,"La","Lanthanum","138.9",3,6,{en:1.10,config:"[Xe] 5d¹ 6s²",state:"Solid",ox:"+3"}],[72,"Hf","Hafnium","178.5",4,6,{en:1.30,config:"[Xe] 4f¹⁴ 5d² 6s²",state:"Solid",ox:"+4"}],[73,"Ta","Tantalum","180.9",5,6,{en:1.50,config:"[Xe] 4f¹⁴ 5d³ 6s²",state:"Solid",ox:"+5"}],[74,"W","Tungsten","183.8",6,6,{en:2.36,config:"[Xe] 4f¹⁴ 5d⁴ 6s²",state:"Solid",ox:"+6"}],[75,"Re","Rhenium","186.2",7,6,{en:1.90,config:"[Xe] 4f¹⁴ 5d⁵ 6s²",state:"Solid",ox:"+7"}],[76,"Os","Osmium","190.2",8,6,{en:2.20,config:"[Xe] 4f¹⁴ 5d⁶ 6s²",state:"Solid",ox:"+4"}],[77,"Ir","Iridium","192.2",9,6,{en:2.20,config:"[Xe] 4f¹⁴ 5d⁷ 6s²",state:"Solid",ox:"+4"}],[78,"Pt","Platinum","195.1",10,6,{en:2.28,config:"[Xe] 4f¹⁴ 5d⁹ 6s¹",state:"Solid",ox:"+4"}],[79,"Au","Gold","197.0",11,6,{en:2.54,config:"[Xe] 4f¹⁴ 5d¹⁰ 6s¹",state:"Solid",ox:"+3"}],[80,"Hg","Mercury","200.6",12,6,{en:2.00,config:"[Xe] 4f¹⁴ 5d¹⁰ 6s²",state:"Liquid",ox:"+2"}],[81,"Tl","Thallium","204.4",13,6,{en:1.62,config:"[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p¹",state:"Solid",ox:"+3"}],[82,"Pb","Lead","207.2",14,6,{en:2.33,config:"[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p²",state:"Solid",ox:"+4"}],[83,"Bi","Bismuth","209.0",15,6,{en:2.02,config:"[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p³",state:"Solid",ox:"+5"}],[84,"Po","Polonium","(209)",16,6,{en:2.00,config:"[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁴",state:"Solid",ox:"+4"}],[85,"At","Astatine","(210)",17,6,{en:2.20,config:"[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁵",state:"Solid",ox:"+1"}],[86,"Rn","Radon","(222)",18,6,{en:null,config:"[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁶",state:"Gas",ox:"none"}],
+[87,"Fr","Francium","(223)",1,7,{en:0.70,config:"[Rn] 7s¹",state:"Solid",ox:"+1"}],[88,"Ra","Radium","(226)",2,7,{en:0.90,config:"[Rn] 7s²",state:"Solid",ox:"+2"}],[89,"Ac","Actinium","(227)",3,7,{en:1.10,config:"[Rn] 6d¹ 7s²",state:"Solid",ox:"+3"}],
+[58,"Ce","Cerium","140.1",4,9,{en:1.12,config:"[Xe] 4f¹ 5d¹ 6s²",state:"Solid",ox:"+4"}],[59,"Pr","Praseodymium","140.9",5,9,{en:1.13,config:"[Xe] 4f³ 6s²",state:"Solid",ox:"+3"}],[60,"Nd","Neodymium","144.2",6,9,{en:1.14,config:"[Xe] 4f⁴ 6s²",state:"Solid",ox:"+3"}],[61,"Pm","Promethium","(145)",7,9,{en:1.13,config:"[Xe] 4f⁵ 6s²",state:"Solid",ox:"+3"}],[62,"Sm","Samarium","150.4",8,9,{en:1.17,config:"[Xe] 4f⁶ 6s²",state:"Solid",ox:"+3"}],[63,"Eu","Europium","152.0",9,9,{en:1.20,config:"[Xe] 4f⁷ 6s²",state:"Solid",ox:"+3"}],[64,"Gd","Gadolinium","157.3",10,9,{en:1.20,config:"[Xe] 4f⁷ 5d¹ 6s²",state:"Solid",ox:"+3"}],[65,"Tb","Terbium","158.9",11,9,{en:1.10,config:"[Xe] 4f⁹ 6s²",state:"Solid",ox:"+3"}],[66,"Dy","Dysprosium","162.5",12,9,{en:1.22,config:"[Xe] 4f¹⁰ 6s²",state:"Solid",ox:"+3"}],[67,"Ho","Holmium","164.9",13,9,{en:1.23,config:"[Xe] 4f¹¹ 6s²",state:"Solid",ox:"+3"}],[68,"Er","Erbium","167.3",14,9,{en:1.24,config:"[Xe] 4f¹² 6s²",state:"Solid",ox:"+3"}],[69,"Tm","Thulium","168.9",15,9,{en:1.25,config:"[Xe] 4f¹³ 6s²",state:"Solid",ox:"+3"}],[70,"Yb","Ytterbium","173.0",16,9,{en:1.10,config:"[Xe] 4f¹⁴ 6s²",state:"Solid",ox:"+3"}],[71,"Lu","Lutetium","175.0",17,9,{en:1.27,config:"[Xe] 4f¹⁴ 5d¹ 6s²",state:"Solid",ox:"+3"}],
+[90,"Th","Thorium","232.0",4,10,{en:1.30,config:"[Rn] 6d² 7s²",state:"Solid",ox:"+4"}],[91,"Pa","Protactinium","231.0",5,10,{en:1.50,config:"[Rn] 5f² 6d¹ 7s²",state:"Solid",ox:"+5"}],[92,"U","Uranium","238.0",6,10,{en:1.38,config:"[Rn] 5f³ 6d¹ 7s²",state:"Solid",ox:"+6"}],[93,"Np","Neptunium","(237)",7,10,{en:1.36,config:"[Rn] 5f⁴ 6d¹ 7s²",state:"Solid",ox:"+5"}],[94,"Pu","Plutonium","(244)",8,10,{en:1.28,config:"[Rn] 5f⁶ 7s²",state:"Solid",ox:"+4"}],[95,"Am","Americium","(243)",9,10,{en:1.30,config:"[Rn] 5f⁷ 7s²",state:"Solid",ox:"+3"}],[96,"Cm","Curium","(247)",10,10,{en:1.30,config:"[Rn] 5f⁷ 6d¹ 7s²",state:"Solid",ox:"+3"}],[97,"Bk","Berkelium","(247)",11,10,{en:1.30,config:"[Rn] 5f⁹ 7s²",state:"Solid",ox:"+3"}],[98,"Cf","Californium","(251)",12,10,{en:1.30,config:"[Rn] 5f¹⁰ 7s²",state:"Solid",ox:"+3"}],[99,"Es","Einsteinium","(252)",13,10,{en:1.30,config:"[Rn] 5f¹¹ 7s²",state:"Solid",ox:"+3"}],[100,"Fm","Fermium","(257)",14,10,{en:1.30,config:"[Rn] 5f¹² 7s²",state:"Solid",ox:"+3"}],[101,"Md","Mendelevium","(258)",15,10,{en:1.30,config:"[Rn] 5f¹³ 7s²",state:"Solid",ox:"+3"}],[102,"No","Nobelium","(259)",16,10,{en:1.30,config:"[Rn] 5f¹⁴ 7s²",state:"Solid",ox:"+2"}],[103,"Lr","Lawrencium","(266)",17,10,{en:1.30,config:"[Rn] 5f¹⁴ 7s² 7p¹",state:"Solid",ox:"+3"}]
+];
+const PT_CATEGORY=z=>{ // simple colour grouping
+  if([1].includes(z))return'#22c55e';
+  if([2,4,12,20,38,56,88].includes(z))return'#f59e0b';
+  if([3,11,19,37,55,87].includes(z))return'#ef4444';
+  if(z>=57&&z<=71)return'#a855f7';if(z>=89&&z<=103)return'#c084fc';
+  if((z>=21&&z<=30)||(z>=39&&z<=48)||(z>=72&&z<=80)||(z>=104&&z<=112))return'#3b82f6';
+  if([5,14,32,33,51,52].includes(z))return'#14b8a6';
+  if([9,17,35,53,85,117].includes(z))return'#eab308';
+  if([2,10,18,36,54,86,118].includes(z))return'#8b5cf6';
+  return'#64748b';};
+let ptMode=null; // null | 'en' | 'ie' | 'cond'
+const enColor=en=>{if(en==null)return'#64748b';const norm=(en-0.7)/(3.98-0.7);const clamped=Math.max(0,Math.min(1,norm));if(clamped<0.5){const t=clamped*2;return`rgb(${Math.floor(t*100)},${Math.floor(50+t*130)},${Math.floor(255-t*155)})`;}else{const t=(clamped-0.5)*2;return`rgb(${Math.floor(100+t*155)},${Math.floor(180-t*160)},${Math.floor(100-t*100)})`;}}; /* EN: blue(low)→red(high) */
+const IE_DATA={1:1312,2:2372,3:520,4:900,5:800,6:1086,7:1402,8:1314,9:1681,10:2081,11:496,12:738,13:577,14:786,15:1012,16:1000,17:1251,18:1521,19:419,20:590,21:633,22:659,23:651,24:653,25:717,26:762,27:760,28:737,29:745,30:906,31:579,32:762,33:947,34:941,35:1140,36:1351,37:403,38:550,39:600,40:640,41:652,42:685,43:702,44:711,45:720,46:805,47:731,48:868,49:558,50:709,51:834,52:869,53:1008,54:1170,55:376,56:503,57:538,72:659,73:761,74:770,75:760,76:840,77:880,78:870,79:890,80:1007,81:589,82:716,83:703,84:812,85:890,86:1037,87:393,88:509,89:499,58:534,59:527,60:533,61:540,62:545,63:547,64:593,65:566,66:573,67:581,68:589,69:597,70:603,71:524,90:587,91:568,92:598,93:605,94:585,95:578,96:581,97:601,98:608,99:619,100:627,101:635,102:642,103:443};
+const ieColor=ie=>{if(ie==null)return'#64748b';const norm=(ie-376)/(2372-376);const clamped=Math.max(0,Math.min(1,norm));if(clamped<0.5){const t=clamped*2;return`rgb(${Math.floor(t*100)},${Math.floor(50+t*130)},${Math.floor(255-t*155)})`;}else{const t=(clamped-0.5)*2;return`rgb(${Math.floor(100+t*155)},${Math.floor(180-t*160)},${Math.floor(100-t*100)})`;}}; /* IE: blue(low metals)→red(high noble gases) */
+const COND_DATA={1:0,2:0,3:4,4:4,5:2,6:2,7:0,8:0,9:0,10:0,11:4,12:4,13:5,14:2,15:1,16:1,17:0,18:0,19:4,20:4,21:4,22:4,23:4,24:4,25:4,26:4,27:4,28:4,29:5,30:4,31:4,32:2,33:2,34:1,35:1,36:0,37:4,38:4,39:4,40:4,41:4,42:4,43:4,44:4,45:4,46:4,47:5,48:4,49:4,50:4,51:2,52:2,53:1,54:0,55:4,56:4,57:4,72:4,73:4,74:4,75:4,76:4,77:4,78:4,79:5,80:3,81:4,82:4,83:3,84:3,85:1,86:0,87:4,88:4,89:4,58:4,59:4,60:4,61:4,62:4,63:4,64:4,65:4,66:4,67:4,68:4,69:4,70:4,71:4,90:4,91:4,92:4,93:4,94:4,95:4,96:4,97:4,98:4,99:4,100:4,101:4,102:4,103:4};
+const COND_LABEL={5:'Excellent conductor',4:'Metal (conductor)',3:'Poor conductor',2:'Semiconductor',1:'Insulator',0:'Non-conductive'};
+const condColor=l=>{if(l==null)return'#64748b';return['#1e293b','#1e3a8a','#0d9488','#f59e0b','#fb923c','#fbbf24'][Math.max(0,Math.min(5,l))];};
+
+/* ============================ SVG DIAGRAMS ============================ */
+const DIAGRAMS={
+ equilibrium:()=>`<svg class="diagram" viewBox="0 0 540 300" role="img" aria-label="Rate vs time graph approaching dynamic equilibrium">
+   <line class="ax" x1="60" y1="250" x2="510" y2="250"/><line class="ax" x1="60" y1="30" x2="60" y2="250"/>
+   <text x="285" y="285" text-anchor="middle" class="muted">Time →</text>
+   <text x="22" y="140" transform="rotate(-90 22 140)" text-anchor="middle" class="muted">Rate</text>
+   <path d="M60,70 C160,150 260,200 510,210" fill="none" stroke="#3b82f6" stroke-width="3"/>
+   <path d="M60,250 C160,225 260,215 510,210" fill="none" stroke="#ef4444" stroke-width="3"/>
+   <line x1="60" y1="210" x2="510" y2="210" class="gl" stroke-dasharray="5 5"/>
+   <text x="370" y="120" fill="#93c5fd">forward rate ↓</text>
+   <text x="120" y="245" fill="#fca5a5">reverse rate ↑</text>
+   <text x="320" y="202" class="accent">equal rates = equilibrium</text>
+ </svg>`,
+ energy:()=>`<svg class="diagram" viewBox="0 0 540 300" role="img" aria-label="Energy profile diagram showing activation energy and catalyst pathway">
+   <line class="ax" x1="60" y1="260" x2="510" y2="260"/><line class="ax" x1="60" y1="20" x2="60" y2="260"/>
+   <text x="285" y="292" text-anchor="middle" class="muted">Reaction progress →</text>
+   <text x="20" y="150" transform="rotate(-90 20 150)" text-anchor="middle" class="muted">Energy</text>
+   <path d="M90,190 C180,190 200,60 285,60 C370,60 390,150 470,150" fill="none" stroke="#2dd4bf" stroke-width="3"/>
+   <path d="M90,190 C180,190 200,110 285,110 C370,110 390,150 470,150" fill="none" stroke="#a855f7" stroke-width="2.5" stroke-dasharray="6 5"/>
+   <line x1="90" y1="190" x2="40" y2="190" class="gl"/><text x="100" y="205" class="muted">reactants</text>
+   <line x1="470" y1="150" x2="520" y2="150" class="gl"/><text x="415" y="170" class="muted">products</text>
+   <line x1="150" y1="190" x2="150" y2="60" class="gl" stroke-dasharray="3 3"/>
+   <text x="156" y="125" fill="#2dd4bf">Eₐ (no cat.)</text>
+   <text x="300" y="100" fill="#d8b4fe">catalysed (lower Eₐ)</text>
+   <text x="380" y="215" fill="#86efac">ΔH (exothermic)</text>
+ </svg>`,
+ ph:()=>{let cells='';const cols=['#d7263d','#f04e23','#f47b20','#f9a825','#fdd835','#c0ca33','#7cb342','#43a047','#26a69a','#00897b','#0277bd','#3949ab','#5e35b1','#6a1b9a','#4a148c'];
+   for(let i=0;i<15;i++){cells+=`<rect x="${40+i*30}" y="60" width="30" height="50" fill="${cols[i]}"/><text x="${55+i*30}" y="128" text-anchor="middle" font-size="12">${i}</text>`;}
+   return `<svg class="diagram" viewBox="0 0 520 170" role="img" aria-label="pH scale from 0 to 14">
+     ${cells}
+     <text x="55" y="45" text-anchor="middle" class="accent">ACIDIC</text>
+     <text x="250" y="45" text-anchor="middle" class="muted">NEUTRAL (7)</text>
+     <text x="455" y="45" text-anchor="middle" class="accent">BASIC</text>
+     <text x="40" y="155" font-size="11" class="muted">↑ each unit = ×10 change in [H⁺]</text>
+   </svg>`;},
+ titration:()=>`<svg class="diagram" viewBox="0 0 540 300" role="img" aria-label="Titration curve with equivalence point">
+   <line class="ax" x1="60" y1="260" x2="510" y2="260"/><line class="ax" x1="60" y1="20" x2="60" y2="260"/>
+   <text x="285" y="292" text-anchor="middle" class="muted">Volume of base added (mL) →</text>
+   <text x="20" y="150" transform="rotate(-90 20 150)" text-anchor="middle" class="muted">pH</text>
+   <path d="M70,240 C170,232 250,222 285,150 C300,70 320,52 500,42" fill="none" stroke="#2dd4bf" stroke-width="3"/>
+   <circle cx="285" cy="150" r="5" fill="#ef4444"/>
+   <line x1="285" y1="150" x2="285" y2="260" class="gl" stroke-dasharray="4 4"/>
+   <text x="295" y="120" fill="#fca5a5">equivalence point</text>
+   <text x="430" y="60" class="muted">pH 7</text>
+ </svg>`,
+ micelle:()=>{let s='';const cx=270,cy=150,R=78;for(let i=0;i<16;i++){const a=i/16*2*Math.PI;const hx=cx+Math.cos(a)*(R+22),hy=cy+Math.sin(a)*(R+22);const tx=cx+Math.cos(a)*(R-30),ty=cy+Math.sin(a)*(R-30);s+=`<line x1="${cx+Math.cos(a)*(R+18)}" y1="${cy+Math.sin(a)*(R+18)}" x2="${tx}" y2="${ty}" stroke="#8aa0b0" stroke-width="2"/><circle cx="${hx}" cy="${hy}" r="9" fill="#2dd4bf"/>`;}
+   return `<svg class="diagram" viewBox="0 0 540 300" role="img" aria-label="Soap micelle with hydrophilic heads out and hydrophobic tails in">
+     <circle cx="${cx}" cy="${cy}" r="${R-34}" fill="rgba(245,158,11,.18)" stroke="#f59e0b" stroke-dasharray="4 4"/>
+     <text x="${cx}" y="${cy+4}" text-anchor="middle" fill="#fcd34d" font-size="12">grease</text>
+     ${s}
+     <text x="${cx}" y="285" text-anchor="middle" class="muted">heads (●) face water · tails face grease</text>
+   </svg>`;}
+};
+
+/* ============================ DRILL GENERATORS (7) ============================ */
+const rnd=(a,b,dp=0)=>{const v=a+Math.random()*(b-a);return dp?+v.toFixed(dp):Math.round(v);};
+const DRILLS=[
+ {id:"ph_from_h",name:"pH from [H⁺]",gen:()=>{const m=rnd(1.1,9.5,2),e=rnd(2,6);const H=m*Math.pow(10,-e);const pH=(-Math.log10(H)).toFixed(2);
+   return{prob:`A solution has [H⁺] = ${m}×10⁻${e} mol L⁻¹. Calculate the pH.`,
+   sol:`pH = −log₁₀[H⁺]\n   = −log₁₀(${m}×10⁻${e})\n   = ${pH}`};}},
+ {id:"h_from_ph",name:"[H⁺] from pH",gen:()=>{const pH=rnd(1.2,12.8,2);const H=Math.pow(10,-pH);
+   return{prob:`A solution has pH = ${pH}. Calculate [H⁺] in mol L⁻¹.`,
+   sol:`[H⁺] = 10^(−pH)\n     = 10^(−${pH})\n     = ${H.toExponential(2)} mol L⁻¹`};}},
+ {id:"dilution",name:"Dilution (c₁V₁=c₂V₂)",gen:()=>{const c1=rnd(0.5,2.5,2),v2=rnd(100,500),c2=rnd(0.05,0.3,3);const v1=(c2*v2/c1);
+   return{prob:`What volume of ${c1} mol L⁻¹ stock is needed to make ${v2} mL of ${c2} mol L⁻¹ solution?`,
+   sol:`c₁V₁ = c₂V₂\nV₁ = c₂V₂/c₁ = (${c2}×${v2})/${c1}\nV₁ = ${v1.toFixed(1)} mL (then make up to ${v2} mL)`};}},
+ {id:"ksp",name:"Ksp → solubility",gen:()=>{const types=[{n:"AgCl",p:1,exp:"s²",solve:k=>Math.sqrt(k)},{n:"PbI₂",p:2,exp:"4s³",solve:k=>Math.cbrt(k/4)}];const t=types[rnd(0,types.length-1)];const m=rnd(1.1,9,1),e=rnd(8,11);const k=m*Math.pow(10,-e);const s=t.solve(k);
+   return{prob:`${t.n} has Ksp = ${m}×10⁻${e}. Calculate its molar solubility (mol L⁻¹).`,
+   sol:`${t.n} ⇌ ions ; Ksp = ${t.exp}\n${t.exp} = ${m}×10⁻${e}\ns = ${s.toExponential(2)} mol L⁻¹`};}},
+ {id:"titration",name:"Titration concentration",gen:()=>{const cs=rnd(0.05,0.25,3),va=rnd(20,25),vt=rnd(15,28,1),ratio=[1,2][rnd(0,1)];const nStd=cs*va/1000;const nUnk=nStd*ratio;const cUnk=nUnk/(vt/1000);
+   return{prob:`${va}.0 mL of ${cs} mol L⁻¹ standard reacts with the unknown in a ${ratio===1?'1:1':'1:2 (standard:unknown)'} ratio. Average titre = ${vt} mL. Find the unknown's concentration.`,
+   sol:`n(std) = c×V = ${cs}×${(va/1000).toFixed(4)} = ${nStd.toExponential(3)} mol\nn(unknown) = ${ratio}×n(std) = ${nUnk.toExponential(3)} mol\nc = n/V = ${nUnk.toExponential(3)} / ${(vt/1000).toFixed(4)}\nc = ${cUnk.toFixed(3)} mol L⁻¹`};}},
+ {id:"calorimetry",name:"Calorimetry (q=mcΔT)",gen:()=>{const m=rnd(50,200),dT=rnd(3,30,1),n=rnd(0.02,0.2,3);const q=m*4.18*dT;const dH=-(q/1000)/n;
+   return{prob:`${m} g of water rises ${dT} °C when ${n} mol of fuel/acid reacts. Find q and the molar enthalpy ΔH.`,
+   sol:`q = mcΔT = ${m}×4.18×${dT} = ${q.toFixed(0)} J = ${(q/1000).toFixed(2)} kJ\nΔH = −q/n = −${(q/1000).toFixed(2)}/${n}\nΔH = ${dH.toFixed(1)} kJ mol⁻¹`};}},
+ {id:"keq",name:"Equilibrium constant Keq",gen:()=>{const A=rnd(0.1,1,2),B=rnd(0.1,1,2),C=rnd(0.2,2,2);const K=(C*C)/(A*B);
+   return{prob:`For A + B ⇌ 2C at equilibrium: [A]=${A}, [B]=${B}, [C]=${C} mol L⁻¹. Calculate Keq.`,
+   sol:`Keq = [C]² / ([A][B])\n    = (${C})² / (${A}×${B})\n    = ${(C*C).toFixed(3)} / ${(A*B).toFixed(3)}\n    = ${K.toFixed(2)}`};}}
+];
+
+/* ============================ CONTENT MERGE HELPERS ============================ */
+function moduleById(id){return MODULES.find(m=>m.id===id);}
+function addedDotsFor(modId){return (state.addedDots[modId]||[]);}
+function allTopics(mod){return mod.topics.concat(addedDotsFor(mod.id));}
+function topicById(tid){for(const m of MODULES){const t=allTopics(m).find(x=>x.id===tid);if(t)return{topic:t,mod:m};}return null;}
+function field(tid,name,base){const k=tid+":"+name;return (k in state.edits)?state.edits[k]:(base||"");}
+function qCount(tid,baseLen){return baseLen+(state.addedQ[tid]||0);}
+function allDots(){const out=[];MODULES.forEach(m=>allTopics(m).forEach(t=>out.push({t,m})));return out;}
+function totalDots(){return allDots().length;}
+function checkedCount(){return allDots().filter(({t})=>state.check[t.id]).length;}
+function modProgress(m){const ts=allTopics(m);if(!ts.length)return 0;return Math.round(ts.filter(t=>state.check[t.id]).length/ts.length*100);}
+function confOf(tid){return state.conf[tid]||"";}
+
+/* auto weak-spots from quiz accuracy */
+function quizAccuracyOf(tid){const s=state.quizStats[tid];if(!s||(s.r+s.w)===0)return null;return s.r/(s.r+s.w);}
+function isAutoWeak(tid){const a=quizAccuracyOf(tid);return a!=null&&a<0.5;}     // <50% correct in quizzes
+/* effective confidence used for sorting/weak-spots: manual rating wins; else quiz signal */
+function effConf(tid){const c=confOf(tid);if(c)return c;if(isAutoWeak(tid))return 'weak';const a=quizAccuracyOf(tid);if(a!=null&&a<0.75)return 'shaky';return '';}
+
+/* readiness score 0-100: blends completion, confidence, quiz accuracy */
+function readiness(){const dots=allDots();if(!dots.length)return 0;
+  let comp=0,conf=0;dots.forEach(({t})=>{if(state.check[t.id])comp++;const c=effConf(t.id);conf+=(c==='good'||(!c&&state.check[t.id]))?1:c==='shaky'?0.5:c==='weak'?0:0;});
+  comp/=dots.length;conf/=dots.length;
+  const ql=state.quizLog;const acc=ql.length?ql.reduce((s,q)=>s+q.score/q.total,0)/ql.length:0;
+  const qWeight=ql.length?0.25:0;const cWeight=0.35,compWeight=0.40+(ql.length?0:0.25);
+  return Math.round((comp*compWeight+conf*cWeight+acc*qWeight)*100);}
+
+/* daily history snapshot (one per day) for progress chart */
+function snapshotHistory(){const d=TODAY();const comp=totalDots()?Math.round(checkedCount()/totalDots()*100):0;
+  const ql=state.quizLog;const acc=ql.length?Math.round(ql.reduce((s,q)=>s+q.score/q.total,0)/ql.length*100):0;
+  const rec={date:d,completion:comp,quiz:acc,readiness:readiness()};
+  const last=state.history[state.history.length-1];
+  if(last&&last.date===d)state.history[state.history.length-1]=rec;else state.history.push(rec);
+  save();}
+
+/* ---- SRS (spaced repetition) ---- */
+function srsCards(){const cards=[];allDots().forEach(({t,m})=>{
+  const title=stripTags(field(t.id,'title',t.title));
+  const defv=stripTags(field(t.id,'def',t.def));
+  if(defv)cards.push({id:t.id+'#def',tid:t.id,mod:m.num,front:title,back:defv,kind:'Concept'});
+  const base=t.questions||[];const n=qCount(t.id,base.length);
+  for(let i=0;i<n;i++){const q=stripTags(field(t.id,'q'+i,base[i]?base[i].q:''));const a=stripTags(field(t.id,'a'+i,base[i]?base[i].a:''));if(q&&a)cards.push({id:t.id+'#q'+i,tid:t.id,mod:m.num,front:q,back:a,kind:'Question'});}
+});return cards;}
+function srsDue(card){const r=state.srs[card.id];if(!r)return true;return r.due<=TODAY();}
+function srsRate(cardId,grade){ // grade: again|hard|good|easy
+  const r=state.srs[cardId]||{interval:0,reps:0};let iv;
+  if(grade==='again')iv=0; else if(grade==='hard')iv=Math.max(1,Math.round((r.interval||1)*1.2));
+  else if(grade==='good')iv=r.interval?Math.round(r.interval*2.3):1; else iv=r.interval?Math.round(r.interval*3.5):3;
+  state.srs[cardId]={interval:iv,reps:(r.reps||0)+1,due:addDays(TODAY(),iv),last:TODAY()};save();}
+function dueCount(){return srsCards().filter(srsDue).length;}
+
+/* ============================ NAV / ROUTER ============================ */
+const NAV=[
+ {id:"dashboard",ic:"▢",label:"Dashboard"},
+ {id:"m5",ic:"5",label:"Mod 5 · Equilibrium"},
+ {id:"m6",ic:"6",label:"Mod 6 · Acids/Bases"},
+ {id:"m7",ic:"7",label:"Mod 7 · Organic"},
+ {id:"m8",ic:"8",label:"Mod 8 · Applied"},
+ {id:"flashcards",ic:"🂠",label:"Flashcards"},
+ {id:"quiz",ic:"?",label:"Quiz Mode"},
+ {id:"revision",ic:"★",label:"Smart Revision"},
+ {id:"drills",ic:"∑",label:"Calculation Drills"},
+ {id:"hscbank",ic:"§",label:"HSC Questions"},
+ {id:"technique",ic:"✎",label:"Exam Technique"},
+ {id:"practicals",ic:"⚗",label:"Practical Library"},
+ {id:"formula",ic:"ƒ",label:"Formula Sheet"},
+ {id:"reference",ic:"⊞",label:"Data & Periodic"},
+ {id:"glossary",ic:"A",label:"Glossary"}
+];
+let CURRENT="dashboard";let pendingJump=null;
+function buildNav(){const nav=document.getElementById('nav');nav.innerHTML=NAV.map(n=>{
+  let badge='';if(/^m[5-8]$/.test(n.id))badge=`<span class="badge">${modProgress(moduleById(n.id))}%</span>`;
+  else if(n.id==='flashcards'){const d=dueCount();if(d)badge=`<span class="badge" style="background:var(--accent);color:#042">${d}</span>`;}
+  return `<button class="navbtn ${n.id===CURRENT?'active':''}" data-nav="${n.id}"><span class="ic">${n.ic}</span>${esc(n.label)}${badge}</button>`;
+}).join('');}
+function go(view){CURRENT=view;buildNav();render();window.scrollTo(0,0);}
+
+/* ============================ RENDER: ROUTER ============================ */
+function render(){
+  const main=document.getElementById('main');
+  if(CURRENT==="dashboard")main.innerHTML=viewDashboard();
+  else if(/^m[5-8]$/.test(CURRENT))main.innerHTML=viewModule(CURRENT);
+  else if(CURRENT==="quiz")main.innerHTML=viewQuiz();
+  else if(CURRENT==="revision")main.innerHTML=viewRevision();
+  else if(CURRENT==="drills")main.innerHTML=viewDrills();
+  else if(CURRENT==="practicals")main.innerHTML=viewPracticals();
+  else if(CURRENT==="formula")main.innerHTML=viewFormula();
+  else if(CURRENT==="flashcards")main.innerHTML=viewFlashcards();
+  else if(CURRENT==="hscbank")main.innerHTML=viewHscBank();
+  else if(CURRENT==="technique")main.innerHTML=viewTechnique();
+  else if(CURRENT==="reference"){main.innerHTML=viewReference();drawPeriodic();}
+  else if(CURRENT==="glossary"){main.innerHTML=viewGlossary();filterGloss();}
+  if(pendingJump){const{tid}=pendingJump;pendingJump=null;setTimeout(()=>openDot(tid),60);}
+}
+
+/* ---------- DASHBOARD ---------- */
+function viewDashboard(){
+  const total=totalDots(),done=checkedCount();const pct=total?Math.round(done/total*100):0;
+  const weak=allDots().filter(({t})=>effConf(t.id)==="weak");
+  const shaky=allDots().filter(({t})=>effConf(t.id)==="shaky");
+  const ready=readiness();const due=dueCount();
+  const ql=state.quizLog;const lastQ=ql[ql.length-1];
+  const avg=ql.length?Math.round(ql.reduce((s,q)=>s+q.score/q.total,0)/ql.length*100):0;
+  const days=examDays();
+  const modCards=MODULES.map(m=>`<div class="card"><div class="row" style="justify-content:space-between"><b>Module ${m.num}</b><span class="pill">${modProgress(m)}%</span></div>
+     <div class="muted small" style="margin:4px 0 8px">${esc(m.title)}</div><div class="bar"><i style="width:${modProgress(m)}%"></i></div></div>`).join('');
+  const weakList=weak.concat(shaky).slice(0,8).map(({t,m})=>{const ec=effConf(t.id);const auto=!confOf(t.id)&&(isAutoWeak(t.id)||quizAccuracyOf(t.id)!=null);
+    return `<div class="kv" style="cursor:pointer" data-jump="${t.id}"><span>${ec==='weak'?'🔴':'🟠'} ${esc(stripTags(field(t.id,'title',t.title)))} ${auto?'<span class="pill" style="font-size:9px">from quiz</span>':''}</span><span class="muted small">Mod ${m.num} →</span></div>`;}).join('')||'<div class="muted small">No weak spots yet — rate your confidence on topics, or take quizzes to auto-flag weak areas.</div>';
+  const readyColor=ready>=75?'var(--green)':ready>=50?'var(--amber)':'var(--red)';
+  return `
+  <div class="page-head"><div><h1>Dashboard</h1><p>Your progress across HSC Chemistry Modules 5–8.</p></div></div>
+  <div class="grid g4">
+    <div class="card" style="text-align:center"><div class="ring" style="--p:${ready};background:conic-gradient(${readyColor} calc(${ready}*3.6deg),var(--surface2) 0)"><div class="inner"><b>${ready}%</b><small>exam-ready</small></div></div><div class="muted small" style="margin-top:10px">Readiness score</div></div>
+    <div class="card" style="text-align:center"><div class="ring" style="--p:${pct}"><div class="inner"><b>${pct}%</b><small>${done}/${total}</small></div></div><div class="muted small" style="margin-top:10px">Topics completed</div></div>
+    <div class="card stat"><div class="lbl">Exam countdown</div><div class="big accent">${days==null?'—':days}</div><div class="muted small">${days==null?'Set your exam date':'days until 30 Oct 2026'}</div>
+      <div class="divider"></div><div class="lbl">Cards due today</div><div class="big">${due}</div><button class="btn sm ${due?'':'ghost'}" data-nav="flashcards" style="margin-top:6px">Review →</button></div>
+    <div class="card stat"><div class="lbl">Quiz performance</div><div class="big">${avg}%</div><div class="muted small">${ql.length} quiz(zes) · ${lastQ?('last '+lastQ.score+'/'+lastQ.total):'none yet'}</div>
+      <div class="divider"></div><div class="lbl">Confidence</div><div class="small">🟢 ${allDots().filter(({t})=>effConf(t.id)==='good').length} · 🟠 ${shaky.length} · 🔴 ${weak.length}</div>
+      <button class="btn sm ghost" data-nav="quiz" style="margin-top:8px">Start a quiz →</button></div>
+  </div>
+  ${progressChart()}
+  <h3 style="margin:18px 0 8px">Module progress</h3>
+  <div class="grid g4">${modCards}</div>
+  <h3 style="margin:18px 0 8px">⚠ Weak spots tracker</h3>
+  <div class="card">${weakList}${(weak.length+shaky.length)>8?`<div class="muted small" style="margin-top:8px">+${weak.length+shaky.length-8} more — see <a data-nav="revision" style="cursor:pointer">Smart Revision</a></div>`:''}</div>`;
+}
+function progressChart(){
+  const h=state.history.slice(-30);if(h.length<2)return `<div class="card muted small">📈 Progress chart will appear here once you've used the tool on 2+ days (it logs a snapshot daily).</div>`;
+  const W=720,H=180,pad=34;const n=h.length;const xs=i=>pad+(i/(n-1))*(W-pad-10);const ys=v=>H-pad-(v/100)*(H-pad-14);
+  const line=(key,col)=>{let d='';h.forEach((r,i)=>{d+=(i?'L':'M')+xs(i).toFixed(1)+','+ys(r[key]).toFixed(1)+' ';});return `<path d="${d}" fill="none" stroke="${col}" stroke-width="2.5"/>`;};
+  const grid=[0,25,50,75,100].map(v=>`<line class="gl" x1="${pad}" y1="${ys(v)}" x2="${W-10}" y2="${ys(v)}"/><text x="6" y="${ys(v)+4}" font-size="10" class="muted">${v}</text>`).join('');
+  return `<div class="card"><div class="row" style="justify-content:space-between"><h3 style="margin:0">Progress over time</h3>
+    <div class="small"><span style="color:var(--accent)">● readiness</span> &nbsp; <span style="color:#3b82f6">● completion</span> &nbsp; <span style="color:#f59e0b">● quiz avg</span></div></div>
+    <svg class="diagram" viewBox="0 0 ${W} ${H}" style="max-width:100%">${grid}${line('completion','#3b82f6')}${line('quiz','#f59e0b')}${line('readiness','var(--accent)')}
+    <text x="${pad}" y="${H-8}" font-size="10" class="muted">${esc(h[0].date.slice(5))}</text><text x="${W-50}" y="${H-8}" font-size="10" class="muted">${esc(h[h.length-1].date.slice(5))}</text></svg></div>`;
+}
+function stripTags(s){return String(s).replace(/<[^>]+>/g,'');}
+
+/* ---------- MODULE VIEW ---------- */
+function viewModule(modId){
+  const m=moduleById(modId);const ts=allTopics(m);
+  const edit=state.editMode;
+  const dots=ts.map(t=>dotHTML(t,m)).join('');
+  return `
+  <div class="page-head"><div><h1>Module ${m.num} — ${esc(m.title)}</h1><p>${esc(m.sub)}</p></div><div class="spacer"></div>
+    <button class="btn sm ${edit?'on':'ghost'}" data-toggle-edit>${edit?'✓ Editing — done':'✎ Edit content'}</button></div>
+  ${edit?'<div class="card small muted">Edit mode on: click any coloured box text to edit it. Use the buttons below each topic to add questions, and the button at the bottom to add a new dot point. Everything saves automatically and survives file updates.</div>':''}
+  <div class="row" style="margin-bottom:12px"><span class="pill">${modProgress(m)}% complete</span><span class="pill">${ts.filter(t=>state.check[t.id]).length}/${ts.length} done</span>${!m.full?'<span class="pill">Skeleton + basics</span>':''}</div>
+  ${dots}
+  ${edit?`<button class="btn ghost" data-add-dot="${m.id}">+ Add a new dot point to Module ${m.num}</button>`:''}`;
+}
+/* --- pretty-format box content --- */
+function prettyLine(s){
+  if(!s.trim())return'';
+  const chunks=s.split(/\.\s+(?=<b>)/).filter(c=>c.trim());
+  if(chunks.length>1)return chunks.map(c=>prettyLine(c)).join('');
+  const lm=s.match(/^<b>([^<]+)<\/b>[:—–\s]\s*([\s\S]*)/);
+  if(lm)return`<div style="display:flex;gap:11px;padding:6px 0;border-bottom:1px solid rgba(128,128,128,.1);align-items:flex-start"><span style="font-weight:700;min-width:88px;max-width:130px;flex-shrink:0;font-size:12px;opacity:.8;padding-top:2px;line-height:1.4">${lm[1]}</span><span style="flex:1;font-size:13.5px;line-height:1.55">${lm[2]}</span></div>`;
+  return`<div style="padding:4px 0;font-size:13.5px;line-height:1.55">${s}</div>`;}
+function prettyBox(raw,cls){
+  if(!raw)return'';
+  const div=s=>`<div style="padding:4px 0;border-bottom:1px solid rgba(128,128,128,.1)">${s}</div>`;
+  if(cls==='calc'){
+    const lines=raw.split('\n').filter(l=>l.trim());
+    if(lines.length<2)return`<span style="white-space:pre-wrap">${esc(raw)}</span>`;
+    return lines.map(l=>div(`<span style="font-family:'IBM Plex Mono',monospace;font-size:13px">${esc(l)}</span>`)).join('');}
+  if(cls==='eqn'){
+    const lines=raw.split('\n').filter(l=>l.trim());
+    if(lines.length<2)return raw;
+    return lines.map(l=>div(l)).join('');}
+  if(raw.includes('\n'))return raw.split('\n').filter(l=>l.trim()).map(l=>prettyLine(l)).join('');
+  return prettyLine(raw);}
+
+function box(tid,cls,label,name,base,editable){
+  const txt=field(tid,name,base);
+  if(!txt && !editable)return '';
+  let body;
+  if(editable){
+    body=cls==='calc'
+      ?`<div class="body" contenteditable data-ek="${tid}:${name}">${esc(txt)}</div>`
+      :`<div contenteditable data-ek="${tid}:${name}">${txt||'<span class="muted">(empty — click to add)</span>'}</div>`;
+  } else {
+    body=`<div>${prettyBox(txt,cls)}</div>`;}
+  return `<div class="box ${cls}${editable?' editing':''}"><span class="bx-l">${label}</span>${body}</div>`;
+}
+function dotHTML(t,m){
+  const tid=t.id;const checked=state.check[tid]?'checked':'';const conf=confOf(tid);const edit=state.editMode;
+  const tags=(t.tags||[]).map(tg=>{const cl=tg.toLowerCase()==='hsc'?'hsc':tg.toLowerCase()==='syllabus'?'syl':tg.toLowerCase()==='custom'?'custom':'';return `<span class="tag ${cl}">${esc(tg)}</span>`;}).join('');
+  const title=field(tid,'title',t.title);
+  let boxes='';
+  boxes+=box(tid,'def','Definition','def',t.def,edit);
+  boxes+=box(tid,'eqn','Equations','eqn',t.eqn,edit);
+  boxes+=box(tid,'tip','Practical tip','tip',t.tip,edit);
+  boxes+=box(tid,'trap','Exam trap','trap',t.trap,edit);
+  boxes+=box(tid,'mnem','Mnemonic','mnem',t.mnem,edit);
+  boxes+=box(tid,'calc','Worked calculation template','calc',t.calc,edit);
+  let diagram='';const dkey=field(tid,'diagram',t.diagram);if(dkey&&DIAGRAMS[dkey])diagram=DIAGRAMS[dkey]();
+  // questions
+  const baseQs=t.questions||[];const n=qCount(tid,baseQs.length);let qs='';
+  for(let i=0;i<n;i++){const bq=baseQs[i];const qtxt=field(tid,'q'+i,bq?bq.q:'');const atxt=field(tid,'a'+i,bq?bq.a:'');const type=bq?bq.type:'Custom';
+    qs+=`<div class="q"><div class="qq"><span class="tag ${type==='HSC'?'hsc':type==='Custom'?'custom':'syl'}" style="margin-right:6px">${esc(type)}</span><span ${edit?'contenteditable':''} data-ek="${tid}:q${i}">${qtxt||(edit?'(question)':'')}</span></div>
+      <button class="reveal" data-reveal>Reveal answer</button>
+      <div class="ans" ${edit?'contenteditable':''} data-ek="${tid}:a${i}">${atxt||(edit?'(answer)':'')}</div></div>`;}
+  const notes=esc(state.notes[tid]||'');
+  return `<div class="dot ${state.check[tid]?'':''}" id="dot-${tid}">
+    <div class="dot-h" data-dot-head="${tid}">
+      <input class="chk" type="checkbox" ${checked} data-check="${tid}" title="Mark as 'Got it'"/>
+      <div class="ttl"><span ${edit?'contenteditable':''} data-ek="${tid}:title">${title}</span>${tags?`<div class="tags">${tags}</div>`:''}</div>
+      <div class="conf-dot ${conf?('conf-'+conf):''}" title="${conf||'unrated'}"></div>
+      <span class="chev">▶</span>
+    </div>
+    <div class="dot-body">
+      ${boxes}
+      ${diagram}
+      <div class="confrow"><span>Confidence:</span>
+        <button class="cbtn good ${conf==='good'?'on':''}" data-conf="${tid}|good">😎 Confident</button>
+        <button class="cbtn shaky ${conf==='shaky'?'on':''}" data-conf="${tid}|shaky">😐 Shaky</button>
+        <button class="cbtn weak ${conf==='weak'?'on':''}" data-conf="${tid}|weak">😬 Weak</button>
+      </div>
+      ${qs}
+      ${edit?`<button class="btn sm ghost" data-add-q="${tid}" style="margin-top:8px">+ Add question</button>`:''}
+      <textarea class="notes" placeholder="Your personal notes for this topic…" data-note="${tid}">${notes}</textarea>
+    </div>
+  </div>`;
+}
+
+/* ---------- QUIZ ---------- */
+let quiz=null;
+function noOx(t){return t.replace(/,\s+(and|or)(\s)/gi,' $1$2');}
+function stripEg(t){return t.replace(/\s*\([^)]{1,80}\)/g,'').replace(/[\s,]+(e\.g\.|for example|such as|including|like)[^;.,]*/gi,'').trim().replace(/[,;]\s*$/,'');}
+function shortCrit(t){let s=stripEg(t);const w=s.split(' ');if(w.length>22)s=w.slice(0,22).join(' ')+'…';return noOx(s);}
+function sampleAns(t){const sents=t.split(/\.\s+(?=[A-Z])/).filter(s=>s.trim().length>5);const out=sents.slice(0,3).join('. ');return noOx(out.endsWith('.')?out:out+'.');}
+function parseCriteria(ans,marks){
+  const numbered=ans.split(/\s*\(\d+\)\s+/).filter(s=>s.trim().length>8);
+  if(numbered.length>=marks)return numbered.slice(0,marks).map(t=>t.replace(/\.$/,'').trim());
+  const semis=ans.split(/;\s+/).filter(s=>s.trim().length>8);
+  if(semis.length>=marks)return semis.slice(0,marks).map(t=>t.replace(/\.$/,'').trim());
+  const sents=ans.split(/\.\s+(?=[A-Z])/).filter(s=>s.trim().length>8);
+  if(sents.length>=marks)return sents.slice(0,marks).map(t=>t.trim());
+  const words=ans.split(' ');const chunk=Math.ceil(words.length/marks);
+  return Array.from({length:marks},(_,i)=>words.slice(i*chunk,(i+1)*chunk).join(' ')).filter(Boolean);}
+function gatherQuestions(modIds){
+  const out=[];
+  MODULES.filter(m=>modIds.includes(m.id)).forEach(m=>{allTopics(m).forEach(t=>{const base=t.questions||[];const n=qCount(t.id,base.length);for(let i=0;i<n;i++){const bq=base[i];const q=field(t.id,'q'+i,bq?bq.q:'');const a=field(t.id,'a'+i,bq?bq.a:'');if(q&&a)out.push({q,a,type:bq?bq.type:'Custom',mod:m.num,tid:t.id,marks:bq&&bq.marks?bq.marks:1,qtype:bq&&bq.qtype?bq.qtype:'short',part:bq&&bq.part?bq.part:'',choices:bq?bq.choices||null:null,correct:bq&&bq.correct!=null?bq.correct:null});}});});
+  MC_BANK.filter(q=>modIds.some(id=>{const m=moduleById(id);return m&&m.num===q.mod;})).forEach(q=>out.push(q));
+  return out;
+}
+function viewQuiz(){
+  if(quiz&&quiz.active)return quizRunningHTML();
+  if(quiz&&quiz.done)return quizResultHTML();
+  if(!quiz)quiz={sel:MODULES.map(m=>m.id),len:10,qtype:'all'};
+  if(!quiz.qtype)quiz.qtype='all';
+  const modChips=MODULES.map(m=>`<button class="chip ${quiz.sel.includes(m.id)?'on':''}" data-quizmod="${m.id}">Mod ${m.num}</button>`).join('');
+  const typeChips=[['all','All types'],['short','Written'],['mc','Multiple Choice']].map(([v,l])=>`<button class="chip ${quiz.qtype===v?'on':''}" data-qtype="${v}">${l}</button>`).join('');
+  let pool=gatherQuestions(quiz.sel);
+  if(quiz.qtype!=='all')pool=pool.filter(q=>(q.qtype||'short')===quiz.qtype);
+  const avail=pool.length;
+  const availMarks=pool.reduce((s,q)=>s+(q.marks||1),0);
+  const hist=state.quizLog.slice().reverse().slice(0,8).map(q=>`<div class="kv"><span>${esc(q.date)} · Mods ${q.mods}</span><span class="${q.score/q.total>=0.7?'accent':''}">${q.score}/${q.total} marks (${Math.round(q.score/q.total*100)}%)</span></div>`).join('')||'<div class="muted small">No quizzes logged yet.</div>';
+  return `
+  <div class="page-head"><div><h1>Quiz Mode</h1><p>Typed answers, multiple choice, and mark-based scoring.</p></div></div>
+  <div class="card">
+    <b>1. Pick modules</b><div class="chips" style="margin:8px 0 14px">${modChips}</div>
+    <b>2. Question type</b><div class="chips" style="margin:8px 0 14px">${typeChips}</div>
+    <b>3. How many questions?</b>
+    <div class="row" style="margin:8px 0 14px"><select id="quizLen">
+      ${[5,10,15,20].map(n=>`<option value="${n}" ${quiz.len===n?'selected':''}>${n} questions</option>`).join('')}
+    </select><span class="muted small">${avail} questions · ${availMarks} marks available</span></div>
+    <button class="btn" data-quizstart ${avail===0?'disabled':''}>Start quiz →</button>
+  </div>
+  <h3 style="margin:18px 0 8px">History</h3><div class="card">${hist}</div>`;
+}
+function quizRunningHTML(){
+  const q=quiz.items[quiz.i];
+  const marks=q.marks||1;
+  const qtype=q.qtype||'short';
+  const isMC=qtype==='mc';
+  const part=q.part?`<span class="muted">(${q.part})</span> `:'';
+  const markPips='●'.repeat(Math.min(marks,5))+(marks>5?'+':'');
+  let body='';
+  if(isMC){
+    const choices=q.choices||[];
+    const done=quiz.mcSelected!=null;
+    body=choices.map((c,i)=>{
+      let style='width:100%;text-align:left;margin:5px 0;padding:10px 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);cursor:pointer;color:var(--text)';
+      if(done){if(i===q.correct)style+='background:#14532d44;border-color:#22c55e';else if(i===quiz.mcSelected)style+='background:#7f1d1d44;border-color:#ef4444';}
+      return `<button style="${style}" data-quizmcanswer="${i}" ${done?'disabled':''}>${esc(c)}</button>`;
+    }).join('');
+    if(done){
+      const correct=quiz.mcSelected===q.correct;
+      body+=`<div class="box ${correct?'def':'trap'}" style="margin-top:12px"><span class="bx-l">${correct?'✓ Correct +'+marks+' mark'+(marks>1?'s':''):'✗ Incorrect'}</span>${esc(q.a)}</div>
+      <div class="row" style="margin-top:12px"><button class="btn" data-quizmark="${correct?marks:0}">Next →</button></div>`;
+    }
+  } else {
+    body=`<textarea class="notes" style="width:100%;min-height:90px;margin:10px 0 6px;box-sizing:border-box" placeholder="Type your answer here…" id="quizAnswer">${esc(quiz.userAnswer||'')}</textarea>`;
+    if(!quiz.revealed){
+      body+=`<button class="btn" data-quizreveal>Done →</button>`;
+    } else {
+      if(quiz.userAnswer)body+=`<div style="background:var(--surface2);border-left:3px solid var(--line);border-radius:6px;padding:10px 12px;font-size:13px;margin:10px 0 14px;white-space:pre-wrap"><span style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em">Your answer</span>${esc(quiz.userAnswer)}</div>`;
+      const criteria=parseCriteria(q.a,marks);
+      const breakdown=criteria.map(c=>`<div style="display:flex;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);align-items:flex-start"><span style="color:var(--accent);font-weight:700;white-space:nowrap;min-width:58px;font-size:13px">1 mark —</span><span style="flex:1;font-size:14px;line-height:1.45">${esc(shortCrit(c))}</span></div>`).join('');
+      body+=`<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px">Marks breakdown</div>${breakdown}</div>`;
+      body+=`<div class="box def" style="margin-bottom:14px"><span class="bx-l">Sample answer</span><div style="font-size:14px;line-height:1.55">${esc(sampleAns(q.a))}</div></div>`;
+      const markBtns=Array.from({length:marks+1},(_,n)=>`<button class="btn sm ${n===marks?'':'ghost'}" data-quizmark="${n}" style="min-width:46px">${n}/${marks}</button>`).join(' ');
+      body+=`<div style="margin-top:14px"><div class="row" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><span class="muted small">Award yourself:</span><div class="row" style="flex-wrap:wrap;gap:6px">${markBtns}</div></div></div>`;
+    }
+  }
+  const marksStr=quiz.marksAvail>0?`${quiz.marksEarned}/${quiz.marksAvail} marks`:'';
+  return `<div class="page-head"><div><h1>Quiz · Q${quiz.i+1}/${quiz.items.length}</h1><p>${marksStr}</p></div></div>
+  <div class="card">
+    <div class="row" style="justify-content:space-between;margin-bottom:12px">
+      <div class="chips" style="gap:4px"><span class="chip on" style="pointer-events:none">${esc(q.type)}</span><span class="chip on" style="pointer-events:none">Mod ${q.mod}</span><span class="chip on" style="pointer-events:none">${isMC?'Multiple Choice':marks+' mark'+(marks>1?'s':'')}</span>${q.part?`<span class="chip on" style="pointer-events:none">Part (${q.part})</span>`:''}</div>
+      <span class="accent" title="${marks} mark${marks>1?'s':''}">${markPips}</span>
+    </div>
+    <div class="qq" style="font-size:16px;margin-bottom:12px">${part}${q.q}</div>
+    ${body}
+  </div>`;
+}
+function quizResultHTML(){
+  const pct=quiz.marksAvail>0?Math.round(quiz.marksEarned/quiz.marksAvail*100):0;
+  const grade=pct>=90?'🏆 Outstanding':pct>=75?'⭐ Strong':pct>=50?'📈 Developing':'📚 Needs work';
+  return `<div class="page-head"><div><h1>Quiz complete</h1><p>${grade} — logged to your history.</p></div></div>
+  <div class="card" style="text-align:center">
+    <div class="ring" style="--p:${pct}"><div class="inner"><b>${pct}%</b><small>${quiz.marksEarned}/${quiz.marksAvail}</small></div></div>
+    <p class="muted" style="margin:8px 0 16px">${quiz.marksEarned} marks earned of ${quiz.marksAvail} available</p>
+    <div class="row" style="justify-content:center"><button class="btn" data-quizagain>New quiz</button><button class="btn ghost" data-nav="revision">Revise weak spots</button></div>
+  </div>`;
+}
+
+/* ---------- SMART REVISION ---------- */
+let revFilter={mod:"all",status:"all"};
+function viewRevision(){
+  const order={weak:0,shaky:1,"":2,good:3};
+  let dots=allDots().slice().sort((a,b)=>order[effConf(a.t.id)]-order[effConf(b.t.id)]);
+  if(revFilter.mod!=="all")dots=dots.filter(({m})=>m.id===revFilter.mod);
+  if(revFilter.status!=="all")dots=dots.filter(({t})=>revFilter.status==="untouched"?!effConf(t.id):effConf(t.id)===revFilter.status);
+  const modChips=['all',...MODULES.map(m=>m.id)].map(id=>`<button class="chip ${revFilter.mod===id?'on':''}" data-revmod="${id}">${id==='all'?'All mods':'Mod '+moduleById(id).num}</button>`).join('');
+  const statChips=[['all','All'],['weak','🔴 Weak'],['shaky','🟠 Shaky'],['untouched','Untouched'],['good','🟢 Good']].map(([v,l])=>`<button class="chip ${revFilter.status===v?'on':''}" data-revstat="${v}">${l}</button>`).join('');
+  const rows=dots.map(({t,m})=>{const c=effConf(t.id);const ic=c==='weak'?'🔴':c==='shaky'?'🟠':c==='good'?'🟢':'⚪';const acc=quizAccuracyOf(t.id);
+    return `<div class="kv" style="cursor:pointer" data-jump="${t.id}"><span>${ic} ${esc(stripTags(field(t.id,'title',t.title)))}</span><span class="muted small">${acc!=null?Math.round(acc*100)+'% quiz · ':''}Mod ${m.num} ${state.check[t.id]?'· ✓':''} →</span></div>`;}).join('')||'<div class="muted small">Nothing matches this filter.</div>';
+  return `<div class="page-head"><div><h1>Smart Revision</h1><p>Topics ranked by priority — weak first, then shaky, then untouched. Click any to jump to it.</p></div></div>
+  <div class="card"><div class="small muted" style="margin-bottom:6px">Module</div><div class="chips" style="margin-bottom:12px">${modChips}</div>
+    <div class="small muted" style="margin-bottom:6px">Status</div><div class="chips">${statChips}</div></div>
+  <div class="card">${rows}</div>`;
+}
+
+/* ---------- DRILLS ---------- */
+let drill={type:DRILLS[0].id,current:null,revealed:false};
+function viewDrills(){
+  const opts=DRILLS.map(d=>`<option value="${d.id}" ${drill.type===d.id?'selected':''}>${d.name}</option>`).join('');
+  if(!drill.current)drill.current=DRILLS.find(d=>d.id===drill.type).gen();
+  return `<div class="page-head"><div><h1>Calculation Drills</h1><p>Unlimited randomised practice with full worked solutions.</p></div></div>
+  <div class="card"><div class="row"><b>Type:</b><select id="drillType">${opts}</select><button class="btn sm" data-drillnew>↻ New problem</button></div></div>
+  <div class="card"><div class="small muted">Problem</div><div style="font-size:15px;margin:8px 0 14px">${esc(drill.current.prob)}</div>
+    <button class="btn ghost sm" data-drillreveal>${drill.revealed?'Hide':'Reveal'} worked solution</button>
+    <div class="box calc ${drill.revealed?'':'hidden'}" style="margin-top:12px"><span class="bx-l">Worked solution</span><div class="body">${esc(drill.current.sol)}</div></div>
+    <div style="margin-top:14px"><button class="btn" data-drillnew>Next problem →</button></div></div>`;
+}
+
+/* ---------- PRACTICALS ---------- */
+let pracOpen={};
+function viewPracticals(){
+  const cards=PRACTICALS.map((p,i)=>{const open=pracOpen[i];
+    return `<div class="card" style="padding:0;overflow:hidden">
+      <div class="collapse-h ${open?'open':''}" data-prac="${i}" style="padding:14px 16px">
+        <span class="pill">Mod ${p.mod}</span><b style="flex:1">${esc(p.title)}</b><span class="chev">▶</span></div>
+      <div class="${open?'':'hidden'}" style="padding:0 16px 16px">
+        <div class="box def"><span class="bx-l">Aim</span>${esc(p.aim)}</div>
+        <div class="box tip"><span class="bx-l">Method</span>${esc(p.method)}</div>
+        <div class="box trap"><span class="bx-l">Risk assessment</span>${esc(p.risks)}</div>
+        <div class="box mnem"><span class="bx-l">Sources of error</span>${esc(p.errors)}</div>
+      </div></div>`;}).join('');
+  return `<div class="page-head"><div><h1>Practical Library</h1><p>12 required first-hand investigations — aim, method, risks & error analysis. Click to expand.</p></div></div>${cards}`;
+}
+
+/* ---------- FORMULA ---------- */
+function viewFormula(){
+  const cards=FORMULAS.map(g=>`<div class="card"><h3 style="margin:0 0 10px">${esc(g.group)}</h3>
+    ${g.items.map(it=>`<div class="kv"><span style="font-family:'IBM Plex Mono',monospace;color:var(--accent)">${esc(it.f)}</span><span class="muted small">${esc(it.d)}</span></div>`).join('')}</div>`).join('');
+  return `<div class="page-head"><div><h1>Formula Sheet</h1><p>Key equations grouped by module.</p></div></div><div class="grid g2">${cards}</div>`;
+}
+
+/* ---------- GLOSSARY ---------- */
+let glossFilter="";
+function viewGlossary(){
+  const items=GLOSSARY.slice().sort((a,b)=>a[0].localeCompare(b[0]))
+    .map(([t,d])=>`<div class="card" data-gloss="${esc((t+' '+d).toLowerCase())}" style="margin-bottom:10px"><b class="accent">${esc(t)}</b><div class="small" style="margin-top:4px">${esc(d)}</div></div>`).join('');
+  return `<div class="page-head"><div><h1>Glossary</h1><p>${GLOSSARY.length} key terms.</p></div></div>
+  <div class="card"><input id="glossSearch" type="text" placeholder="Filter terms…" value="${esc(glossFilter)}" style="width:100%"/></div>
+  <div id="glossList">${items}</div><div id="glossEmpty" class="muted hidden">No terms match.</div>`;
+}
+function filterGloss(){let shown=0;document.querySelectorAll('#glossList [data-gloss]').forEach(c=>{const m=!glossFilter||c.dataset.gloss.includes(glossFilter);c.style.display=m?'':'none';if(m)shown++;});const e=document.getElementById('glossEmpty');if(e)e.classList.toggle('hidden',shown>0);}
+
+/* ---------- FLASHCARDS / SPACED REPETITION ---------- */
+let fc={deck:null,i:0,flipped:false,scope:"due",mod:"all"};
+function buildDeck(){let cards=srsCards();if(fc.mod!=="all")cards=cards.filter(c=>c.mod===+fc.mod);
+  if(fc.scope==="due")cards=cards.filter(srsDue);
+  // due/new first, then by soonest due
+  cards.sort((a,b)=>{const ra=state.srs[a.id],rb=state.srs[b.id];const da=ra?ra.due:'0000',db=rb?rb.due:'0000';return da<db?-1:da>db?1:0;});
+  return cards;}
+function viewFlashcards(){
+  const scopeChips=[['due','Due today'],['all','Whole deck']].map(([v,l])=>`<button class="chip ${fc.scope===v?'on':''}" data-fcscope="${v}">${l}</button>`).join('');
+  const modChips=['all',...MODULES.map(m=>''+m.num)].map(v=>`<button class="chip ${fc.mod===v?'on':''}" data-fcmod="${v}">${v==='all'?'All mods':'Mod '+v}</button>`).join('');
+  if(!fc.deck)fc.deck=buildDeck();
+  const total=srsCards().length,due=dueCount();
+  let body;
+  if(!fc.deck.length){body=`<div class="card" style="text-align:center;padding:40px"><div style="font-size:40px">✅</div><h3>${fc.scope==='due'?'No cards due — you are caught up!':'No cards in this selection.'}</h3><p class="muted">${fc.scope==='due'?'Spaced repetition will resurface cards on their due dates. Switch to "Whole deck" to review anything now.':''}</p></div>`;}
+  else{const c=fc.deck[Math.min(fc.i,fc.deck.length-1)];const r=state.srs[c.id];
+    body=`<div class="card" style="min-height:230px;cursor:pointer;display:flex;flex-direction:column;justify-content:center;text-align:center" data-fcflip>
+      <div class="row" style="justify-content:space-between;position:absolute;top:14px;left:16px;right:16px"><span class="tag ${c.kind==='Question'?'syl':''}">${esc(c.kind)} · Mod ${c.mod}</span><span class="muted small">${r?('seen '+r.reps+'× · next +'+r.interval+'d'):'new card'}</span></div>
+      <div style="font-size:${fc.flipped?'15px':'18px'};padding:14px 10px">${fc.flipped?esc(c.back):'<b>'+esc(c.front)+'</b>'}</div>
+      <div class="muted small">${fc.flipped?'':'click to flip ↩'}</div></div>
+    ${fc.flipped?`<div class="row" style="justify-content:center"><span class="muted small" style="align-self:center">How well did you know it?</span>
+      <button class="cbtn weak" data-fcrate="again">Again</button>
+      <button class="cbtn shaky" data-fcrate="hard">Hard</button>
+      <button class="cbtn good" data-fcrate="good">Good</button>
+      <button class="cbtn" style="border-color:var(--accent);color:var(--accent)" data-fcrate="easy">Easy</button></div>`:`<div class="row" style="justify-content:center"><button class="btn" data-fcflip>Show answer</button></div>`}`;}
+  return `<div class="page-head"><div><h1>Flashcards</h1><p>Spaced repetition — cards resurface based on how well you know them. ${due} due today of ${total} total.</p></div></div>
+  <div class="card"><div class="row"><span class="small muted">Scope:</span><div class="chips">${scopeChips}</div><span class="small muted" style="margin-left:8px">Module:</span><div class="chips">${modChips}</div></div></div>
+  <div class="small muted" style="margin:0 0 8px">${fc.deck.length?('Card '+(Math.min(fc.i,fc.deck.length-1)+1)+' of '+fc.deck.length):''}</div>
+  ${body}`;
+}
+
+/* ---------- HSC QUESTION BANK ---------- */
+let qbFilter="all";
+function viewHscBank(){
+  const mods=['all',...[...new Set(QBANK.map(q=>q.mod))].sort()];
+  const chips=mods.map(v=>`<button class="chip ${qbFilter===v?'on':''}" data-qbmod="${v}">${v==='all'?'All modules':'Module '+v}</button>`).join('');
+  const list=QBANK.filter(q=>qbFilter==='all'||q.mod===+qbFilter).sort((a,b)=>b.year-a.year).map((q,i)=>{
+    return `<div class="card" style="padding:0;overflow:hidden">
+      <div class="collapse-h" data-qb="${i}" style="padding:14px 16px"><span class="pill">${q.year} HSC</span><span class="pill">Mod ${q.mod}</span><span class="pill">${q.marks} marks</span><b style="flex:1;font-weight:500">${esc(q.q.slice(0,90))}${q.q.length>90?'…':''}</b><span class="chev">▶</span></div>
+      <div class="hidden" data-qbbody="${i}" style="padding:0 16px 16px">
+        <div class="box def"><span class="bx-l">Question (${q.marks} marks)</span>${esc(q.q)}</div>
+        <button class="reveal" data-qbreveal="${i}">Reveal marking guidelines / sample answer</button>
+        <div class="box calc hidden" data-qbans="${i}" style="margin-top:10px"><span class="bx-l">Marking guidelines &amp; sample answer</span><div class="body">${esc(q.criteria)}</div></div>
+        ${q.tid?`<div style="margin-top:10px"><button class="btn sm ghost" data-jump="${q.tid}">Go to the related topic →</button></div>`:''}
+      </div></div>`;}).join('');
+  return `<div class="page-head"><div><h1>HSC Question Bank</h1><p>Past HSC-style questions with official-style marking guidelines, tagged to topics.</p></div></div>
+  <div class="card"><div class="chips">${chips}</div></div>${list}`;
+}
+
+/* ---------- EXAM TECHNIQUE ---------- */
+let etTab="verbs";let etDrill=null;
+function viewTechnique(){
+  const tabs=[['verbs','Directive verbs'],['mistakes','Common mistakes'],['errors','Error-analysis drill']].map(([v,l])=>`<button class="chip ${etTab===v?'on':''}" data-ettab="${v}">${l}</button>`).join('');
+  let body='';
+  if(etTab==='verbs'){
+    body=`<p class="muted small">What each NESA directive verb actually demands. Matching your answer to the verb is free marks.</p>`+
+      DIRECTIVES.map(([v,d])=>`<div class="kv"><span><b class="accent">${esc(v)}</b></span><span style="flex:1;text-align:right;max-width:62%">${esc(d)}</span></div>`).join('');
+    body=`<div class="card">${body}</div>`;
+  } else if(etTab==='mistakes'){
+    const items=[];allDots().forEach(({t,m})=>{const tr=stripTags(field(t.id,'trap',t.trap));if(tr)items.push({tid:t.id,mod:m.num,title:stripTags(field(t.id,'title',t.title)),trap:tr});});
+    body=`<p class="muted small">Every exam-trap from your notes, in one hit-list. Click a card to jump to the topic.</p>`+
+      items.map(it=>`<div class="card" style="cursor:pointer;margin-bottom:10px" data-jump="${it.tid}"><div class="row" style="justify-content:space-between"><b>${esc(it.title)}</b><span class="pill">Mod ${it.mod} →</span></div><div class="box trap" style="margin-bottom:0"><span class="bx-l">Trap</span>${esc(it.trap)}</div></div>`).join('');
+  } else {
+    if(!etDrill)etDrill=PRACTICALS[Math.floor(Math.random()*PRACTICALS.length)];
+    const p=etDrill;
+    body=`<p class="muted small">Mr Ford's focus: for a given practical, recall the sources of error <i>and their effect on the result</i> before revealing.</p>
+      <div class="card"><div class="row" style="justify-content:space-between"><span class="pill">Module ${p.mod}</span><button class="btn sm ghost" data-etnewdrill>↻ Another practical</button></div>
+      <div class="box def" style="margin-top:10px"><span class="bx-l">Investigation</span>${esc(p.title)}</div>
+      <div class="box tip"><span class="bx-l">Method (context)</span>${esc(p.method)}</div>
+      <button class="reveal" data-etreveal>Reveal sources of error</button>
+      <div class="box mnem hidden" data-eterrans style="margin-top:10px"><span class="bx-l">Sources of error &amp; their effect</span>${esc(p.errors)}</div></div>`;
+  }
+  return `<div class="page-head"><div><h1>Exam Technique</h1><p>Directive verbs, a common-mistakes hit-list, and an error-analysis drill.</p></div></div>
+  <div class="card"><div class="chips">${tabs}</div></div>${body}`;
+}
+
+/* ---------- REFERENCE: DATA SHEET + PERIODIC TABLE ---------- */
+function viewReference(){
+  const sheet=DATASHEET.map(g=>`<div class="card"><h3 style="margin:0 0 10px">${esc(g.group)}</h3><table class="tablebox">${g.rows.map(r=>`<tr><td>${esc(r[0])}</td><td style="font-family:'IBM Plex Mono',monospace">${esc(r[1])}</td></tr>`).join('')}</table></div>`).join('');
+  return `<div class="page-head"><div><h1>Data Sheet &amp; Periodic Table</h1><p>The reference data you can assume in the HSC, plus an interactive periodic table.</p></div></div>
+  <h3 style="margin:6px 0 8px">Interactive periodic table</h3>
+  <div class="card" style="overflow-x:auto"><div class="chips" style="margin-bottom:10px"><button class="btn sm ${ptMode==='en'?'on':'ghost'}" data-ptmode="en">🎨 Electronegativity</button><button class="btn sm ${ptMode==='ie'?'on':'ghost'}" data-ptmode="ie">⚡ Ionisation Energy</button><button class="btn sm ${ptMode==='cond'?'on':'ghost'}" data-ptmode="cond">🔌 Conductivity</button></div><div id="ptWrap"></div><div id="ptInfo" class="muted small" style="margin-top:10px">Click an element to see its details.</div></div>
+  <h3 style="margin:16px 0 8px">NESA data sheet</h3>
+  <div class="grid g2">${sheet}</div>`;
+}
+function drawPeriodic(){
+  const wrap=document.getElementById('ptWrap');if(!wrap)return;
+  const cell=33,gap=3;const W=18*(cell+gap)+gap, H=10*(cell+gap)+gap;
+  let cells='';
+  PTABLE.forEach(([z,sym,name,wt,x,y,data])=>{const col=ptMode==='en'&&data?enColor(data.en):ptMode==='ie'?ieColor(IE_DATA[z]):ptMode==='cond'?condColor(COND_DATA[z]):PT_CATEGORY(z);const px=gap+(x-1)*(cell+gap),py=gap+(y-1)*(cell+gap);
+    cells+=`<g class="ptcell" data-z="${z}" style="cursor:pointer"><rect x="${px}" y="${py}" width="${cell}" height="${cell}" rx="4" fill="${col}22" stroke="${col}" stroke-width="1"/>
+      <text x="${px+3}" y="${py+9}" font-size="6" fill="var(--muted)">${z}</text>
+      <text x="${px+cell/2}" y="${py+20}" font-size="11" text-anchor="middle" font-weight="700" fill="var(--text)">${sym}</text>
+      <text x="${px+cell/2}" y="${py+29}" font-size="5.4" text-anchor="middle" fill="var(--muted)">${wt}</text></g>`;});
+  // markers for La/Ac series gap
+  cells+=`<text x="${gap+2*(cell+gap)+cell/2}" y="${gap+5*(cell+gap)+cell/2+2}" font-size="7" text-anchor="middle" fill="var(--muted)">57-71</text>`;
+  cells+=`<text x="${gap+2*(cell+gap)+cell/2}" y="${gap+6*(cell+gap)+cell/2+2}" font-size="7" text-anchor="middle" fill="var(--muted)">89-103</text>`;
+  wrap.innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;min-width:640px" id="ptSvg">${cells}</svg>`;
+}
+
+/* ============================ GLOBAL SEARCH ============================ */
+function searchIndex(){const idx=[];allDots().forEach(({t,m})=>{const blob=[t.title,t.def,t.eqn,t.tip,t.trap,t.mnem,t.calc].map(x=>field(t.id,'',x)).join(' ');idx.push({type:'Mod '+m.num,title:stripTags(field(t.id,'title',t.title)),tid:t.id,blob:(stripTags(blob)+' '+stripTags(field(t.id,'title',t.title))).toLowerCase()});});
+  GLOSSARY.forEach(([term,def])=>idx.push({type:'Term',title:term,gloss:true,blob:(term+' '+def).toLowerCase()}));return idx;}
+let SEARCH_IDX=null;
+function doSearch(q){const box=document.getElementById('searchRes');q=q.trim().toLowerCase();if(!q){box.classList.add('hidden');return;}
+  if(!SEARCH_IDX)SEARCH_IDX=searchIndex();
+  const res=SEARCH_IDX.filter(r=>r.blob.includes(q)).slice(0,12);
+  box.innerHTML=res.length?res.map(r=>`<div class="r" data-sres="${r.gloss?'g:':''}${esc(r.tid||r.title)}"><span class="tag ${r.type==='Term'?'':'syl'}" style="margin-right:7px">${esc(r.type)}</span>${esc(r.title)}</div>`).join(''):'<div class="r muted">No results</div>';
+  box.classList.remove('hidden');}
+
+/* ============================ JUMP TO DOT ============================ */
+function openDot(tid){const found=topicById(tid);if(!found)return;go(found.mod.id);setTimeout(()=>{
+  const m=moduleById(found.mod.id);const el=document.getElementById('dot-'+tid);if(el){el.classList.add('open','flash');el.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>el.classList.remove('flash'),1600);}},80);}
+
+/* ============================ EXAM COUNTDOWN ============================ */
+function examDays(){if(!state.examDate)return null;const d=Math.ceil((new Date(state.examDate)-new Date())/(1000*60*60*24));return d;}
+function refreshCountdown(){const d=examDays();const el=document.getElementById('countdown');el.textContent=(d==null)?'— days':(d<0?'Exam passed':d+' days');document.getElementById('examDate').value=state.examDate||'';}
+
+/* ============================ EXPORT / IMPORT ============================ */
+function openIO(){const json=JSON.stringify(state,null,2);
+  const wrap=document.createElement('div');wrap.className='modal';wrap.innerHTML=`<div class="box2">
+    <h3 style="margin-top:0">Backup / Restore progress</h3>
+    <p class="muted small">Copy this JSON to back up everything (progress, notes, edits, quiz history). Paste a backup below and click Import to restore.</p>
+    <textarea id="ioText">${esc(json)}</textarea>
+    <div class="row" style="margin-top:12px"><button class="btn sm" id="ioCopy">Copy</button><button class="btn sm ghost" id="ioImport">Import (replace)</button><button class="btn sm ghost" id="ioClose" style="margin-left:auto">Close</button></div>
+  </div>`;document.body.appendChild(wrap);
+  wrap.addEventListener('click',e=>{if(e.target===wrap)wrap.remove();});
+  document.getElementById('ioClose').onclick=()=>wrap.remove();
+  document.getElementById('ioCopy').onclick=()=>{const ta=document.getElementById('ioText');ta.select();document.execCommand('copy');toast('Copied to clipboard');};
+  document.getElementById('ioImport').onclick=()=>{try{const s=JSON.parse(document.getElementById('ioText').value);state=Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)),s);localStorage.setItem(LS_KEY,JSON.stringify(state));SEARCH_IDX=null;wrap.remove();applyTheme();refreshCountdown();buildNav();render();toast('Progress imported');}catch(err){toast('Invalid JSON');}};}
+
+/* ============================ THEME ============================ */
+function applyTheme(){document.documentElement.setAttribute('data-theme',state.theme);document.getElementById('themeBtn').textContent=state.theme==='dark'?'☀ Theme':'🌙 Theme';}
+
+/* ============================ EVENT DELEGATION ============================ */
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-nav],[data-jump],[data-dot-head],[data-conf],[data-reveal],[data-toggle-edit],[data-add-dot],[data-add-q],[data-quizmod],[data-quizstart],[data-quizreveal],[data-quizmark],[data-quizagain],[data-revmod],[data-revstat],[data-drillnew],[data-drillreveal],[data-prac],[data-sres],[data-fcflip],[data-fcrate],[data-fcscope],[data-fcmod],[data-qb],[data-qbreveal],[data-qbmod],[data-ettab],[data-etreveal],[data-etnewdrill],[data-ptmode],[data-qtype],[data-quizmcanswer],[data-z]');
+  if(!el)return;
+  if(el.dataset.nav){go(el.dataset.nav);}
+  else if(el.dataset.jump){openDot(el.dataset.jump);}
+  else if(el.hasAttribute('data-dot-head')){if(e.target.matches('[data-check],[contenteditable]'))return;const d=el.closest('.dot');d.classList.toggle('open');}
+  else if(el.dataset.conf){const[tid,v]=el.dataset.conf.split('|');state.conf[tid]=(state.conf[tid]===v)?'':v;save();streakToday();render();buildNav();}
+  else if(el.hasAttribute('data-reveal')){el.closest('.q').classList.add('show');el.style.display='none';}
+  else if(el.hasAttribute('data-toggle-edit')){state.editMode=!state.editMode;save();SEARCH_IDX=null;render();}
+  else if(el.dataset.addDot){const mid=el.dataset.addDot;state.addedDots[mid]=state.addedDots[mid]||[];const idx=state.addedDots[mid].length+1;state.addedDots[mid].push({id:mid+'.custom'+Date.now(),title:'New custom dot point',tags:['Custom'],questions:[]});save();SEARCH_IDX=null;render();}
+  else if(el.dataset.addQ){const tid=el.dataset.addQ;state.addedQ[tid]=(state.addedQ[tid]||0)+1;save();render();setTimeout(()=>openDot(tid),20);}
+  // quiz
+  else if(el.dataset.qtype){if(!quiz)quiz={sel:MODULES.map(m=>m.id),len:10,qtype:'all'};quiz.qtype=el.dataset.qtype;render();}
+  else if(el.dataset.quizmod){if(!quiz)quiz={sel:MODULES.map(m=>m.id),len:10,qtype:'all'};const id=el.dataset.quizmod;const i=quiz.sel.indexOf(id);if(i>=0){if(quiz.sel.length>1)quiz.sel.splice(i,1);}else quiz.sel.push(id);render();}
+  else if(el.hasAttribute('data-quizstart')){startQuiz();}
+  else if(el.hasAttribute('data-quizreveal')){const ta=document.getElementById('quizAnswer');if(ta)quiz.userAnswer=ta.value;quiz.revealed=true;render();}
+  else if(el.dataset.quizmcanswer!=null){quiz.mcSelected=+el.dataset.quizmcanswer;render();}
+  else if(el.dataset.quizmark!=null){const earned=+el.dataset.quizmark;const maxM=quiz.items[quiz.i]?quiz.items[quiz.i].marks||1:1;const it=quiz.items[quiz.i];if(it&&it.tid){const s=state.quizStats[it.tid]||{r:0,w:0};earned>=maxM?s.r++:s.w++;state.quizStats[it.tid]=s;}quiz.marksEarned+=earned;quiz.answered++;quiz.i++;quiz.revealed=false;quiz.userAnswer='';quiz.mcSelected=null;if(quiz.i>=quiz.items.length){finishQuiz();}save();buildNav();render();}
+  else if(el.hasAttribute('data-quizagain')){quiz=null;render();}
+  else if(el.dataset.revmod){revFilter.mod=el.dataset.revmod;render();}
+  else if(el.dataset.revstat){revFilter.status=el.dataset.revstat;render();}
+  else if(el.hasAttribute('data-drillnew')){drill.current=DRILLS.find(d=>d.id===drill.type).gen();drill.revealed=false;render();}
+  else if(el.hasAttribute('data-drillreveal')){drill.revealed=!drill.revealed;render();}
+  else if(el.dataset.prac!=null){pracOpen[el.dataset.prac]=!pracOpen[el.dataset.prac];render();}
+  else if(el.dataset.sres){const v=el.dataset.sres;document.getElementById('searchRes').classList.add('hidden');document.getElementById('globalSearch').value='';if(v.startsWith('g:')){glossFilter=v.slice(2).toLowerCase();go('glossary');}else openDot(v);}
+  // flashcards
+  else if(el.hasAttribute('data-fcflip')){if(!fc.flipped){fc.flipped=true;render();}}
+  else if(el.dataset.fcrate){const c=fc.deck[Math.min(fc.i,fc.deck.length-1)];srsRate(c.id,el.dataset.fcrate);streakToday();
+    if(el.dataset.fcrate==='again'){fc.deck.push(c);} // re-show later this session
+    fc.i++;fc.flipped=false;if(fc.i>=fc.deck.length){fc.deck=buildDeck();fc.i=0;}buildNav();render();}
+  else if(el.dataset.fcscope){fc.scope=el.dataset.fcscope;fc.deck=buildDeck();fc.i=0;fc.flipped=false;render();}
+  else if(el.dataset.fcmod){fc.mod=el.dataset.fcmod;fc.deck=buildDeck();fc.i=0;fc.flipped=false;render();}
+  // hsc bank
+  else if(el.dataset.qb!=null){const i=el.dataset.qb;const b=document.querySelector('[data-qbbody="'+i+'"]');if(b){b.classList.toggle('hidden');el.classList.toggle('open');}}
+  else if(el.dataset.qbreveal!=null){const a=document.querySelector('[data-qbans="'+el.dataset.qbreveal+'"]');if(a){a.classList.remove('hidden');el.style.display='none';}}
+  else if(el.dataset.qbmod){qbFilter=el.dataset.qbmod==='all'?'all':+el.dataset.qbmod;render();}
+  // exam technique
+  else if(el.dataset.ettab){etTab=el.dataset.ettab;render();}
+  else if(el.hasAttribute('data-etreveal')){const a=document.querySelector('[data-eterrans]');if(a){a.classList.remove('hidden');el.style.display='none';}}
+  else if(el.hasAttribute('data-etnewdrill')){let n;do{n=PRACTICALS[Math.floor(Math.random()*PRACTICALS.length)];}while(n===etDrill&&PRACTICALS.length>1);etDrill=n;render();}
+  // periodic table heat map toggle
+  else if(el.dataset.ptmode){ptMode=(ptMode===el.dataset.ptmode?null:el.dataset.ptmode);render();drawPeriodic();}
+  // periodic element
+  else if(el.dataset.z){const z=+el.dataset.z;const r=PTABLE.find(p=>p[0]===z);if(r&&r[6]){const d=r[6];const info=document.getElementById('ptInfo');if(info){let h=`<b class="accent" style="font-size:15px">${r[1]} — ${esc(r[2])}</b><br/><div class="small muted" style="margin:6px 0 10px"><span class="pill">Z=${r[0]}</span><span class="pill">A=${r[3]}</span><span class="pill">Group ${r[4]}</span><span class="pill">Period ${r[5]}</span></div>`;h+=`<div class="kv"><span>Electronegativity (Pauling)</span><span class="accent">${d.en!=null?d.en.toFixed(2):'N/A'}</span></div>`;h+=`<div class="kv"><span>Electron configuration</span><span class="small">${esc(d.config)}</span></div>`;h+=`<div class="kv"><span>State (room temp)</span><span>${esc(d.state)}</span></div>`;h+=`<div class="kv"><span>Common oxidation states</span><span>${esc(d.ox)}</span></div>`;h+=`<div class="kv"><span>1st ionisation energy</span><span>${IE_DATA[z]!=null?IE_DATA[z]+' kJ mol⁻¹':'N/A'}</span></div>`;h+=`<div class="kv"><span>Electrical conductivity</span><span>${COND_DATA[z]!=null?COND_LABEL[COND_DATA[z]]:'Unknown'}</span></div>`;info.innerHTML=h;}}}
+});
+
+function startQuiz(){
+  let all=gatherQuestions(quiz.sel);
+  if(quiz.qtype&&quiz.qtype!=='all')all=all.filter(q=>(q.qtype||'short')===quiz.qtype);
+  for(let i=all.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[all[i],all[j]]=[all[j],all[i]];}
+  quiz.items=all.slice(0,Math.min(quiz.len,all.length));
+  quiz.i=0;quiz.marksEarned=0;quiz.marksAvail=quiz.items.reduce((s,q)=>s+(q.marks||1),0);
+  quiz.answered=0;quiz.revealed=false;quiz.userAnswer='';quiz.mcSelected=null;
+  quiz.active=true;quiz.done=false;streakToday();render();}
+function finishQuiz(){quiz.active=false;quiz.done=true;state.quizLog.push({date:new Date().toISOString().slice(0,10),score:quiz.marksEarned,total:quiz.marksAvail,mods:quiz.sel.map(m=>moduleById(m).num).join(',')});save();}
+
+/* ============================ INPUT EVENTS ============================ */
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.dataset.note!=null){state.notes[t.dataset.note]=t.value;save();}
+  else if(t.id==='quizAnswer'){if(quiz)quiz.userAnswer=t.value;}
+  else if(t.id==='quizLen'){if(!quiz)quiz={sel:MODULES.map(m=>m.id),len:10,qtype:'all'};quiz.len=+t.value;}
+  else if(t.id==='drillType'){drill.type=t.value;drill.current=DRILLS.find(d=>d.id===drill.type).gen();drill.revealed=false;render();}
+  else if(t.id==='glossSearch'){glossFilter=t.value.toLowerCase();filterGloss();}
+  else if(t.id==='examDate'){state.examDate=t.value;save();refreshCountdown();render();}
+  else if(t.id==='globalSearch'){doSearch(t.value);}
+});
+document.addEventListener('change',e=>{const t=e.target;if(t.dataset.check!=null){state.check[t.dataset.check]=t.checked;save();streakToday();buildNav();}});
+// save contenteditable edits on blur
+document.addEventListener('focusout',e=>{const el=e.target;if(el.dataset&&el.dataset.ek){const key=el.dataset.ek;let val=el.innerText.trim();if(val==='(empty — click to add)'||val==='(question)'||val==='(answer)')val='';state.edits[key]=val;save();SEARCH_IDX=null;buildNav();}});
+
+document.getElementById('themeBtn').onclick=()=>{state.theme=state.theme==='dark'?'light':'dark';save();applyTheme();};
+document.getElementById('ioBtn').onclick=openIO;
+document.addEventListener('click',e=>{if(!e.target.closest('.search')){document.getElementById('searchRes').classList.add('hidden');}});
+
+/* ============================ INIT ============================ */
+applyTheme();refreshCountdown();buildNav();render();streakToday();
+</script>
+</body>
+</html>
