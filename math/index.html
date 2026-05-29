@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>HSC Math Standard 2 Y12 — Study Tool</title>
+<style>
+:root{
+  --bg:#0d0f14;--surface:#141720;--surface2:#1a1e28;--accent:#6366f1;--accent2:#4f46e5;
+  --text:#e8eaf0;--muted:#7b82a0;--line:#222636;
+  --blue:#3b82f6;--green:#22c55e;--amber:#f59e0b;--red:#ef4444;--purple:#a855f7;--teal:#14b8a6;
+  --blueb:#0e1a2e;--greenb:#0e2014;--amberb:#261e08;--redb:#2a1010;--purpleb:#1e1028;--tealb:#0a1e1c;
+}
+html[data-theme="light"]{
+  --bg:#f0f1f7;--surface:#ffffff;--surface2:#eef0f8;--accent:#4f46e5;--accent2:#4338ca;
+  --text:#0f1020;--muted:#5a6080;--line:#d8daea;
+  --blueb:#e6f0fb;--greenb:#e7f7ec;--amberb:#fdf3e1;--redb:#fbe9e9;--purpleb:#f4e9fc;--tealb:#e0f7f5;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;line-height:1.55}
+h1,h2,h3,h4,.brand{font-family:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif;font-weight:700;letter-spacing:-.01em}
+a{color:var(--accent)}
+.app{display:flex;min-height:100vh}
+
+/* ── Sidebar ── */
+.sidebar{width:256px;background:var(--surface);border-right:1px solid var(--line);position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:14px 12px;gap:8px;overflow-y:auto;flex-shrink:0}
+.brand{font-size:17px;display:flex;align-items:center;gap:8px}
+.brand .logo{width:38px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:18px;gap:1px}
+.brand .logo span{font-size:8px;font-weight:700;letter-spacing:.04em;opacity:.85}
+.brand small{display:block;color:var(--muted);font-size:11px;font-weight:500}
+.search{position:relative}
+.search input{width:100%;background:var(--surface2);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:8px 10px;font-size:13px;font-family:inherit}
+.search input:focus{outline:none;border-color:var(--accent)}
+.searchres{position:absolute;top:42px;left:0;right:0;background:var(--surface2);border:1px solid var(--line);border-radius:9px;max-height:300px;overflow-y:auto;z-index:30;box-shadow:0 12px 30px rgba(0,0,0,.5)}
+.searchres .r{padding:8px 10px;border-bottom:1px solid var(--line);cursor:pointer;font-size:13px}
+.searchres .r:hover{background:var(--surface)}.searchres .r:last-child{border-bottom:none}
+.navlist{display:flex;flex-direction:column;gap:2px}
+.nav-sep{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:8px 11px 2px;opacity:.6}
+.navbtn{display:flex;align-items:center;gap:9px;background:none;border:none;color:var(--muted);text-align:left;padding:8px 11px;border-radius:9px;cursor:pointer;font-size:13px;font-family:inherit;width:100%;transition:.12s}
+.navbtn .ic{width:18px;text-align:center;font-size:12px;flex-shrink:0}
+.navbtn:hover{background:var(--surface2);color:var(--text)}
+.navbtn.active{background:linear-gradient(90deg,rgba(99,102,241,.18),transparent);color:var(--accent);font-weight:600}
+.navbtn .badge{margin-left:auto;font-size:10px;background:var(--surface2);color:var(--muted);padding:1px 7px;border-radius:20px}
+.navbtn .weak-badge{margin-left:auto;font-size:10px;background:rgba(239,68,68,.2);color:#fca5a5;padding:1px 7px;border-radius:20px}
+.streak-chip{display:flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:13px}
+.streak-chip .flame{font-size:16px}
+.streak-chip b{color:var(--accent)}
+.exampill{background:var(--surface2);border:1px solid var(--line);border-radius:11px;padding:10px}
+.exampill label{font-size:11px;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em}
+.exampill .cd{font-size:22px;font-weight:700;color:var(--accent);font-family:"Bricolage Grotesque",sans-serif}
+.exampill input{width:100%;margin-top:6px;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:7px;padding:5px 7px;font-size:12px}
+.sb-foot{display:flex;gap:6px;flex-wrap:wrap}
+.sb-foot button{flex:1;font-size:11px;padding:6px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);border-radius:8px;cursor:pointer;min-width:58px;font-family:inherit}
+.sb-foot button:hover{color:var(--text);border-color:var(--accent)}
+
+/* ── Main ── */
+.main{flex:1;min-width:0;padding:26px 32px 100px;max-width:1120px}
+.page-head{margin-bottom:18px;display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.page-head h1{font-size:27px;margin:0 0 4px}.page-head p{color:var(--muted);margin:0;font-size:14px}
+.page-head .spacer{flex:1}
+
+/* ── Cards / Grid ── */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+/* ── Progress ── */
+.bar{height:8px;background:var(--surface2);border-radius:20px;overflow:hidden}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:20px;transition:width .4s}
+.stat .big{font-size:28px;font-weight:700;font-family:"Bricolage Grotesque",sans-serif}
+.stat .lbl{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+.ring{--p:0;width:130px;height:130px;border-radius:50%;background:conic-gradient(var(--accent) calc(var(--p)*3.6deg),var(--surface2) 0);display:grid;place-items:center;margin:0 auto}
+.ring .inner{width:100px;height:100px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center}
+.ring .inner b{font-size:24px;font-family:"Bricolage Grotesque",sans-serif;line-height:1}
+.ring .inner small{color:var(--muted);font-size:11px}
+
+/* ── Topic/Dot system ── */
+.mod-h{display:flex;align-items:center;gap:12px;cursor:pointer;padding:14px 18px;background:var(--surface);border:1px solid var(--line);border-radius:14px;margin-bottom:10px}
+.mod-h:hover{border-color:var(--accent)}
+.mod-h .num{width:36px;height:36px;border-radius:9px;background:var(--surface2);display:grid;place-items:center;font-weight:700;color:var(--accent);font-family:"Bricolage Grotesque",sans-serif;font-size:14px;flex-shrink:0}
+.mod-h h2{font-size:16px;margin:0}.mod-h .sub{color:var(--muted);font-size:12px}
+.mod-h .chev{color:var(--muted);transition:.2s;font-size:12px;margin-left:auto}
+.mod-h.open .chev{transform:rotate(90deg)}
+.mod-h .mprog{height:5px;width:80px;background:var(--surface2);border-radius:20px;overflow:hidden;flex-shrink:0}
+.mod-h .mprog i{display:block;height:100%;background:var(--accent)}
+.dot{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin:0 0 10px;overflow:hidden}
+.dot.flash{border-color:var(--accent);box-shadow:0 0 0 2px rgba(99,102,241,.3)}
+.dot-h{display:flex;align-items:flex-start;gap:10px;padding:13px 15px;cursor:pointer}
+.dot-h:hover{background:var(--surface2)}
+.dot-h .chk{margin-top:3px;width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.dot-h .ttl{flex:1;font-weight:600;font-size:14px}
+.dot-h .conf-dot{width:10px;height:10px;border-radius:50%;margin-top:4px;flex-shrink:0;background:var(--line)}
+.conf-good{background:var(--green)!important}.conf-shaky{background:var(--amber)!important}.conf-weak{background:var(--red)!important}
+.tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.tag{font-size:10px;padding:1px 6px;border-radius:20px;background:var(--surface2);color:var(--muted);border:1px solid var(--line)}
+.tag.hsc{color:#fda4af;border-color:#5b2330}.tag.syl{color:#7dd3fc;border-color:#1e4a63}.tag.calc{color:#86efac;border-color:#1a4a2a}
+.dot-body{padding:0 15px 15px;display:none}.dot.open .dot-body{display:block}
+
+/* ── Content boxes ── */
+.box{border-radius:9px;padding:11px 13px;margin:8px 0;font-size:14px;border-left:3px solid}
+.box .bx-l{font-size:10px;text-transform:uppercase;letter-spacing:.07em;font-weight:700;display:block;margin-bottom:4px;opacity:.9}
+.box.def{background:var(--blueb);border-color:var(--blue)}.box.def .bx-l{color:#93c5fd}
+.box.eqn{background:var(--greenb);border-color:var(--green);font-family:"IBM Plex Mono",monospace}.box.eqn .bx-l{color:#86efac;font-family:inherit}
+.box.tip{background:var(--amberb);border-color:var(--amber)}.box.tip .bx-l{color:#fcd34d}
+.box.trap{background:var(--redb);border-color:var(--red)}.box.trap .bx-l{color:#fca5a5}
+.box.mnem{background:var(--purpleb);border-color:var(--purple)}.box.mnem .bx-l{color:#d8b4fe}
+.box.calc{background:var(--surface2);border-color:var(--accent)}.box.calc .bx-l{color:var(--accent)}
+.box.calc .body{white-space:pre-wrap;font-family:"IBM Plex Mono",monospace;font-size:13px}
+.box.worked{background:var(--tealb);border-color:var(--teal)}.box.worked .bx-l{color:#5eead4}
+.box.worked .body{white-space:pre-wrap;font-family:"IBM Plex Mono",monospace;font-size:13px}
+.prow{display:flex;gap:10px;padding:5px 0;border-bottom:1px solid rgba(128,128,128,.1);align-items:flex-start}
+.prow:last-child{border-bottom:none}
+.plbl{font-weight:700;font-size:12px;min-width:90px;flex-shrink:0;opacity:.8;padding-top:2px}
+.pval{flex:1;font-size:13.5px;line-height:1.55}
+
+/* ── Questions ── */
+.q{border:1px solid var(--line);border-radius:9px;padding:11px 13px;margin:8px 0;background:var(--surface2)}
+.q .qq{font-size:14px;margin-bottom:7px;font-weight:500}
+.q .marks{font-size:11px;color:var(--muted);margin-bottom:6px}
+.q .ans{display:none;border-top:1px dashed var(--line);margin-top:8px;padding-top:8px;font-size:13.5px;color:#c7d4ff;white-space:pre-wrap}
+.q .hint-box{display:none;border-top:1px dashed var(--line);margin-top:8px;padding-top:8px;font-size:13px;color:#fcd34d;font-style:italic}
+.q.show .ans{display:block}
+.q.hint-shown .hint-box{display:block}
+.q-btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.q .reveal{font-size:12px;background:var(--surface);border:1px solid var(--line);color:var(--accent);padding:4px 10px;border-radius:7px;cursor:pointer;font-family:inherit}
+.q .hint-btn{font-size:12px;background:var(--surface);border:1px solid var(--line);color:var(--amber);padding:4px 10px;border-radius:7px;cursor:pointer;font-family:inherit}
+.confrow{display:flex;gap:6px;align-items:center;margin:10px 0 4px;flex-wrap:wrap}
+.confrow span{font-size:12px;color:var(--muted);margin-right:2px}
+.cbtn{font-size:12px;padding:4px 12px;border-radius:8px;border:1px solid var(--line);background:var(--surface2);color:var(--muted);cursor:pointer;font-family:inherit}
+.cbtn.good.on{background:rgba(34,197,94,.18);color:#86efac;border-color:var(--green)}
+.cbtn.shaky.on{background:rgba(245,158,11,.18);color:#fcd34d;border-color:var(--amber)}
+.cbtn.weak.on{background:rgba(239,68,68,.18);color:#fca5a5;border-color:var(--red)}
+textarea.notes{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:9px;font-family:inherit;font-size:13px;resize:vertical;min-height:56px;margin-top:6px}
+textarea.notes:focus{outline:none;border-color:var(--accent)}
+
+/* ── Buttons ── */
+.btn{background:var(--accent);color:#fff;border:none;border-radius:9px;padding:8px 15px;font-weight:600;cursor:pointer;font-family:inherit;font-size:13px}
+.btn:hover{background:var(--accent2)}.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.ghost{background:var(--surface2);color:var(--text);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn.sm{padding:5px 10px;font-size:12px}
+.btn.danger{background:rgba(239,68,68,.2);color:#fca5a5;border:1px solid var(--red)}
+.btn.danger:hover{background:rgba(239,68,68,.35)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:13px;padding:5px 11px;border-radius:20px;border:1px solid var(--line);background:var(--surface2);color:var(--muted);cursor:pointer;font-family:inherit}
+.chip.on{background:rgba(99,102,241,.16);color:var(--accent);border-color:var(--accent)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.muted{color:var(--muted)}.accent{color:var(--accent)}.small{font-size:12px}
+.divider{height:1px;background:var(--line);margin:14px 0}
+.kv{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line);font-size:13.5px}.kv:last-child{border:none}
+.tablebox{width:100%;border-collapse:collapse;font-size:13px}
+.tablebox th,.tablebox td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+.tablebox th{background:var(--surface2);color:var(--accent)}
+.hidden{display:none!important}
+select,input[type=number],input[type=text]{background:var(--surface2);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:6px 9px;font-family:inherit;font-size:13px}
+select:focus,input:focus{outline:none;border-color:var(--accent)}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--surface2);border:1px solid var(--accent);color:var(--text);padding:10px 20px;border-radius:11px;z-index:200;box-shadow:0 10px 30px rgba(0,0,0,.4);opacity:0;transition:.25s;pointer-events:none}
+.toast.show{opacity:1}
+
+/* ── Session Timer ── */
+.timer-fab{position:fixed;bottom:24px;right:24px;z-index:150;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.timer-bubble{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 16px;min-width:160px;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.timer-bubble .timer-display{font-size:28px;font-weight:700;font-family:"Bricolage Grotesque",sans-serif;color:var(--accent);letter-spacing:.02em}
+.timer-bubble .timer-label{font-size:11px;color:var(--muted);margin-bottom:6px}
+.timer-bubble .timer-btns{display:flex;gap:6px;margin-top:8px}
+.timer-toggle{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-weight:600;cursor:pointer;font-size:13px;font-family:inherit}
+.timer-toggle:hover{background:var(--accent2)}
+.timer-stop{background:rgba(239,68,68,.2);color:#fca5a5;border:1px solid var(--red);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:13px;font-family:inherit}
+.timer-open-btn{background:var(--accent);color:#fff;border:none;border-radius:50%;width:48px;height:48px;font-size:20px;cursor:pointer;box-shadow:0 4px 16px rgba(99,102,241,.4);display:flex;align-items:center;justify-content:center}
+.timer-open-btn:hover{background:var(--accent2)}
+
+/* ── Modal ── */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:grid;place-items:center;z-index:180;padding:20px}
+.modal .box2{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px;max-width:520px;width:100%;max-height:85vh;overflow:auto}
+.modal h2{margin:0 0 16px;font-size:20px}
+.modal textarea{width:100%;min-height:120px;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:10px;font-family:"IBM Plex Mono",monospace;font-size:12px}
+
+/* ── Weak Topics Panel ── */
+.weak-panel .weak-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;margin-bottom:7px;background:var(--surface2);cursor:pointer}
+.weak-panel .weak-item:hover{border-color:var(--accent)}
+.weak-panel .weak-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.weak-panel .weak-name{flex:1;font-size:13.5px;font-weight:600}
+.weak-panel .weak-tag{font-size:11px;color:var(--muted)}
+
+/* ── Past Papers ── */
+.pp-filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.pp-q{border:1px solid var(--line);border-radius:10px;padding:13px 15px;margin-bottom:10px;background:var(--surface2)}
+.pp-q .pp-meta{font-size:11px;color:var(--muted);margin-bottom:6px;display:flex;gap:10px;flex-wrap:wrap}
+.pp-q .pp-meta span{background:var(--surface);padding:2px 7px;border-radius:5px;border:1px solid var(--line)}
+.pp-q .pp-text{font-size:14px;font-weight:500;margin-bottom:8px}
+.pp-q .pp-ans{display:none;border-top:1px dashed var(--line);margin-top:8px;padding-top:8px;font-size:13.5px;color:#c7d4ff;white-space:pre-wrap}
+.pp-q.show .pp-ans{display:block}
+.pp-q .pp-hint{display:none;border-top:1px dashed var(--line);margin-top:8px;padding-top:8px;font-size:13px;color:#fcd34d;font-style:italic}
+.pp-q.hint-shown .pp-hint{display:block}
+
+/* ── Formula Sheet ── */
+.formula-group{margin-bottom:18px}
+.formula-group h3{font-size:14px;margin:0 0 8px;color:var(--accent)}
+.formula-item{display:flex;align-items:flex-start;gap:12px;padding:7px 10px;border-bottom:1px solid var(--line);font-size:13.5px}
+.formula-item:last-child{border-bottom:none}
+.formula-item .fi-f{font-family:"IBM Plex Mono",monospace;color:var(--text);min-width:180px;flex-shrink:0}
+.formula-item .fi-d{color:var(--muted)}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+
+/* ── Responsive ── */
+@media(max-width:820px){.app{flex-direction:column}.sidebar{position:relative;width:100%;height:auto;max-height:none}.main{padding:16px 14px 80px}.ring{width:110px;height:110px}.timer-fab{bottom:16px;right:16px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <a href="/" style="text-decoration:none">
+        <span class="logo">∑<span>HOME</span></span>
+      </a>
+      <div>HSC Math Std 2<small>Year 12 · 5 Topics</small></div>
+    </div>
+    <div class="search">
+      <input id="globalSearch" type="text" placeholder="🔍 Search topics, formulas…" autocomplete="off"/>
+      <div id="searchRes" class="searchres hidden"></div>
+    </div>
+    <div class="streak-chip" id="streakChip">
+      <span class="flame">🔥</span><span>Streak: <b id="streakNum">0</b> days</span>
+    </div>
+    <nav class="navlist" id="nav"></nav>
+    <div class="exampill">
+      <label>HSC Exam Countdown</label>
+      <div class="cd" id="countdown">— days</div>
+      <input id="examDate" type="date"/>
+    </div>
+    <div class="sb-foot">
+      <button id="themeBtn">☀ Theme</button>
+      <button id="ioBtn">⇅ Backup</button>
+    </div>
+  </aside>
+  <main class="main" id="main"></main>
+</div>
+<div class="toast" id="toast"></div>
+
+<!-- Session Timer FAB -->
+<div class="timer-fab" id="timerFab">
+  <div class="timer-bubble hidden" id="timerBubble">
+    <div class="timer-label">Study Session</div>
+    <div class="timer-display" id="timerDisplay">00:00</div>
+    <div style="font-size:12px;color:var(--muted);margin-top:2px" id="timerTopic">No topic selected</div>
+    <div class="timer-btns">
+      <button class="timer-toggle" id="timerToggle">Start</button>
+      <button class="timer-stop" id="timerStop">■ Stop</button>
+    </div>
+  </div>
+  <button class="timer-open-btn" id="timerOpenBtn" title="Study Timer">⏱</button>
+</div>
+
+<!-- Modals -->
+<div class="modal hidden" id="ioModal">
+  <div class="box2">
+    <h2>Backup / Restore</h2>
+    <p class="muted small" style="margin-bottom:12px">Export your progress as JSON or paste a backup to restore.</p>
+    <textarea id="ioText" placeholder="Paste backup JSON here…"></textarea>
+    <div class="row" style="margin-top:12px;gap:8px">
+      <button class="btn" id="exportBtn">Export</button>
+      <button class="btn ghost" id="importBtn">Import</button>
+      <button class="btn ghost" id="ioClose">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal hidden" id="recapModal">
+  <div class="box2">
+    <h2>📊 Session Recap</h2>
+    <div id="recapContent"></div>
+    <div style="margin-top:16px">
+      <button class="btn" id="recapClose">Done</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   HSC MATH STANDARD 2 Y12 — Study Tool
+   Features: Topics · Practice Qs + Hints · Past Papers · Confidence Tracker
+             Weak Topics Panel · Session Timer + Recap · Streak · Formula Sheet
+             Progress Rings · Search · Notes · Backup/Restore · Dark/Light theme
+   ===================================================================== */
+
+const LS_KEY = "hscmath_progress";
+const DEFAULT_STATE = {
+  check:{}, conf:{}, notes:{}, examDate:"2026-10-22",
+  theme:"dark", streak:[], quizLog:[], bookmarks:{},
+  sessions:[], edits:{}, addedQ:{}
+};
+const TODAY = () => new Date().toISOString().slice(0,10);
+let state = load();
+function load(){
+  try{ const s = JSON.parse(localStorage.getItem(LS_KEY)); if(s) return Object.assign({}, JSON.parse(JSON.stringify(DEFAULT_STATE)), s); }
+  catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULT_STATE));
+}
+let saveT;
+function save(){ clearTimeout(saveT); saveT = setTimeout(()=>localStorage.setItem(LS_KEY,JSON.stringify(state)),350); }
+function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800); }
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+/* =====================================================================
+   CONTENT DATA
+   ===================================================================== */
+const TOPICS = [
+{id:"alg", num:"A", title:"Algebra", icon:"📐", sub:"MS-A4 Types of Relationships",
+ subtopics:[
+  {id:"a4_1", code:"A4.1", title:"Simultaneous Linear Equations",
+   tags:["Syllabus","Graph"],
+   def:"Two linear equations with two unknowns can be solved simultaneously — the solution is the point where both lines intersect on a graph. In practical contexts this often models a <b>break-even point</b> where cost equals revenue.",
+   eqn:"Line 1: y = m₁x + b₁\nLine 2: y = m₂x + b₂\nSolution: find (x, y) where both are equal\nBreak-even: Revenue = Cost → solve simultaneously",
+   tip:"To solve graphically: graph both lines carefully on the same axes, read off the intersection point. Always check your answer by substituting back into BOTH equations. For break-even: the x-value = units needed to break even; the y-value = revenue/cost at that point.",
+   trap:"Read the question carefully — it may ask for the x-value (units), y-value (amount), or both. Don't confuse 'break-even point' (coordinate pair) with just the quantity. Make sure you write the answer in context ('the business breaks even after 40 units').",
+   mnem:"Break-even = where the two lines CROSS — the business stops losing money.",
+   calc:"WORKED EXAMPLE\nCost: C = 200 + 5x (fixed cost $200, variable $5/unit)\nRevenue: R = 12x ($12 per unit)\nBreak-even: 200 + 5x = 12x → 200 = 7x → x = 28.6 → 29 units\nAt x = 29: R = 12×29 = $348, C = 200 + 5×29 = $345\nNote: round UP for the number of units (you can't sell 0.6 of a unit)",
+   questions:[
+    {q:"A business has fixed costs of $500 and variable costs of $8 per item. Items sell for $18 each. (i) Write equations for cost C and revenue R in terms of n items sold. (ii) Find the break-even point graphically or algebraically. (iii) State what happens if 60 items are sold.",
+     a:"(i) C = 500 + 8n; R = 18n\n(ii) Break-even: 500 + 8n = 18n → 500 = 10n → n = 50 units. At n=50: R = C = $900. Break-even point: (50, 900).\n(iii) At n=60: R = $1080, C = $980. Profit = $100 — the business makes a profit.",
+     marks:4, hint:"Set C = R and solve for n. Then substitute n back to find the dollar value."},
+    {q:"The graphs of y = 3x + 2 and y = x + 6 intersect at point P. Find the coordinates of P.",
+     a:"3x + 2 = x + 6 → 2x = 4 → x = 2. y = 2 + 6 = 8. P = (2, 8).",
+     marks:2, hint:"Set the two equations equal to each other and solve for x, then substitute to find y."},
+    {q:"A phone plan costs $30/month plus $0.10 per minute. A second plan costs $0.25 per minute with no monthly fee. After how many minutes per month do the plans cost the same?",
+     a:"Plan A: C = 30 + 0.10m; Plan B: C = 0.25m\n30 + 0.10m = 0.25m → 30 = 0.15m → m = 200 minutes\nThe plans cost the same at 200 minutes/month. ($50 each)",
+     marks:3, hint:"Write a cost equation for each plan and set them equal."}
+   ]},
+  {id:"a4_2", code:"A4.2", title:"Non-Linear Relationships",
+   tags:["Syllabus","Graph","HSC"],
+   def:"Three key non-linear models in Math Standard 2: <b>Exponential</b> y = aˣ or y = a·bˣ (growth/decay curves), <b>Quadratic</b> y = ax² + bx + c (parabola — has a turning point and axis of symmetry), and <b>Reciprocal</b> y = k/x (rectangular hyperbola — inverse variation, two branches, never touches axes).",
+   eqn:"Exponential: y = A·bˣ (b>1 = growth; 0<b<1 = decay)\nExponential decay: A = A₀·(1−r)ᵗ or A = A₀·bᵗ\nQuadratic: y = ax² + bx + c (parabola)\nAxis of symmetry: x = −b/(2a)\nReciprocal: y = k/x (k = constant of variation)",
+   tip:"Identifying the model: if the graph is a straight line → linear. J-shaped → exponential. U-shaped (turns) → quadratic. Two-branched and never touches axes → reciprocal/hyperbola. The y-intercept of an exponential y=Abˣ is always A (when x=0, y=A). For a quadratic, the turning point x-coordinate = −b/(2a).",
+   trap:"Don't confuse exponential growth (b > 1) with exponential decay (0 < b < 1). For a reciprocal y = k/x, doubling x HALVES y — this is inverse variation, NOT a linear relationship. A parabola is symmetric about its axis — the turning point is always on the axis.",
+   mnem:"Expo = EXPOnent in the power. Quad = QUADRUPEDAL (4 legs = 4-letter root = 4th letter = degree 2?). Reciprocal = RECIProcal fraction k/x.",
+   calc:"WORKED EXAMPLE — Exponential Model\nA car worth $25,000 depreciates at 15% per year.\nA = 25000 × (0.85)ᵗ\nt=0: A=$25,000; t=3: A=25000×0.85³=25000×0.614=$15,350\nWhen is A < $10,000? → 0.85ᵗ < 0.4 → use trial/technology: t≈8.5 years\n\nWORKED EXAMPLE — Quadratic\ny = −x² + 4x + 5\nAxis of symmetry: x = −4/(2×−1) = 2\nTurning point: y = −4 + 8 + 5 = 9 → (2, 9)\ny-intercept: (0, 5); x-intercepts: −x²+4x+5=0 → x=5 or x=−1",
+   questions:[
+    {q:"The population of bacteria doubles every 3 hours. Initially there are 500 bacteria. (i) Write an equation for the population P after t hours. (ii) Find the population after 12 hours. (iii) After how many hours does the population first exceed 10,000?",
+     a:"(i) P = 500 × 2^(t/3) [doubles every 3 hours]\n(ii) t=12: P = 500 × 2⁴ = 500 × 16 = 8000 bacteria\n(iii) 500 × 2^(t/3) > 10000 → 2^(t/3) > 20 → t/3 > log₂(20) ≈ 4.32 → t > 12.97 → after approximately 13 hours (or by trial: t=15: P=16000 ✓, t=12: P=8000 ✗, so between 12 and 15; t=13: P≈10080 ✓).",
+     marks:5, hint:"For part (i), the growth factor per 3 hours is 2, so per hour it's 2^(1/3). Or write P = 500 × 2^(t/3)."},
+    {q:"A ball is thrown and its height is modelled by h = −5t² + 20t + 1, where h is in metres and t in seconds. (i) Find the initial height. (ii) Find the maximum height and when it occurs. (iii) Find when the ball hits the ground (h = 0).",
+     a:"(i) t=0: h = 1 m (initial height 1 metre)\n(ii) Axis of symmetry: t = −20/(2×−5) = 2 seconds. Max h = −5(4) + 20(2) + 1 = −20 + 40 + 1 = 21 metres at t=2s.\n(iii) −5t² + 20t + 1 = 0 → use quadratic formula or technology: t = (−20 ± √(400+20))/−10 → t ≈ 4.05 s (taking positive value). Ball hits ground after approximately 4.05 seconds.",
+     marks:5, hint:"For max height, use t = −b/(2a). Remember a = −5, b = 20."},
+    {q:"The time t (hours) to complete a job varies inversely with the number of workers n. With 4 workers the job takes 6 hours. (i) Find the equation linking t and n. (ii) How long with 8 workers? (iii) How many workers are needed to finish in 2 hours?",
+     a:"(i) t = k/n → 6 = k/4 → k = 24 → t = 24/n\n(ii) n=8: t = 24/8 = 3 hours\n(iii) 2 = 24/n → n = 12 workers",
+     marks:4, hint:"Inverse variation: t = k/n. Find k first by substituting the known values."}
+   ]}
+ ]},
+{id:"meas", num:"M", title:"Measurement", icon:"📏", sub:"MS-M6 Trigonometry · MS-M7 Rates & Ratios",
+ subtopics:[
+  {id:"m6", code:"M6", title:"Non-Right-Angled Trigonometry",
+   tags:["Syllabus","HSC","Calc"],
+   def:"For triangles that are <b>not</b> right-angled, we use three rules: <b>Area rule</b> (area given two sides and included angle), <b>Sine rule</b> (find a side or angle when you have a matching angle-side pair), <b>Cosine rule</b> (find a side given two sides and included angle, or find an angle given all three sides). Bearings describe direction: <b>True bearings</b> are measured clockwise from North (000°–360°). <b>Compass bearings</b> are written as N/S then degrees then E/W (e.g. N42°E).",
+   eqn:"Area rule:   Area = ½ab·sin(C)\nSine rule:   a/sin(A) = b/sin(B) = c/sin(C)\nCosine rule (side):  c² = a² + b² − 2ab·cos(C)\nCosine rule (angle): cos(C) = (a²+b²−c²)/(2ab)\nRt-angled: SOH CAH TOA | Pythagoras: c²=a²+b²",
+   tip:"WHICH RULE? → If right-angled: SOH CAH TOA. If not right-angled: Area = ½ab·sinC (need 2 sides + included angle). Sine rule: need a matching pair (side + opposite angle). Cosine rule: need 3 sides (to find angle) or 2 sides + included angle (to find 3rd side). Bearings: always draw a diagram. True bearing 270° = West.",
+   trap:"Sine rule ambiguous case: when finding an angle using the sine rule, there could be TWO solutions (acute AND obtuse). The question will usually say 'the angle is obtuse' or give context to rule one out. Cosine rule: be careful with sign — the −2ab·cosC term. If C is obtuse, cosC is negative, so you're actually ADDING. Always check if your answer is reasonable.",
+   mnem:"Sine rule: 'Pair up sides and angles opposite each other.' Cosine rule: 'All three sides — use cosine.'",
+   calc:"WORKED EXAMPLE — Sine Rule\nTriangle ABC: a = 8, A = 35°, B = 72°. Find b.\nb/sin(72°) = 8/sin(35°)\nb = 8 × sin(72°)/sin(35°) = 8 × 0.951/0.574 = 13.25\n\nWORKED EXAMPLE — Cosine Rule (find angle)\na=7, b=5, c=9. Find angle C.\ncos(C) = (7²+5²−9²)/(2×7×5) = (49+25−81)/70 = −7/70 = −0.1\nC = cos⁻¹(−0.1) = 95.7° (obtuse, makes sense as cos is negative)",
+   questions:[
+    {q:"In triangle PQR, PQ = 12 cm, QR = 9 cm and angle PQR = 56°. Find (i) the area of the triangle (ii) the length of PR.",
+     a:"(i) Area = ½ × 12 × 9 × sin(56°) = ½ × 108 × 0.829 = 44.8 cm²\n(ii) Using cosine rule: PR² = 12² + 9² − 2×12×9×cos(56°) = 144 + 81 − 216×0.559 = 225 − 120.7 = 104.3 → PR = 10.2 cm",
+     marks:4, hint:"Part (i): Area = ½ab·sinC where the angle is between the two given sides. Part (ii): cosine rule because you have 2 sides and the included angle."},
+    {q:"Two ships leave a port P. Ship A travels on a bearing of 040° for 15 km to point A. Ship B travels on a bearing of 115° for 20 km to point B. Find the distance AB.",
+     a:"The angle APB = 115° − 40° = 75°.\nUsing cosine rule: AB² = 15² + 20² − 2×15×20×cos(75°)\n= 225 + 400 − 600×0.259 = 625 − 155.4 = 469.6\nAB = √469.6 ≈ 21.7 km",
+     marks:4, hint:"The angle between the two ships' paths = difference in bearings = 115° − 40° = 75°. Draw a diagram then use cosine rule."},
+    {q:"Find all possible values of angle B in a triangle where a = 10, b = 14 and A = 38°.",
+     a:"Using sine rule: sin(B)/14 = sin(38°)/10\nsin(B) = 14 × sin(38°)/10 = 14 × 0.6157/10 = 0.8620\nB = sin⁻¹(0.8620) = 59.5° OR B = 180° − 59.5° = 120.5°\nBoth are valid (check: 38+59.5=97.5° < 180° ✓; 38+120.5=158.5° < 180° ✓).\nSo B ≈ 59.5° or B ≈ 120.5° (ambiguous case).",
+     marks:3, hint:"This is the ambiguous case. After finding the acute angle with sin⁻¹, also check if 180° minus that angle is valid."}
+   ]},
+  {id:"m7", code:"M7", title:"Rates and Ratios",
+   tags:["Syllabus","AAM"],
+   def:"A <b>rate</b> compares two quantities with different units (e.g. km/h, $/L, beats/min). A <b>ratio</b> compares quantities with the same units (written a:b or a/b). <b>Scale drawings</b>: actual distance = map distance × scale factor. <b>Trapezoidal rule</b> approximates the area of an irregular shape using trapezoids. <b>Rainfall volume</b> = rainfall depth × catchment area.",
+   eqn:"Scale: actual = map measurement × scale factor\nTrapezoidal rule: A ≈ h/2 × (d₀ + 2d₁ + 2d₂ + ... + dₙ)\n  where h = interval width, d = perpendicular measurements\nRainfall: V = A × d (volume = area × depth)\nPower: 1 kW = 1000 W; energy = power × time (kWh)\nFuel: cost = (distance/100) × consumption rate × price/L",
+   tip:"Trapezoidal rule: draw the shape, measure the parallel widths at equal intervals, then apply the formula. For the rule: A ≈ (h/2)(first + last + 2×middles). Energy bills: convert watts to kilowatts first (÷1000), multiply by hours = kWh, then multiply by rate ($/kWh). For ratios, to divide in ratio a:b: total parts = a+b, each share = total × a/(a+b) or b/(a+b).",
+   trap:"Scale: if scale is 1:50000, then 1 cm on map = 50000 cm = 500 m = 0.5 km in real life. Don't forget to convert units! Trapezoidal rule APPROXIMATES — the more intervals, the more accurate. Rainfall volume: make sure area and depth use consistent units (m² and m → m³, or cm² and cm → cm³, then convert to litres: 1 m³ = 1000 L).",
+   mnem:"Trapezoidal Rule: 'First + Last + 2×(everything in between), times h/2.'",
+   calc:"WORKED EXAMPLE — Trapezoidal Rule\nA lake measured at 10m intervals:\nWidths: 0, 8, 14, 18, 12, 0 m (5 intervals)\nh = 10 m\nA ≈ (10/2) × (0 + 0 + 2×(8+14+18+12))\n= 5 × (0 + 2×52) = 5 × 104 = 520 m²\n\nWORKED EXAMPLE — Electricity\n2400 W TV used for 5 hours/day for 30 days.\nEnergy = 2.4 kW × 5 h × 30 days = 360 kWh\nCost @ $0.28/kWh = 360 × 0.28 = $100.80",
+   questions:[
+    {q:"A map has a scale of 1:250 000. (i) Two towns are 4.6 cm apart on the map. Find the actual distance in km. (ii) A national park has an area of 18 cm² on the map. Find the actual area in km².",
+     a:"(i) Actual distance = 4.6 × 250,000 = 1,150,000 cm = 11.5 km\n(ii) Scale factor for areas = 250,000² = 6.25 × 10¹⁰\nActual area = 18 × 6.25 × 10¹⁰ cm² = 1.125 × 10¹² cm² = 1.125 × 10¹² ÷ 10¹⁰ km² = 112.5 km²\n(or: convert 250,000 cm = 2.5 km, so 1 cm = 2.5 km, 1 cm² = 6.25 km², 18 cm² = 112.5 km²)",
+     marks:4, hint:"For areas, square the linear scale factor. 1 km = 100,000 cm, so 1 km² = 10^10 cm²."},
+    {q:"A paddock is measured using the trapezoidal rule. Perpendicular offsets at 20 m intervals are: 0, 12, 18, 22, 15, 8, 0 metres. Calculate the approximate area.",
+     a:"h = 20 m; offsets: d₀=0, d₁=12, d₂=18, d₃=22, d₄=15, d₅=8, d₆=0\nA ≈ (20/2) × (0 + 0 + 2×(12+18+22+15+8))\n= 10 × 2 × 75 = 10 × 150 = 1500 m²",
+     marks:3, hint:"Formula: A ≈ (h/2) × (first + last + 2×sum of all middle offsets)."},
+    {q:"A 1800 W heater runs for 4 hours per day. Electricity costs 32 cents per kWh. Calculate the cost to run the heater for the month of July (31 days).",
+     a:"Power = 1800 W = 1.8 kW\nEnergy per day = 1.8 × 4 = 7.2 kWh\nEnergy for July = 7.2 × 31 = 223.2 kWh\nCost = 223.2 × $0.32 = $71.42",
+     marks:3, hint:"Convert watts to kilowatts first (÷1000). Energy = power (kW) × time (hours). Then multiply by rate."}
+   ]}
+ ]},
+{id:"fin", num:"F", title:"Financial Mathematics", icon:"💰", sub:"MS-F4 Investments & Loans · MS-F5 Annuities",
+ subtopics:[
+  {id:"f4_1", code:"F4.1", title:"Investments — Compound Interest & Shares",
+   tags:["Syllabus","HSC","Calc"],
+   def:"<b>Compound interest</b>: interest is calculated on the principal PLUS all previously earned interest. Unlike simple interest (linear), compound interest produces exponential growth. <b>Shares</b>: you can invest in a company's shares; the <b>dividend</b> is your cut of profits; the <b>dividend yield</b> = (dividend per share ÷ share price) × 100%.",
+   eqn:"Compound interest: A = P(1 + r/n)^(nt)\n  A = future value, P = principal, r = annual rate (decimal)\n  n = compounding periods per year, t = years\nSimple interest: A = P(1 + rt)\nDividend yield = (annual dividend per share ÷ market price) × 100%\nInflation: A = P(1 + i)ᵗ  (same formula as compound interest)",
+   tip:"For compound interest: the more frequently you compound, the more interest you earn. Monthly compounding: n=12, quarterly: n=4, daily: n=365, annually: n=1. When comparing investments, calculate the effective annual rate or use the formula with matching n. Converting rate: if 6% p.a. compounded monthly, use r=0.06/12=0.005 per month.",
+   trap:"Don't forget to divide the annual rate by the number of compounding periods! r/n is the rate per period, not per year. The formula gives the TOTAL amount (principal + interest) — to find just the interest earned, subtract P. Comparing simple vs compound: for short periods, the difference is small; for long periods, compound grows much faster.",
+   mnem:"PANT: Principal × (1 + rate/n)^(n×time).",
+   calc:"WORKED EXAMPLE\n$5000 invested at 4.2% p.a. compounded quarterly for 3 years.\nP=5000, r=0.042, n=4, t=3\nA = 5000 × (1 + 0.042/4)^(4×3)\n= 5000 × (1.0105)^12\n= 5000 × 1.13388\n= $5669.40\nInterest earned = $5669.40 − $5000 = $669.40",
+   questions:[
+    {q:"$8000 is invested at 3.6% per annum, compounded monthly, for 4 years. Find (i) the total amount and (ii) the interest earned.",
+     a:"P=8000, r=0.036, n=12, t=4\n(i) A = 8000×(1+0.036/12)^(12×4) = 8000×(1.003)^48 = 8000×1.15397 = $9231.76\n(ii) Interest = $9231.76 − $8000 = $1231.76",
+     marks:3, hint:"r/n = 0.036/12 = 0.003 (monthly rate). n×t = 48 total compounding periods."},
+    {q:"Compare the final value of $10,000 invested for 5 years at 5% p.a. under (i) simple interest and (ii) compound interest (compounded annually). State which is better.",
+     a:"(i) Simple: A = 10000×(1 + 0.05×5) = 10000×1.25 = $12,500\n(ii) Compound: A = 10000×(1.05)^5 = 10000×1.27628 = $12,762.82\nCompound interest is better by $262.82 because interest is calculated on the growing balance, not just the original principal.",
+     marks:3, hint:"Simple interest: A = P(1 + rt). Compound: A = P(1+r)^t. State which is higher and explain why."},
+    {q:"Sam owns 2000 shares in a company. The shares are currently priced at $4.50 each. A dividend of $0.27 per share is paid. (i) Calculate Sam's total dividend payment. (ii) Calculate the dividend yield.",
+     a:"(i) Total dividend = 2000 × $0.27 = $540\n(ii) Dividend yield = (0.27 / 4.50) × 100% = 6%",
+     marks:3, hint:"Dividend yield is a percentage: divide the per-share dividend by the share price, then multiply by 100."}
+   ]},
+  {id:"f4_2", code:"F4.2", title:"Depreciation and Reducing Balance Loans",
+   tags:["Syllabus","HSC","Calc"],
+   def:"<b>Declining-balance depreciation</b>: an asset loses a fixed PERCENTAGE of its current value each year (same formula structure as compound interest, but value decreases). <b>Reducing balance loan</b>: you borrow money and repay regularly; interest is charged only on the outstanding balance, which reduces with each repayment. <b>Credit cards</b> are a type of reducing balance loan, typically at high interest rates.",
+   eqn:"Depreciation: S = V₀(1 − r)ⁿ\n  S = salvage value, V₀ = initial value\n  r = depreciation rate (decimal), n = number of periods\nCredit card interest (daily): I = P × r_daily × days\nReducing balance: use financial calculator / table or iterative calculation",
+   tip:"Depreciation formula S = V₀(1−r)ⁿ is the SAME as compound interest A = P(1+r)ᵗ but with (1−r) instead of (1+r) because the value is decreasing. For credit cards: the minimum repayment trap — if you only pay the minimum, you pay mostly interest and the principal barely reduces, extending the debt for years. Always compare loan types by the total interest paid.",
+   trap:"The depreciation rate in the formula must be expressed as a decimal (15% → 0.15). Don't confuse straight-line depreciation (constant dollar amount each year) with declining-balance (constant percentage of current value — dollar amount decreases each year). For reducing balance loans, the interest component of each repayment decreases over time as the principal falls.",
+   mnem:"Depreciation: 'Same formula as compound interest but (1 MINUS r) because value goes DOWN.'",
+   calc:"WORKED EXAMPLE — Depreciation\nCar purchased for $32,000. Depreciates at 18% p.a.\nAfter 4 years: S = 32000×(1−0.18)⁴ = 32000×(0.82)⁴\n= 32000×0.4521 = $14,467\n\nWORKED EXAMPLE — Credit Card\nBalance: $2400. Rate: 19.8% p.a. = 0.054% per day.\nInterest for 30 days: I = 2400 × (0.198/365) × 30 = $39.05\nMinimum payment (2%): 0.02 × 2400 = $48 → $39.05 is interest → only $8.95 reduces principal!",
+   questions:[
+    {q:"A laptop costs $2200. It depreciates at 25% per year using the declining-balance method. (i) Find its value after 3 years. (ii) After how many years is it worth less than $500? (iii) Find the total depreciation after 3 years.",
+     a:"(i) S = 2200×(0.75)³ = 2200×0.421875 = $927.34\n(ii) 2200×(0.75)ⁿ < 500 → (0.75)ⁿ < 0.2273\n    n=5: 2200×0.2373=$522 (not yet); n=6: 2200×0.178=$391 ✓ → after 6 years\n(iii) Total depreciation = $2200 − $927.34 = $1272.66",
+     marks:5, hint:"Use S = V₀(0.75)^n for each part. For part (ii), try successive values of n."},
+    {q:"A credit card has a balance of $3500 and charges 21.6% p.a. interest, compounded daily. (i) Calculate the daily interest rate. (ii) If no repayment is made for 30 days, find the balance after 30 days. (iii) Explain the risk of only making minimum repayments.",
+     a:"(i) Daily rate = 21.6% ÷ 365 = 0.05918% per day = 0.0005918\n(ii) A = 3500 × (1 + 0.216/365)^30 = 3500 × (1.0005918)^30 ≈ 3500 × 1.01797 = $3562.90\n(iii) Minimum repayments (often 2−3% of balance) mostly cover interest with little reduction of principal. This means the debt takes many years (sometimes decades) to pay off, and total interest paid can exceed the original purchase amount.",
+     marks:5, hint:"For part (ii), use compound interest formula with n=365 or treat each day as one compounding period."}
+   ]},
+  {id:"f5", code:"F5", title:"Annuities",
+   tags:["Syllabus","HSC","Calc"],
+   def:"An <b>annuity</b> is a series of equal, regular payments into (or out of) an account where interest compounds at the end of each period. <b>Future value (FV)</b> = what the account grows to. <b>Present value (PV)</b> = the single lump sum needed now to produce the same result. Used for: saving plans (regular deposits), superannuation, home loans (withdrawals/repayments), car loans.",
+   eqn:"Future value of annuity:\nFV = M × [(1+r)ⁿ − 1] / r\n  M = regular payment, r = interest rate per period (decimal)\n  n = number of periods\nPresent value of annuity:\nPV = M × [1 − (1+r)^(−n)] / r\nAlternatively: use future value interest factor tables",
+   tip:"Identify the type: regular deposits growing → future value. Regular withdrawals from a lump sum → present value. For home loans, the 'regular payment' is the mortgage repayment and PV = loan amount. To use the FV/PV table, find the correct interest factor for the given rate and periods, then multiply by M. Technology (spreadsheet or CAS) can compute these directly.",
+   trap:"Make sure r is the rate PER PERIOD (not per year) — divide annual rate by number of periods per year. n is the total number of payments. The formulas assume payments are made at the END of each period. Don't confuse FV (what you'll have) with PV (what you need now). For a loan: PV = amount borrowed, M = repayment amount.",
+   mnem:"'FV = how much you'll HAVE. PV = how much you need NOW.'",
+   calc:"WORKED EXAMPLE — FV Annuity\nDeposit $500/month into account at 6% p.a. compounded monthly for 3 years.\nr = 0.06/12 = 0.005; n = 36; M = 500\nFV = 500 × [(1.005)³⁶ − 1] / 0.005\n= 500 × [1.1967 − 1] / 0.005\n= 500 × 0.1967 / 0.005\n= 500 × 39.34 = $19,668.51\n\nWORKED EXAMPLE — Loan Repayment\n$200,000 home loan at 4.8% p.a. monthly, 25 years.\nr=0.004, n=300\nM = 200000 × 0.004 / [1−(1.004)^(−300)]\n= 800 / [1−0.3014] = 800/0.6986 = $1144.79/month",
+   questions:[
+    {q:"Mia deposits $300 per month into a savings account paying 4.2% p.a. compounded monthly. (i) Find the future value after 5 years. (ii) Find the total amount Mia deposited. (iii) Calculate the total interest earned.",
+     a:"r = 0.042/12 = 0.0035; n = 60; M = 300\n(i) FV = 300 × [(1.0035)^60 − 1] / 0.0035\n= 300 × [1.23367 − 1] / 0.0035\n= 300 × 0.23367 / 0.0035\n= 300 × 66.763 = $20,028.87\n(ii) Total deposited = 300 × 60 = $18,000\n(iii) Interest earned = $20,028.87 − $18,000 = $2,028.87",
+     marks:5, hint:"r must be the monthly rate = 4.2%/12. n = 5×12 = 60 months. Interest = FV − total payments."},
+    {q:"A retiree has $450,000 in superannuation. They withdraw $2,500 per month. The fund earns 5.4% p.a. compounded monthly. Using PV = M × [1−(1+r)^(−n)] / r, find how many months the fund will last.",
+     a:"PV=450000, M=2500, r=0.054/12=0.0045\n450000 = 2500 × [1−(1.0045)^(−n)] / 0.0045\n450000 × 0.0045 / 2500 = 1−(1.0045)^(−n)\n0.81 = 1−(1.0045)^(−n)\n(1.0045)^(−n) = 0.19\n−n × ln(1.0045) = ln(0.19)\n−n × 0.004490 = −1.6607\nn = 369.9 ≈ 370 months ≈ 30.8 years",
+     marks:5, hint:"Rearrange the PV formula to isolate (1+r)^(-n), then use logarithms or trial and error to find n."}
+   ]}
+ ]},
+{id:"stat", num:"S", title:"Statistical Analysis", icon:"📊", sub:"MS-S4 Bivariate Data · MS-S5 Normal Distribution",
+ subtopics:[
+  {id:"s4", code:"S4", title:"Bivariate Data Analysis",
+   tags:["Syllabus","HSC"],
+   def:"<b>Bivariate data</b> involves two variables measured on the same subject. A <b>scatterplot</b> displays the relationship. We describe associations by: <b>form</b> (linear or non-linear), <b>direction</b> (positive or negative), <b>strength</b> (strong, moderate, weak). <b>Pearson's correlation coefficient r</b> measures the strength and direction of a LINEAR association (−1 ≤ r ≤ 1). The <b>line of best fit</b> (regression line) lets us make predictions.",
+   eqn:"Pearson's r: calculated by technology\nr close to +1 → strong positive linear\nr close to −1 → strong negative linear\nr close to 0 → weak or no linear relationship\nLeast-squares regression: ŷ = a + bx\n  b = gradient (change in y per unit change in x)\n  a = y-intercept\nInterpolation: predicting WITHIN data range (more reliable)\nExtrapolation: predicting OUTSIDE data range (less reliable)",
+   tip:"Interpreting r: |r| > 0.85 = strong; 0.5 < |r| ≤ 0.85 = moderate; |r| ≤ 0.5 = weak. Interpreting the regression equation: the gradient b tells you 'for each 1-unit increase in x, y changes by b units.' The y-intercept a is the predicted y when x = 0 (may not be meaningful in context). Interpolation vs extrapolation: always state which you're doing and comment on reliability.",
+   trap:"Correlation does NOT imply causation! Just because r is close to ±1 doesn't mean one variable CAUSES the other. There may be a lurking variable, or it could be coincidence. Extrapolation is unreliable because the relationship outside the data range may not follow the same pattern. Don't use the regression equation for x values outside the original data set without noting the limitation.",
+   mnem:"r = −1: perfect negative. r = 0: no linear relationship. r = +1: perfect positive.",
+   calc:"WORKED EXAMPLE — Interpreting regression output (technology)\nData: hours of study (x) and test score (y)\nTechnology gives: ŷ = 42 + 5.8x, r = 0.91\nInterpretation:\n- Strong positive linear association (r = 0.91)\n- For each additional hour of study, score increases by ~5.8 marks\n- y-intercept 42: predicted score with 0 hours study\n- Predict score for 6 hours: ŷ = 42 + 5.8×6 = 76.8 marks (interpolation, reliable)\n- Predict for 15 hours: ŷ = 42 + 5.8×15 = 129 (extrapolation — unreliable, score can't exceed 100)",
+   questions:[
+    {q:"A scatterplot shows a moderate, negative linear association between hours of screen time per day (x) and sleep quality score (y). The least-squares regression line is ŷ = 8.4 − 0.6x, r = −0.72. (i) Interpret the gradient. (ii) Predict the sleep score for 5 hours of screen time. (iii) Is it reliable to predict sleep quality for 12 hours of screen time? Explain.",
+     a:"(i) For each additional hour of screen time, sleep quality score decreases by 0.6 units (moderate negative linear relationship).\n(ii) ŷ = 8.4 − 0.6×5 = 8.4 − 3 = 5.4\n(iii) No. 12 hours is likely beyond the range of the original data. Using the regression line to extrapolate outside the data range is unreliable because the pattern may not continue. Also, the score could become negative (ŷ = 8.4−7.2=1.2 at x=12, technically possible, but further data may not follow the trend).",
+     marks:5, hint:"Gradient interpretation: always say 'for each 1-unit increase in x, y changes by...' and give the direction (increases/decreases)."},
+    {q:"Explain why a correlation coefficient of r = 0.95 between ice cream sales and drowning rates does NOT mean ice cream causes drowning.",
+     a:"Correlation does not imply causation. A high r only shows that the two variables tend to move together, but does not establish a cause-and-effect relationship. In this case, both variables are likely influenced by a third (lurking) variable — hot weather. Hot weather increases both ice cream consumption and swimming (which increases drowning risk). The association is explained by a common cause, not a direct relationship between the two variables.",
+     marks:3, hint:"Think about what other factor could be causing BOTH variables to change together. This is called a 'lurking variable'."}
+   ]},
+  {id:"s5", code:"S5", title:"The Normal Distribution",
+   tags:["Syllabus","HSC","Calc"],
+   def:"Many real-world datasets (heights, test scores, measurement errors) follow a <b>normal distribution</b> — a symmetric bell-shaped curve where mean = median = mode. A <b>z-score</b> standardises any value by measuring how many standard deviations it lies above or below the mean. The <b>empirical rule</b> (68-95-99.7 rule) describes the percentage of data within 1, 2, and 3 standard deviations.",
+   eqn:"z-score: z = (x − μ) / σ\n  x = data value, μ = mean, σ = standard deviation\nEmpirical Rule:\n  ~68% of data: −1 ≤ z ≤ 1  (within 1 SD of mean)\n  ~95% of data: −2 ≤ z ≤ 2  (within 2 SDs)\n  ~99.7% of data: −3 ≤ z ≤ 3 (within 3 SDs)\nNote: z-score data set has mean=0 and SD=1",
+   tip:"Positive z-score → value is ABOVE the mean. Negative z-score → value is BELOW the mean. |z| = 2 means the value is 2 standard deviations from the mean — only about 5% of data lies outside this range. Use z-scores to COMPARE values from different datasets (e.g. compare a physics score to a maths score). For probabilities beyond the empirical rule, use z-score tables or technology.",
+   trap:"The empirical rule gives APPROXIMATE percentages (68%, 95%, 99.7%). It only applies if the data is normally distributed. Don't use it for skewed data. When using z-scores to compare datasets, a HIGHER z-score is better for positive things (scores, heights for basketball) but may be worse for negative things (times, error rates). Always interpret in context.",
+   mnem:"68-95-99.7: 'one sigma, two sigma, three sigma away — 68, 95, nearly all the day.'",
+   calc:"WORKED EXAMPLE\nTest scores: μ = 65, σ = 8\nJane scored 77. Find z-score.\nz = (77 − 65) / 8 = 12/8 = 1.5\nJane is 1.5 standard deviations above the mean.\n\nCompare: In English (μ=70, σ=10), Tom scored 84 → z=(84-70)/10=1.4\nIn Maths (μ=60, σ=6), Tom scored 72 → z=(72-60)/6=2.0\nTom performed better relative to the class in Maths (higher z-score).",
+   questions:[
+    {q:"The heights of Year 12 students are normally distributed with a mean of 170 cm and a standard deviation of 8 cm. (i) Find the z-score for a student who is 182 cm tall. (ii) What percentage of students are between 154 cm and 186 cm tall? (iii) If there are 400 students, how many would be expected to be taller than 186 cm?",
+     a:"(i) z = (182−170)/8 = 12/8 = 1.5\n(ii) 154 = 170−2×8 (z=−2); 186 = 170+2×8 (z=+2). By empirical rule, 95% of data lies within 2 SDs. So 95% of students are between 154 and 186 cm.\n(iii) 5% lie outside ±2 SDs. By symmetry, 2.5% are above 186 cm. 2.5% × 400 = 10 students.",
+     marks:5, hint:"For part (ii), find the z-scores for each value first. 154 and 186 are both exactly 2 standard deviations from the mean."},
+    {q:"Sarah sat two exams. In Chemistry she scored 74 (class mean 68, SD 9). In Physics she scored 81 (class mean 75, SD 8). In which subject did she perform better relative to her class? Justify.",
+     a:"Chemistry z-score: z = (74−68)/9 = 6/9 = 0.67\nPhysics z-score: z = (81−75)/8 = 6/8 = 0.75\nSarah performed better relative to her class in Physics (z=0.75 > z=0.67). Her Physics score was 0.75 standard deviations above the mean compared to 0.67 in Chemistry, meaning she outperformed a greater proportion of her class in Physics.",
+     marks:3, hint:"Calculate both z-scores. The higher z-score means better performance relative to the class mean."},
+    {q:"In a normally distributed dataset, approximately what percentage of values have z-scores (i) greater than 1, (ii) less than −2, (iii) between −1 and 2?",
+     a:"(i) 68% lie between z=−1 and z=1, so 32% lie outside. By symmetry, 16% lie above z=1.\n(ii) 95% lie between z=−2 and z=2, so 5% lie outside. By symmetry, 2.5% lie below z=−2.\n(iii) 68% between −1 and 1; between 1 and 2 is half of (95%−68%) = 13.5%. So between −1 and 2 = 68% + 13.5% = 81.5%.",
+     marks:4, hint:"Use the empirical rule: 68% within ±1 SD, 95% within ±2 SDs. Use symmetry: each tail gets half the percentage that falls outside."}
+   ]}
+ ]},
+{id:"net", num:"N", title:"Networks", icon:"🕸️", sub:"MS-N2 Network Concepts · MS-N3 Critical Path Analysis",
+ subtopics:[
+  {id:"n2", code:"N2", title:"Network Concepts & Shortest Paths",
+   tags:["Syllabus","HSC"],
+   def:"A <b>network</b> (or graph) consists of <b>vertices</b> (nodes/points) connected by <b>edges</b> (lines/arcs). Edges can be <b>weighted</b> (have a number — cost, distance, time) and <b>directed</b> (one-way arrows). The <b>degree</b> of a vertex = number of edges meeting at it. A <b>minimum spanning tree</b> connects all vertices with minimum total weight (no cycles). A <b>shortest path</b> minimises total weight between two specific vertices.",
+   eqn:"Minimum spanning tree algorithms:\n  Kruskal's: add edges in order of increasing weight, skip any that create a cycle\n  Prim's: start at any vertex, always add the cheapest edge connecting to the tree\nShortest path: Dijkstra's algorithm (or by inspection for small networks)\nSum of all degrees = 2 × number of edges",
+   tip:"Kruskal's vs Prim's — both find the SAME minimum spanning tree (just different processes). Use Kruskal's when it's easier to list all edges by weight. Use Prim's when working from a specific starting point. For shortest path: don't confuse with minimum spanning tree — shortest path is between two SPECIFIC vertices; MST connects ALL vertices. Always show your working for these algorithms step by step.",
+   trap:"A minimum spanning tree has n−1 edges for n vertices. It has NO cycles. It connects ALL vertices. The shortest path between two points may not be part of the MST. Directed networks: you can only travel in the direction of the arrows — a path that goes 'against' an arrow is not valid.",
+   mnem:"MST: connects Everything with Minimum cost. Shortest path: fastest route from A to B.",
+   calc:"WORKED EXAMPLE — Kruskal's Algorithm\nEdges (by weight): AB=3, CD=4, BC=5, AC=6, BD=8, AD=10. 4 vertices.\nStep 1: Add AB=3 (no cycle)\nStep 2: Add CD=4 (no cycle)\nStep 3: Add BC=5 (connects the two components — no cycle)\nStep 4: AC=6 would create cycle A-B-C-A → SKIP\nStep 5: BD=8 would create cycle → SKIP\nMST: AB+CD+BC = 3+4+5 = 12 (n−1=3 edges ✓)",
+   questions:[
+    {q:"A network has vertices A, B, C, D, E. The edges and weights are: AB=4, AC=7, BC=2, BD=5, CD=3, CE=8, DE=6. (i) Use Kruskal's algorithm to find the minimum spanning tree. (ii) State its total weight.",
+     a:"(i) List edges in order: BC=2, CD=3, AB=4, BD=5, DE=6, AC=7, CE=8\nKruskal's:\n- Add BC=2 ✓ (no cycle)\n- Add CD=3 ✓ (no cycle: C-D)\n- Add AB=4 ✓ (no cycle: A-B-C-D)\n- Add BD=5 → would create cycle B-C-D-B → SKIP\n- Add DE=6 ✓ (no cycle: A-B-C-D-E)\nMST edges: BC, CD, AB, DE (4 edges for 5 vertices ✓)\n(ii) Total weight = 2+3+4+6 = 15",
+     marks:5, hint:"List ALL edges in ascending order first. Then add each edge only if it doesn't create a cycle. Stop when you have n−1 edges."},
+    {q:"Explain the difference between a minimum spanning tree and a shortest path in a network.",
+     a:"A minimum spanning tree (MST) connects ALL vertices in the network with the minimum total edge weight and contains no cycles. It is used when you want to link every vertex (e.g. connecting all buildings with cables at minimum cost).\nA shortest path finds the route with minimum total weight between two SPECIFIC vertices. It doesn't need to include all vertices. It is used when you want to travel from one point to another as cheaply/quickly/efficiently as possible.\nThey are different: the shortest path between two vertices may not be part of the MST, and the MST is not necessarily a path between any two vertices.",
+     marks:3, hint:"Think about what each one is trying to achieve — MST connects everything, shortest path connects two specific points."}
+   ]},
+  {id:"n3", code:"N3", title:"Critical Path Analysis",
+   tags:["Syllabus","HSC"],
+   def:"<b>Critical Path Analysis (CPA)</b> is used to plan and schedule projects. Activities have durations and dependencies (some must finish before others can start). <b>EST</b> (earliest starting time) = earliest an activity can begin after all predecessors are complete. <b>LST</b> (latest starting time) = latest it can start without delaying the project. <b>Float time</b> = LST − EST = how much an activity can be delayed without affecting the project. The <b>critical path</b> = the longest path through the network = minimum project duration. Activities on the critical path have float = 0.",
+   eqn:"EST: forward scan — work left to right, take the MAXIMUM incoming EST + duration\nLST: backward scan — work right to left, take MINIMUM (next LST − duration)\nFloat = LST − EST\nCritical path: all activities where float = 0\nProject duration = longest path = EST of final node\nMax-flow min-cut: maximum flow = minimum cut value",
+   tip:"Forward scan (EST): at each vertex, EST = max(EST_prev + duration of incoming activities). Backward scan (LST): at each vertex, LST = min(LST_next − duration of outgoing activities). Critical path activities: float = 0 — any delay here delays the whole project. Showing the critical path: highlight the path from start to finish where every activity has float = 0. For max-flow min-cut: a cut separates source from sink; its value = sum of forward-directed edges crossing the cut.",
+   trap:"When doing a forward scan, if multiple activities lead into a node, take the MAXIMUM EST (the project can't continue until ALL predecessors are done). When doing a backward scan, if multiple activities leave a node, take the MINIMUM LST. Float is calculated per ACTIVITY, not per node. All activities on the critical path must have float = 0, but not all float-0 activities form the critical path (check connectivity).",
+   mnem:"Forward scan → take MAX. Backward scan → take MIN. Float = LST − EST.",
+   calc:"WORKED EXAMPLE\nActivities: A(3), B(5), C(4), D(2), E(3)\nDependencies: A before C, B before C, C before D, C before E\nForward scan (EST):\nA: EST=0, finish=3. B: EST=0, finish=5.\nC: EST=max(3,5)=5, finish=9.\nD: EST=9, finish=11. E: EST=9, finish=12. Project duration=12.\nBackward scan (LST):\nE: LST=12−3=9. D: LST=12−2=10.\nC: LST=min(10−2, 9−3)=min(8,6) → wait: LST_D=12-2=10→C's LST via D: 10-4=6; via E: 12-3-4=5... recalc:\nD finish must be ≤12 → D LST=12-2=10 → C must finish by 10 → C LST=10-4=6\nE finish must be ≤12 → E LST=12-3=9 → C must finish by 9 → C LST=9-4=5\nC LST = min(6,5)=5. B LST=5-5=0. A LST=5-3=2.\nFloat: A=2-0=2, B=0-0=0, C=5-5=0, E=9-9=0, D=10-9=1.\nCritical path: B→C→E (float=0 throughout). Duration=12.",
+   questions:[
+    {q:"A project has the following activities:\nA (4 min, no predecessors), B (3 min, no predecessors),\nC (5 min, after A), D (2 min, after A and B),\nE (4 min, after C and D), F (3 min, after D).\n(i) Complete forward and backward scans to find EST and LST for each activity. (ii) Find the float for each activity. (iii) State the critical path and minimum project duration.",
+     a:"Forward scan:\nA: EST=0, finish=4. B: EST=0, finish=3.\nC: EST=4, finish=9. D: EST=max(4,3)=4, finish=6.\nE: EST=max(9,6)=9, finish=13. F: EST=6, finish=9.\nProject duration = 13 min.\n\nBackward scan:\nE: LST=13-4=9. F: LST=13-3=10.\nD: LST=min(9-2, 10-2)=min(7,8)=7. → wait: D→E: LST_E=9, D finishes 2 before E starts → D LST=9-2=7; D→F: LST_F=10, D→F: 10-2=8. D LST=min(7,8)=7.\nC: LST=9-5=4. A: LST=min(4-4, 7-4)=min(0,3)=0. B: LST=7-3=4.\n\nFloat: A=0-0=0, B=4-0=4, C=4-4=0, D=7-4=3, E=9-9=0, F=10-6=4.\n(iii) Critical path: A→C→E (all float=0). Minimum project duration = 13 minutes.",
+     marks:7, hint:"Forward scan: each activity's EST = max finish time of all predecessors. Backward scan: each activity's LST = min(LST of successor − duration). Float = LST − EST."},
+    {q:"A network has edges with capacities: Source→A: 8, Source→B: 6, A→Sink: 5, A→B: 3, B→Sink: 7. Find the maximum flow from Source to Sink.",
+     a:"Find all cuts separating Source from Sink:\nCut 1: {Source→A, Source→B} = 8+6 = 14\nCut 2: {A→Sink, A→B, Source→B} = 5+3+6 = 14\nCut 3: {A→Sink, B→Sink} = 5+7 = 12 ← minimum cut\nCut 4: {Source→A, B→Sink} = 8+7 = 15\nMinimum cut = 12, therefore maximum flow = 12.\nVerify: Route 1 (Source→A→Sink): 5 units. Route 2 (Source→B→Sink): 6 units. Route 3 (Source→A→B→Sink): 1 unit. Total = 5+6+1 = 12 ✓",
+     marks:4, hint:"List all possible cuts (sets of edges whose removal disconnects source from sink). The minimum cut value equals the maximum flow."}
+   ]}
+ ]}
+];
+
+/* =====================================================================
+   FORMULA SHEET DATA
+   ===================================================================== */
+const FORMULAS = [
+  {group:"Algebra", items:[
+    {f:"y = mx + c", d:"Linear equation (m=gradient, c=y-intercept)"},
+    {f:"y = Abˣ", d:"Exponential: b>1 growth, 0<b<1 decay"},
+    {f:"y = ax² + bx + c", d:"Quadratic (parabola)"},
+    {f:"Axis of sym: x = −b/(2a)", d:"x-coord of turning point"},
+    {f:"y = k/x", d:"Reciprocal (rectangular hyperbola, k=constant)"},
+  ]},
+  {group:"Measurement", items:[
+    {f:"Area = ½ab·sin(C)", d:"Area of any triangle (2 sides + included angle)"},
+    {f:"a/sin(A) = b/sin(B) = c/sin(C)", d:"Sine rule"},
+    {f:"c² = a²+b²−2ab·cos(C)", d:"Cosine rule (finding a side)"},
+    {f:"cos(C) = (a²+b²−c²)/(2ab)", d:"Cosine rule (finding an angle)"},
+    {f:"A ≈ h/2 × (d₀+2d₁+…+dₙ)", d:"Trapezoidal rule"},
+    {f:"V = A × d", d:"Rainfall volume"},
+    {f:"Energy = Power(kW) × Time(h)", d:"Electricity in kWh"},
+  ]},
+  {group:"Financial Mathematics", items:[
+    {f:"A = P(1+r/n)^(nt)", d:"Compound interest (A=future value)"},
+    {f:"A = P(1+rt)", d:"Simple interest"},
+    {f:"S = V₀(1−r)ⁿ", d:"Declining-balance depreciation"},
+    {f:"FV = M×[(1+r)ⁿ−1]/r", d:"Future value of annuity"},
+    {f:"PV = M×[1−(1+r)^(−n)]/r", d:"Present value of annuity"},
+    {f:"Dividend yield = (div/price)×100%", d:"Share investment"},
+  ]},
+  {group:"Statistical Analysis", items:[
+    {f:"z = (x − μ) / σ", d:"z-score (standard score)"},
+    {f:"68% within ±1σ", d:"Empirical rule"},
+    {f:"95% within ±2σ", d:"Empirical rule"},
+    {f:"99.7% within ±3σ", d:"Empirical rule"},
+    {f:"ŷ = a + bx", d:"Least-squares regression line"},
+  ]},
+  {group:"Networks", items:[
+    {f:"Sum of degrees = 2 × edges", d:"Degree sum formula"},
+    {f:"MST edges = n−1 vertices", d:"Minimum spanning tree"},
+    {f:"Float = LST − EST", d:"Activity float (critical path)"},
+    {f:"Max flow = Min cut", d:"Max-flow min-cut theorem"},
+  ]}
+];
+
+/* =====================================================================
+   PAST PAPER QUESTIONS (HSC-style)
+   ===================================================================== */
+const PAST_PAPERS = [
+  {year:"HSC Style", topic:"alg", subtopic:"a4_1", marks:3,
+   q:"The cost C (in dollars) to produce x items is C = 150 + 4x. The revenue R (in dollars) from selling x items is R = 9x. (i) Find the break-even point. (ii) Calculate the profit if 50 items are sold.",
+   a:"(i) Break-even: 150+4x = 9x → 150 = 5x → x=30 items. At x=30: R=C=$270. Break-even point: (30, 270).\n(ii) Profit = R−C = 9(50)−(150+4×50) = 450−350 = $100.",
+   hint:"Set cost equal to revenue, solve for x."},
+  {year:"HSC Style", topic:"alg", subtopic:"a4_2", marks:4,
+   q:"An investment of $1000 grows according to A = 1000 × (1.08)ᵗ where t is time in years. (i) Find the value after 5 years. (ii) Sketch the shape of this graph. (iii) In what year does the value first exceed $2000?",
+   a:"(i) A = 1000×(1.08)⁵ = 1000×1.4693 = $1469.30\n(ii) Exponential growth curve: starts at (0,1000), increases at an increasing rate, never touches x-axis.\n(iii) 1000×(1.08)ᵗ > 2000 → (1.08)ᵗ > 2. Trial: t=9: 1.999 (not yet), t=10: 2.159 ✓. After 10 years.",
+   hint:"The y-intercept of y=A·bˣ is always A (when x=0)."},
+  {year:"HSC Style", topic:"meas", subtopic:"m6", marks:5,
+   q:"From point A, a surveyor measures the angle to point B as N62°E. Point B is 250 m from A. From the same point A, point C is 310 m away on a bearing of S48°E. Find the distance BC.",
+   a:"Angle BAC = 62° + 48° = 110° (B is N62°E, C is S48°E — the angle between them measured from North going to B then to C = 62° + 48° = 110°... \nWait: bearing of B from A is N62°E = 062°. Bearing of C from A is S48°E = 180°−48° = 132°.\nAngle BAC = 132° − 62° = 70°.\nCosine rule: BC² = 250² + 310² − 2×250×310×cos(70°)\n= 62500 + 96100 − 155000×0.342 = 158600 − 53010 = 105590\nBC = √105590 ≈ 324.9 m",
+   hint:"Convert bearings to angles from North. The angle at A between the two directions = difference in true bearings."},
+  {year:"HSC Style", topic:"meas", subtopic:"m7", marks:3,
+   q:"A recipe requires ingredients in the ratio flour : sugar : butter = 5 : 2 : 1. If 160 g of sugar is used, find the amount of flour and butter required.",
+   a:"Sugar share = 2 parts = 160 g → 1 part = 80 g\nFlour = 5 parts = 5 × 80 = 400 g\nButter = 1 part = 80 g",
+   hint:"Find the value of 1 part first, then multiply by the required number of parts."},
+  {year:"HSC Style", topic:"fin", subtopic:"f4_1", marks:4,
+   q:"Emma invests $15,000 at 4.8% p.a. compounded quarterly. (i) Write an expression for the value A after t years. (ii) Find the value after 6 years. (iii) How many years until the investment doubles?",
+   a:"(i) A = 15000 × (1 + 0.048/4)^(4t) = 15000 × (1.012)^(4t)\n(ii) t=6: A = 15000 × (1.012)^24 = 15000 × 1.3404 = $20,106\n(iii) 15000×(1.012)^(4t) = 30000 → (1.012)^(4t) = 2\n4t = log(2)/log(1.012) = 0.6931/0.01193 = 58.1 → t = 14.5 years",
+   hint:"For doubling time, set A = 2P and solve. Use logarithms or trial values."},
+  {year:"HSC Style", topic:"fin", subtopic:"f5", marks:5,
+   q:"Noah deposits $400 per month into a superannuation account earning 6% p.a. compounded monthly. Using FV = M[(1+r)ⁿ−1]/r, find the value of his superannuation after 30 years. How much of this is interest?",
+   a:"M=400, r=0.06/12=0.005, n=30×12=360\nFV = 400 × [(1.005)^360 − 1] / 0.005\n= 400 × [6.0226 − 1] / 0.005\n= 400 × 5.0226 / 0.005\n= 400 × 1004.52 = $401,808\nTotal deposited = 400 × 360 = $144,000\nInterest = $401,808 − $144,000 = $257,808",
+   hint:"r must be the MONTHLY rate. n = total number of monthly payments = 360."},
+  {year:"HSC Style", topic:"stat", subtopic:"s4", marks:4,
+   q:"A researcher finds that the least-squares regression line for predicting systolic blood pressure (y) from age (x) is ŷ = 95 + 0.6x with r = 0.78. (i) Interpret the gradient. (ii) Predict the blood pressure for a 50-year-old. (iii) Comment on using this equation to predict blood pressure for a 5-year-old.",
+   a:"(i) For each additional year of age, systolic blood pressure increases by approximately 0.6 mmHg on average.\n(ii) ŷ = 95 + 0.6×50 = 95 + 30 = 125 mmHg\n(iii) A 5-year-old is likely outside the age range of the original data (which probably covered adults). This would be extrapolation, which is unreliable. The linear relationship between age and blood pressure in adults may not hold for children.",
+   hint:"Extrapolation = using x values outside the original data range. Always comment on whether the prediction is interpolation or extrapolation."},
+  {year:"HSC Style", topic:"stat", subtopic:"s5", marks:4,
+   q:"Test results are normally distributed with μ = 72 and σ = 9. (i) Find the z-score for a mark of 54. (ii) What percentage of students scored between 63 and 90? (iii) In a class of 200, how many scored above 81?",
+   a:"(i) z = (54−72)/9 = −18/9 = −2. Mark of 54 is 2 standard deviations below the mean.\n(ii) 63 = 72−9 → z=−1; 90 = 72+2×9 → z=+2. Between z=−1 and z=+2:\n= 68%/2 (between −1 and 0) + 95%/2 (between 0 and +2) = 34% + 47.5% = 81.5%\n(iii) 81 = 72+9 → z=+1. Above z=+1: (100%−68%)/2 = 16%. 16%×200 = 32 students.",
+   hint:"Use the empirical rule. Half of 68% lies between μ and μ+σ (i.e. 34%). Half of 95% lies between μ and μ+2σ (i.e. 47.5%)."},
+  {year:"HSC Style", topic:"net", subtopic:"n2", marks:4,
+   q:"A network has 6 vertices. Its edges and weights are: AB=5, AC=3, BC=7, BD=4, CD=6, CE=2, DF=8, EF=5. Use Kruskal's algorithm to find the minimum spanning tree and state its total weight.",
+   a:"List edges in order: CE=2, AC=3, BD=4, AB=5, EF=5, CD=6, BC=7, DF=8\nKruskal's:\n1. CE=2 ✓ (C-E)\n2. AC=3 ✓ (A-C-E)\n3. BD=4 ✓ (B-D separate from A-C-E)\n4. AB=5 ✓ (connects {A,C,E} with {B,D}: A-B-D, C-E)\n5. EF=5 ✓ (adds F: A-B-D, C-E-F — wait, A is connected to C, so full tree: A-C-E-F, A-B-D)\nAll 6 vertices connected with 5 edges ✓\nMST edges: CE, AC, BD, AB, EF\nTotal weight = 2+3+4+5+5 = 19",
+   hint:"Sort all edges by weight first. Add each edge if it doesn't create a cycle. Stop when you have n−1=5 edges."},
+  {year:"HSC Style", topic:"net", subtopic:"n3", marks:6,
+   q:"A project has activities with durations (days): A=2, B=4, C=3, D=5, E=2, F=4, G=3. Dependencies: A and B precede C; C precedes D and E; D and E precede F; B precedes G; F and G precede the end. Find the earliest project completion time, the critical path, and the float time for activity G.",
+   a:"Forward scan:\nA: EST=0, finish=2. B: EST=0, finish=4.\nC: EST=max(2,4)=4, finish=7.\nD: EST=7, finish=12. E: EST=7, finish=9.\nG: EST=4, finish=7.\nF: EST=max(12,9)=12, finish=16.\nEnd: EST=max(16,7)=16. Project duration = 16 days.\n\nBackward scan:\nF: LST=16-4=12. G: LST=16-3=13.\nE: LST=12-2=10. D: LST=12-5=7.\nC: LST=min(7-3, 10-3)=min(4,7)=4.\nB: LST=min(4-4, 13-4)=min(0,9)=0.\nA: LST=4-2=2.\n\nFloat: A=2-0=2, B=0-0=0, C=4-4=0, D=7-7=0, E=10-7=3, F=12-12=0, G=13-4=9.\nCritical path: B→C→D→F (float=0). Duration = 16 days.\nFloat of G = 13−4 = 9 days.",
+   hint:"Forward scan: take MAX at merging nodes. Backward scan: take MIN at branching nodes. Float = LST − EST. Critical path = all activities where float = 0."}
+];
+
+/* =====================================================================
+   STATE HELPERS
+   ===================================================================== */
+function streakToday(){
+  const d = TODAY();
+  if(!state.streak.includes(d)){ state.streak.push(d); save(); }
+}
+function getStreak(){
+  const sorted = [...state.streak].sort();
+  if(!sorted.length) return 0;
+  let streak = 1, d = new Date(sorted[sorted.length-1]);
+  const today = new Date(TODAY());
+  const diffDays = Math.round((today-d)/86400000);
+  if(diffDays > 1) return 0;
+  for(let i=sorted.length-2;i>=0;i--){
+    const prev = new Date(sorted[i]);
+    const curr = new Date(sorted[i+1]);
+    if(Math.round((curr-prev)/86400000)===1) streak++;
+    else break;
+  }
+  return streak;
+}
+function totalDots(){
+  let n=0; TOPICS.forEach(t=>t.subtopics.forEach(s=>n++)); return n;
+}
+function checkedCount(){
+  return Object.values(state.check).filter(Boolean).length;
+}
+function weakTopics(){
+  const weak=[];
+  TOPICS.forEach(t=>t.subtopics.forEach(s=>{
+    const c=state.conf[s.id];
+    if(c==='weak'||c==='shaky') weak.push({topic:t,sub:s,conf:c});
+  }));
+  return weak;
+}
+function confBreakdown(){
+  let good=0,shaky=0,weak=0,none=0;
+  TOPICS.forEach(t=>t.subtopics.forEach(s=>{
+    const c=state.conf[s.id];
+    if(c==='good') good++;
+    else if(c==='shaky') shaky++;
+    else if(c==='weak') weak++;
+    else none++;
+  }));
+  return {good,shaky,weak,none};
+}
+
+/* =====================================================================
+   NAVIGATION
+   ===================================================================== */
+let currentPage = 'home';
+function buildNav(){
+  const nav = document.getElementById('nav');
+  nav.innerHTML = '';
+  const pages = [
+    {id:'home', icon:'🏠', label:'Overview'},
+    {id:'weak', icon:'⚠️', label:'Weak Topics', badge: weakTopics().length || null},
+    {id:'papers', icon:'📋', label:'Past Papers'},
+    {id:'formulas', icon:'∑', label:'Formula Sheet'},
+  ];
+  const sep1 = document.createElement('div'); sep1.className='nav-sep'; sep1.textContent='Pages'; nav.appendChild(sep1);
+  pages.forEach(p=>{
+    const btn = document.createElement('button');
+    btn.className = 'navbtn' + (currentPage===p.id?' active':'');
+    const wk = weakTopics().length;
+    btn.innerHTML = `<span class="ic">${p.icon}</span>${esc(p.label)}${p.id==='weak'&&wk?`<span class="weak-badge">${wk}</span>`:''}`;
+    btn.onclick = ()=>{ currentPage=p.id; buildNav(); renderPage(); };
+    nav.appendChild(btn);
+  });
+  const sep2 = document.createElement('div'); sep2.className='nav-sep'; sep2.textContent='Topics'; nav.appendChild(sep2);
+  TOPICS.forEach(t=>{
+    const checked = t.subtopics.filter(s=>state.check[s.id]).length;
+    const total = t.subtopics.length;
+    const pct = total ? Math.round(checked/total*100) : 0;
+    const btn = document.createElement('button');
+    btn.className = 'navbtn' + (currentPage===t.id?' active':'');
+    btn.innerHTML = `<span class="ic">${t.icon}</span>${esc(t.title)}<span class="badge">${checked}/${total}</span>`;
+    btn.onclick = ()=>{ currentPage=t.id; buildNav(); renderPage(); };
+    nav.appendChild(btn);
+  });
+  // Streak
+  document.getElementById('streakNum').textContent = getStreak();
+  // Countdown
+  updateCountdown();
+}
+
+function updateCountdown(){
+  const cd = document.getElementById('countdown');
+  const ed = document.getElementById('examDate');
+  if(state.examDate){ ed.value = state.examDate; const d=Math.ceil((new Date(state.examDate)-new Date())/86400000); cd.textContent=d>0?`${d} days`:'Exam day!'; }
+  ed.onchange = e=>{ state.examDate=e.target.value; save(); updateCountdown(); };
+}
+
+/* =====================================================================
+   PAGE RENDERING
+   ===================================================================== */
+function renderPage(){
+  const main = document.getElementById('main');
+  if(currentPage==='home') renderHome(main);
+  else if(currentPage==='weak') renderWeak(main);
+  else if(currentPage==='papers') renderPapers(main);
+  else if(currentPage==='formulas') renderFormulas(main);
+  else {
+    const topic = TOPICS.find(t=>t.id===currentPage);
+    if(topic) renderTopic(main, topic);
+  }
+  document.title = currentPage==='home'?'HSC Math Std 2':'HSC Math — '+currentPage;
+}
+
+/* ── Home / Overview ── */
+function renderHome(el){
+  const total = totalDots(); const done = checkedCount(); const pct = total?Math.round(done/total*100):0;
+  const bd = confBreakdown();
+  const wk = weakTopics();
+  el.innerHTML = `
+  <div class="page-head"><div><h1>📐 Math Standard 2</h1><p>Year 12 · NSW HSC · 5 Topics · ${total} subtopics</p></div></div>
+  <div class="grid g4" style="margin-bottom:20px">
+    <div class="card"><div class="stat"><div class="big accent">${pct}%</div><div class="lbl">Overall Progress</div><div class="bar" style="margin-top:8px"><i style="width:${pct}%"></i></div></div></div>
+    <div class="card"><div class="stat"><div class="big" style="color:var(--green)">${bd.good}</div><div class="lbl">Confident</div></div></div>
+    <div class="card"><div class="stat"><div class="big" style="color:var(--amber)">${bd.shaky}</div><div class="lbl">Shaky</div></div></div>
+    <div class="card"><div class="stat"><div class="big" style="color:var(--red)">${bd.weak}</div><div class="lbl">Weak</div></div></div>
+  </div>
+  <div class="grid g2" style="margin-bottom:20px">
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:16px">
+        <div class="ring" style="--p:${pct}"><div class="inner"><b>${done}</b><small>of ${total}</small></div></div>
+        <div>
+          <div style="font-size:18px;font-weight:700;margin-bottom:4px">${done}/${total} subtopics checked</div>
+          <div class="muted small">${total-done} remaining</div>
+          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+            ${TOPICS.map(t=>{const c=t.subtopics.filter(s=>state.check[s.id]).length;const p=t.subtopics.length?Math.round(c/t.subtopics.length*100):0;return`<div style="font-size:12px;color:var(--muted)">${t.icon} ${t.title} <span class="accent">${p}%</span></div>`;}).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+    ${wk.length?`<div class="card weak-panel">
+      <div style="font-weight:700;margin-bottom:10px;font-size:15px">⚠️ Needs Attention (${wk.length})</div>
+      ${wk.slice(0,5).map(w=>`<div class="weak-item" onclick="navToSub('${w.topic.id}','${w.sub.id}')">
+        <div class="weak-dot ${w.conf==='weak'?'conf-weak':'conf-shaky'}"></div>
+        <div class="weak-name">${esc(w.sub.code)}: ${esc(w.sub.title)}</div>
+        <div class="weak-tag">${w.conf}</div>
+      </div>`).join('')}
+      ${wk.length>5?`<div class="muted small" style="text-align:center;padding-top:4px">+${wk.length-5} more — <a href="#" onclick="currentPage='weak';buildNav();renderPage();return false">view all</a></div>`:''}
+    </div>`:`<div class="card"><div style="text-align:center;padding:24px 0"><div style="font-size:32px;margin-bottom:8px">✅</div><div style="font-weight:700">No weak topics!</div><div class="muted small" style="margin-top:4px">Rate topics as you study to track your confidence.</div></div></div>`}
+  </div>
+  <div style="font-size:16px;font-weight:700;margin-bottom:12px">Topics</div>
+  <div class="grid g2">
+    ${TOPICS.map(t=>{
+      const done=t.subtopics.filter(s=>state.check[s.id]).length;
+      const pct=t.subtopics.length?Math.round(done/t.subtopics.length*100):0;
+      return`<div class="card" style="cursor:pointer" onclick="currentPage='${t.id}';buildNav();renderPage()">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+          <span style="font-size:24px">${t.icon}</span>
+          <div><div style="font-weight:700;font-size:15px">${esc(t.title)}</div><div class="muted small">${esc(t.sub)}</div></div>
+          <div style="margin-left:auto;font-size:20px;font-weight:700;color:var(--accent)">${pct}%</div>
+        </div>
+        <div class="bar"><i style="width:${pct}%"></i></div>
+        <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+          ${t.subtopics.map(s=>{const c=state.conf[s.id];return`<span class="tag${c?' hsc':''}">${esc(s.code)}${c?` · ${c}`:''}</span>`;}).join('')}
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+/* ── Topic Page ── */
+function renderTopic(el, topic){
+  const done = topic.subtopics.filter(s=>state.check[s.id]).length;
+  el.innerHTML = `
+  <div class="page-head">
+    <div><h1>${topic.icon} ${esc(topic.title)}</h1><p>${esc(topic.sub)}</p></div>
+    <div class="spacer"></div>
+    <div class="muted small">${done}/${topic.subtopics.length} subtopics checked</div>
+  </div>
+  <div id="topicContent"></div>`;
+  const tc = document.getElementById('topicContent');
+  topic.subtopics.forEach(sub=>{ tc.appendChild(buildDot(sub)); });
+}
+
+function buildDot(sub){
+  const wrap = document.createElement('div');
+  wrap.className = 'dot' + (state.check[sub.id]?' checked':'');
+  wrap.id = 'dot_'+sub.id;
+  const conf = state.conf[sub.id]||'';
+  const confClass = conf?`conf-${conf}`:'';
+  wrap.innerHTML = `
+  <div class="dot-h" onclick="toggleDot('${sub.id}')">
+    <input type="checkbox" class="chk" ${state.check[sub.id]?'checked':''} onclick="event.stopPropagation();toggleCheck('${sub.id}',this.checked)"/>
+    <div class="ttl">
+      <span style="color:var(--accent);font-size:11px;font-family:'IBM Plex Mono',monospace">${esc(sub.code)}</span> ${esc(sub.title)}
+      <div class="tags">${sub.tags.map(t=>`<span class="tag ${t.toLowerCase()}">${esc(t)}</span>`).join('')}</div>
+    </div>
+    <div class="conf-dot ${confClass}" id="cdot_${sub.id}"></div>
+  </div>
+  <div class="dot-body" id="body_${sub.id}"></div>`;
+  return wrap;
+}
+
+function toggleDot(id){
+  const body = document.getElementById('body_'+id);
+  const dot = body.closest('.dot');
+  const isOpen = dot.classList.contains('open');
+  dot.classList.toggle('open');
+  if(!isOpen && !body.dataset.built){
+    body.dataset.built='1';
+    const sub = findSub(id);
+    if(sub) body.innerHTML = buildDotBody(sub);
+    attachDotEvents(id);
+  }
+  streakToday(); buildNav();
+}
+
+function buildDotBody(sub){
+  let html = '';
+  if(sub.def) html += `<div class="box def"><span class="bx-l">Definition / Key Concept</span>${sub.def}</div>`;
+  if(sub.eqn) html += `<div class="box eqn"><span class="bx-l">Formulas & Equations</span><div style="white-space:pre-wrap">${esc(sub.eqn)}</div></div>`;
+  if(sub.tip) html += `<div class="box tip"><span class="bx-l">💡 Exam Tip</span>${sub.tip}</div>`;
+  if(sub.trap) html += `<div class="box trap"><span class="bx-l">⚠️ Common Trap</span>${sub.trap}</div>`;
+  if(sub.mnem) html += `<div class="box mnem"><span class="bx-l">🧠 Memory Aid</span>${sub.mnem}</div>`;
+  if(sub.calc) html += `<div class="box worked"><span class="bx-l">✏️ Worked Example</span><div class="body">${esc(sub.calc)}</div></div>`;
+  // Questions
+  if(sub.questions && sub.questions.length){
+    html += `<div style="font-weight:700;font-size:13px;margin:14px 0 6px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Practice Questions</div>`;
+    sub.questions.forEach((q,i)=>{
+      const qid = `${sub.id}_q${i}`;
+      html += `<div class="q" id="q_${qid}">
+        <div class="qq">${esc(q.q)}</div>
+        ${q.marks?`<div class="marks">${q.marks} mark${q.marks>1?'s':''}</div>`:''}
+        <div class="hint-box" id="hint_${qid}">💡 Hint: ${esc(q.hint||'Think about which formula to apply first.')}</div>
+        <div class="ans">${esc(q.a)}</div>
+        <div class="q-btns">
+          <button class="hint-btn" onclick="toggleHint('${qid}')">💡 Hint</button>
+          <button class="reveal" onclick="toggleAns('${qid}')">Show Answer</button>
+        </div>
+        <div class="confrow" id="confrow_${qid}">
+          <span>Confidence:</span>
+          ${['good','shaky','weak'].map(c=>`<button class="cbtn ${c}${state.conf[sub.id]===c?' on':''}" onclick="setConf('${sub.id}','${c}')">${c==='good'?'✓ Got it':c==='shaky'?'~ Shaky':'✗ Weak'}</button>`).join('')}
+        </div>
+      </div>`;
+    });
+  }
+  // Notes
+  html += `<textarea class="notes" placeholder="Notes for ${esc(sub.code)}…" id="notes_${sub.id}">${esc(state.notes[sub.id]||'')}</textarea>`;
+  return html;
+}
+
+function attachDotEvents(id){
+  const notes = document.getElementById('notes_'+id);
+  if(notes) notes.addEventListener('input', e=>{ state.notes[id]=e.target.value; save(); });
+}
+
+function toggleAns(qid){
+  const q = document.getElementById('q_'+qid);
+  if(!q) return;
+  const isShown = q.classList.contains('show');
+  q.classList.toggle('show');
+  q.querySelector('.reveal').textContent = isShown?'Show Answer':'Hide Answer';
+  streakToday();
+}
+function toggleHint(qid){
+  const q = document.getElementById('q_'+qid);
+  if(!q) return;
+  q.classList.toggle('hint-shown');
+  q.querySelector('.hint-btn').textContent = q.classList.contains('hint-shown')?'💡 Hide Hint':'💡 Hint';
+}
+function toggleCheck(id, checked){
+  state.check[id] = checked; save(); buildNav();
+  const dot = document.getElementById('dot_'+id);
+  if(dot){ dot.classList.toggle('checked', checked); }
+}
+function setConf(id, conf){
+  state.conf[id] = conf; save();
+  document.getElementById('cdot_'+id).className = `conf-dot conf-${conf}`;
+  document.querySelectorAll(`#q_${id}_q0 .cbtn, #confrow_${id}_q0 .cbtn`).forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll(`[onclick*="setConf('${id}'"]`).forEach(b=>{
+    b.classList.toggle('on', b.classList.contains(conf));
+  });
+  buildNav();
+  toast(`Confidence: ${conf}`);
+}
+function navToSub(topicId, subId){
+  currentPage = topicId; buildNav(); renderPage();
+  setTimeout(()=>{
+    const dot = document.getElementById('dot_'+subId);
+    if(dot){ dot.classList.add('flash'); dot.scrollIntoView({behavior:'smooth',block:'center'}); setTimeout(()=>dot.classList.remove('flash'),2000); }
+    toggleDot(subId);
+  },100);
+}
+function findSub(id){
+  for(const t of TOPICS) for(const s of t.subtopics) if(s.id===id) return s;
+  return null;
+}
+
+/* ── Weak Topics Page ── */
+function renderWeak(el){
+  const wk = weakTopics();
+  el.innerHTML = `
+  <div class="page-head"><div><h1>⚠️ Weak Topics</h1><p>Topics rated shaky or weak — focus here</p></div></div>
+  ${!wk.length?`<div class="card" style="text-align:center;padding:40px"><div style="font-size:40px;margin-bottom:12px">🎉</div><div style="font-size:18px;font-weight:700">No weak topics!</div><div class="muted" style="margin-top:6px">Rate topics using the confidence buttons while studying.</div></div>`:''}
+  <div class="weak-panel">
+  ${wk.map(w=>`
+    <div class="weak-item" onclick="navToSub('${w.topic.id}','${w.sub.id}')">
+      <div class="weak-dot ${w.conf==='weak'?'conf-weak':'conf-shaky'}"></div>
+      <div style="flex:1">
+        <div class="weak-name">${esc(w.topic.icon)} ${esc(w.sub.code)}: ${esc(w.sub.title)}</div>
+        <div class="muted small">${esc(w.topic.title)} · ${w.conf==='weak'?'<span style="color:#fca5a5">Weak — needs work</span>':'<span style="color:#fcd34d">Shaky — review again</span>'}</div>
+      </div>
+      <span style="font-size:12px;color:var(--muted)">→</span>
+    </div>`).join('')}
+  </div>`;
+}
+
+/* ── Past Papers Page ── */
+let ppFilter = 'all';
+function renderPapers(el){
+  el.innerHTML = `
+  <div class="page-head"><div><h1>📋 Past Paper Questions</h1><p>HSC-style questions by topic</p></div></div>
+  <div class="pp-filter">
+    <button class="chip${ppFilter==='all'?' on':''}" onclick="setPPFilter('all')">All Topics</button>
+    ${TOPICS.map(t=>`<button class="chip${ppFilter===t.id?' on':''}" onclick="setPPFilter('${t.id}')">${t.icon} ${esc(t.title)}</button>`).join('')}
+  </div>
+  <div id="ppList"></div>`;
+  renderPPList();
+}
+function setPPFilter(f){ ppFilter=f; renderPapers(document.getElementById('main')); }
+function renderPPList(){
+  const list = document.getElementById('ppList');
+  if(!list) return;
+  const filtered = ppFilter==='all'?PAST_PAPERS:PAST_PAPERS.filter(p=>p.topic===ppFilter);
+  if(!filtered.length){ list.innerHTML=`<div class="card muted" style="text-align:center;padding:24px">No questions for this filter.</div>`; return; }
+  list.innerHTML = filtered.map((p,i)=>{
+    const ppid=`pp_${i}`;
+    return`<div class="pp-q" id="${ppid}">
+      <div class="pp-meta">
+        <span>${esc(p.year)}</span>
+        <span>${p.marks} mark${p.marks>1?'s':''}</span>
+        <span>${esc(TOPICS.find(t=>t.id===p.topic)?.title||p.topic)}</span>
+      </div>
+      <div class="pp-text">${esc(p.q)}</div>
+      <div class="pp-hint">💡 ${esc(p.hint)}</div>
+      <div class="pp-ans">${esc(p.a)}</div>
+      <div class="q-btns">
+        <button class="hint-btn" onclick="togglePPHint('${ppid}')">💡 Hint</button>
+        <button class="reveal" onclick="togglePP('${ppid}')">Show Answer</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function togglePP(id){
+  const q=document.getElementById(id); if(!q) return;
+  const s=q.classList.toggle('show');
+  q.querySelector('.reveal').textContent=s?'Hide Answer':'Show Answer';
+}
+function togglePPHint(id){
+  const q=document.getElementById(id); if(!q) return;
+  const s=q.classList.toggle('hint-shown');
+  q.querySelector('.hint-btn').textContent=s?'💡 Hide Hint':'💡 Hint';
+}
+
+/* ── Formula Sheet ── */
+function renderFormulas(el){
+  el.innerHTML = `<div class="page-head"><div><h1>∑ Formula Sheet</h1><p>All key formulas for Math Standard 2 Y12</p></div></div>`;
+  FORMULAS.forEach(g=>{
+    const card = document.createElement('div'); card.className='card formula-group';
+    card.innerHTML=`<h3>${esc(g.group)}</h3>${g.items.map(f=>`<div class="formula-item"><div class="fi-f">${esc(f.f)}</div><div class="fi-d">${esc(f.d)}</div></div>`).join('')}`;
+    el.appendChild(card);
+  });
+}
+
+/* =====================================================================
+   SEARCH
+   ===================================================================== */
+document.getElementById('globalSearch').addEventListener('input', function(){
+  const q = this.value.trim().toLowerCase();
+  const res = document.getElementById('searchRes');
+  if(!q){ res.classList.add('hidden'); return; }
+  const hits=[];
+  TOPICS.forEach(t=>t.subtopics.forEach(s=>{
+    if(s.title.toLowerCase().includes(q)||s.code.toLowerCase().includes(q)||(s.def&&s.def.toLowerCase().includes(q))){
+      hits.push({label:`${s.code}: ${s.title}`,topicId:t.id,subId:s.id});
+    }
+  }));
+  FORMULAS.forEach(g=>g.items.forEach(f=>{
+    if(f.f.toLowerCase().includes(q)||f.d.toLowerCase().includes(q)){
+      hits.push({label:`Formula: ${f.f}`,topicId:'formulas',subId:null});
+    }
+  }));
+  if(!hits.length){ res.innerHTML='<div class="r muted">No results</div>'; res.classList.remove('hidden'); return; }
+  res.innerHTML = hits.slice(0,8).map(h=>`<div class="r" onclick="doSearch('${h.topicId}','${h.subId||''}')">${esc(h.label)}</div>`).join('');
+  res.classList.remove('hidden');
+});
+document.addEventListener('click',e=>{ if(!e.target.closest('.search')) document.getElementById('searchRes').classList.add('hidden'); });
+function doSearch(topicId,subId){
+  document.getElementById('searchRes').classList.add('hidden');
+  document.getElementById('globalSearch').value='';
+  if(topicId==='formulas'){ currentPage='formulas'; buildNav(); renderPage(); return; }
+  currentPage=topicId; buildNav(); renderPage();
+  if(subId) setTimeout(()=>navToSub(topicId,subId),100);
+}
+
+/* =====================================================================
+   SESSION TIMER
+   ===================================================================== */
+let timerInterval=null, timerSeconds=0, timerRunning=false;
+let sessionStartTime=null, sessionTopicsStudied=new Set(), sessionQsAnswered=0;
+
+document.getElementById('timerOpenBtn').addEventListener('click',()=>{
+  document.getElementById('timerBubble').classList.toggle('hidden');
+});
+document.getElementById('timerToggle').addEventListener('click',()=>{
+  if(!timerRunning){ startTimer(); } else { pauseTimer(); }
+});
+document.getElementById('timerStop').addEventListener('click',()=>{
+  if(timerSeconds>0) showRecap();
+  stopTimer();
+});
+
+function startTimer(){
+  timerRunning=true;
+  if(!sessionStartTime) sessionStartTime=Date.now();
+  document.getElementById('timerToggle').textContent='Pause';
+  timerInterval=setInterval(()=>{ timerSeconds++; updateTimerDisplay(); },1000);
+  // Track current topic
+  if(currentPage && TOPICS.find(t=>t.id===currentPage)) sessionTopicsStudied.add(currentPage);
+}
+function pauseTimer(){
+  timerRunning=false;
+  document.getElementById('timerToggle').textContent='Resume';
+  clearInterval(timerInterval);
+}
+function stopTimer(){
+  timerRunning=false; clearInterval(timerInterval);
+  timerSeconds=0; sessionStartTime=null; sessionTopicsStudied.clear(); sessionQsAnswered=0;
+  document.getElementById('timerToggle').textContent='Start';
+  updateTimerDisplay();
+  document.getElementById('timerBubble').classList.add('hidden');
+}
+function updateTimerDisplay(){
+  const m=Math.floor(timerSeconds/60), s=timerSeconds%60;
+  document.getElementById('timerDisplay').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  const topic = TOPICS.find(t=>t.id===currentPage);
+  document.getElementById('timerTopic').textContent = topic?`${topic.icon} ${topic.title}`:'Browse mode';
+}
+
+function showRecap(){
+  const duration = timerSeconds;
+  const m=Math.floor(duration/60), s=duration%60;
+  const session={date:TODAY(),duration,topics:[...sessionTopicsStudied]};
+  state.sessions.push(session); save();
+  const topics = [...sessionTopicsStudied].map(id=>TOPICS.find(t=>t.id===id)?.title||id);
+  document.getElementById('recapContent').innerHTML=`
+    <div class="grid g2" style="margin-bottom:16px">
+      <div class="card"><div class="stat"><div class="big accent">${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}</div><div class="lbl">Time studied</div></div></div>
+      <div class="card"><div class="stat"><div class="big" style="color:var(--green)">${topics.length}</div><div class="lbl">Topics covered</div></div></div>
+    </div>
+    ${topics.length?`<div class="card"><div style="font-weight:600;margin-bottom:8px">Topics studied:</div>${topics.map(t=>`<div class="kv"><span>${esc(t)}</span></div>`).join('')}</div>`:''}
+    <div class="card" style="margin-top:12px">
+      <div style="color:var(--muted);font-size:13px">Session saved. Keep going! 🔥 Streak: ${getStreak()} days</div>
+    </div>`;
+  document.getElementById('recapModal').classList.remove('hidden');
+}
+document.getElementById('recapClose').addEventListener('click',()=>{
+  document.getElementById('recapModal').classList.add('hidden');
+  stopTimer();
+});
+
+/* =====================================================================
+   THEME
+   ===================================================================== */
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme',state.theme||'dark');
+}
+document.getElementById('themeBtn').addEventListener('click',()=>{
+  state.theme = state.theme==='dark'?'light':'dark'; save(); applyTheme();
+  document.getElementById('themeBtn').textContent = state.theme==='dark'?'☀ Theme':'🌙 Theme';
+});
+
+/* =====================================================================
+   BACKUP / RESTORE
+   ===================================================================== */
+document.getElementById('ioBtn').addEventListener('click',()=>{
+  document.getElementById('ioText').value=JSON.stringify(state,null,2);
+  document.getElementById('ioModal').classList.remove('hidden');
+});
+document.getElementById('ioClose').addEventListener('click',()=>document.getElementById('ioModal').classList.add('hidden'));
+document.getElementById('exportBtn').addEventListener('click',()=>{
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='math_backup.json'; a.click();
+  toast('Exported!');
+});
+document.getElementById('importBtn').addEventListener('click',()=>{
+  try{
+    const parsed=JSON.parse(document.getElementById('ioText').value);
+    state=Object.assign({},JSON.parse(JSON.stringify(DEFAULT_STATE)),parsed);
+    save(); applyTheme(); buildNav(); renderPage();
+    document.getElementById('ioModal').classList.add('hidden');
+    toast('Imported!');
+  }catch(e){ toast('Invalid JSON'); }
+});
+
+/* =====================================================================
+   INIT
+   ===================================================================== */
+applyTheme();
+streakToday();
+buildNav();
+renderPage();
+</script>
+</body>
+</html>
