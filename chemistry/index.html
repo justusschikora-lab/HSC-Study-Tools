@@ -92,6 +92,17 @@ a{color:var(--accent)}
 .box.calc .body{white-space:pre-wrap;font-family:"IBM Plex Mono",monospace;font-size:13px}
 .box [contenteditable]{outline:none}
 .box.editing{box-shadow:inset 0 0 0 1px var(--accent)}
+.prow{display:flex;gap:10px;padding:6px 0;border-bottom:1px solid rgba(128,128,128,.12);align-items:flex-start}
+.prow:last-child{border-bottom:none}
+.plbl{font-weight:700;font-size:12px;min-width:90px;max-width:140px;flex-shrink:0;opacity:.8;padding-top:2px;line-height:1.4}
+.pval{flex:1;font-size:13.5px;line-height:1.55}
+.pbul{display:flex;gap:7px;padding:5px 0;border-bottom:1px solid rgba(128,128,128,.08);font-size:13.5px;line-height:1.55;align-items:flex-start}
+.pbul:last-child{border-bottom:none}
+.pbul-dot{color:var(--accent);font-size:10px;flex-shrink:0;padding-top:4px;opacity:.7}
+.psteps{display:flex;flex-direction:column;gap:3px}
+.pstep{display:flex;gap:10px;padding:4px 0;border-bottom:1px solid rgba(128,128,128,.08);align-items:flex-start;font-family:"IBM Plex Mono",monospace;font-size:13px}
+.pstep:last-child{border-bottom:none}
+.pstep-n{color:var(--accent);font-weight:700;min-width:18px;flex-shrink:0;font-size:11px;padding-top:2px}
 .q{border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin:9px 0;background:var(--surface2)}
 .q .qq{font-size:14px;margin-bottom:7px;font-weight:500}
 .q .ans{display:none;border-top:1px dashed var(--line);margin-top:9px;padding-top:9px;font-size:13.5px;color:#bfe;white-space:pre-wrap}
@@ -822,26 +833,27 @@ function viewModule(modId){
   ${edit?`<button class="btn ghost" data-add-dot="${m.id}">+ Add a new dot point to Module ${m.num}</button>`:''}`;
 }
 /* --- pretty-format box content --- */
-function prettyLine(s){
-  if(!s.trim())return'';
-  const chunks=s.split(/\.\s+(?=<b>)/).filter(c=>c.trim());
-  if(chunks.length>1)return chunks.map(c=>prettyLine(c)).join('');
-  const lm=s.match(/^<b>([^<]+)<\/b>[:—–\s]\s*([\s\S]*)/);
-  if(lm)return`<div style="display:flex;gap:11px;padding:6px 0;border-bottom:1px solid rgba(128,128,128,.1);align-items:flex-start"><span style="font-weight:700;min-width:88px;max-width:130px;flex-shrink:0;font-size:12px;opacity:.8;padding-top:2px;line-height:1.4">${lm[1]}</span><span style="flex:1;font-size:13.5px;line-height:1.55">${lm[2]}</span></div>`;
-  return`<div style="padding:4px 0;font-size:13.5px;line-height:1.55">${s}</div>`;}
 function prettyBox(raw,cls){
   if(!raw)return'';
-  const div=s=>`<div style="padding:4px 0;border-bottom:1px solid rgba(128,128,128,.1)">${s}</div>`;
+  const ROW=(label,content)=>`<div class="prow"><span class="plbl">${label}</span><span class="pval">${content}</span></div>`;
+  const BULLET=t=>`<div class="pbul"><span class="pbul-dot">▸</span><span>${t}</span></div>`;
   if(cls==='calc'){
     const lines=raw.split('\n').filter(l=>l.trim());
-    if(lines.length<2)return`<span style="white-space:pre-wrap">${esc(raw)}</span>`;
-    return lines.map(l=>div(`<span style="font-family:'IBM Plex Mono',monospace;font-size:13px">${esc(l)}</span>`)).join('');}
+    if(lines.length<2)return`<div class="pval" style="white-space:pre-wrap">${esc(raw)}</div>`;
+    return`<div class="psteps">`+lines.map((l,i)=>`<div class="pstep"><span class="pstep-n">${i+1}</span><span>${esc(l)}</span></div>`).join('')+`</div>`;}
   if(cls==='eqn'){
     const lines=raw.split('\n').filter(l=>l.trim());
-    if(lines.length<2)return raw;
-    return lines.map(l=>div(l)).join('');}
-  if(raw.includes('\n'))return raw.split('\n').filter(l=>l.trim()).map(l=>prettyLine(l)).join('');
-  return prettyLine(raw);}
+    if(lines.length<2)return`<div class="pval">${raw}</div>`;
+    return lines.map(l=>{const m=l.match(/^([^:]+):\s+(.+)/);return m?ROW(m[1],m[2]):BULLET(l);}).join('');}
+  let segments=raw.includes('\n')?raw.split('\n').filter(l=>l.trim()):[raw];
+  segments=segments.flatMap(seg=>seg.split(/\.\s+(?=<b>)/).filter(s=>s.trim()));
+  return segments.map(seg=>{
+    const lm=seg.match(/^<b>([^<]{1,40})<\/b>\s*[:—–]\s*([\s\S]+)/);
+    if(lm)return ROW(lm[1],lm[2]);
+    const clean=seg.replace(/^\.\s*/,'').trim();
+    if(!clean)return'';
+    return clean.length>60?BULLET(clean):`<div class="pval" style="padding:3px 0">${clean}</div>`;
+  }).join('');}
 
 function box(tid,cls,label,name,base,editable){
   const txt=field(tid,name,base);

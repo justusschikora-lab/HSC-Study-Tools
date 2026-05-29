@@ -91,6 +91,18 @@ a{color:var(--accent)}
 .box.calc .body{white-space:pre-wrap;font-family:"IBM Plex Mono",monospace;font-size:13px}
 .box[contenteditable]{outline:none}
 .box.editing{box-shadow:inset 0 0 0 1px var(--accent)}
+/* pretty-box rows */
+.prow{display:flex;gap:10px;padding:6px 0;border-bottom:1px solid rgba(128,128,128,.12);align-items:flex-start}
+.prow:last-child{border-bottom:none}
+.plbl{font-weight:700;font-size:12px;min-width:90px;max-width:140px;flex-shrink:0;opacity:.8;padding-top:2px;line-height:1.4;text-transform:none}
+.pval{flex:1;font-size:13.5px;line-height:1.55}
+.pbul{display:flex;gap:7px;padding:5px 0;border-bottom:1px solid rgba(128,128,128,.08);font-size:13.5px;line-height:1.55;align-items:flex-start}
+.pbul:last-child{border-bottom:none}
+.pbul-dot{color:var(--accent);font-size:10px;flex-shrink:0;padding-top:4px;opacity:.7}
+.psteps{display:flex;flex-direction:column;gap:3px}
+.pstep{display:flex;gap:10px;padding:4px 0;border-bottom:1px solid rgba(128,128,128,.08);align-items:flex-start;font-family:"IBM Plex Mono",monospace;font-size:13px}
+.pstep:last-child{border-bottom:none}
+.pstep-n{color:var(--accent);font-weight:700;min-width:18px;flex-shrink:0;font-size:11px;padding-top:2px}
 /* term table */
 .term-section{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:18px}
 .term-section h3{margin:0 0 10px;font-size:16px;display:flex;align-items:center;gap:8px;cursor:pointer}
@@ -981,28 +993,38 @@ function viewModule(modId){
 }
 
 /* --- pretty-format box content --- */
-function prettyLine(s){
-  if(!s.trim())return'';
-  // split on sentence boundary before a new <b>Label</b> section
-  const chunks=s.split(/\.\s+(?=<b>)/).filter(c=>c.trim());
-  if(chunks.length>1)return chunks.map(c=>prettyLine(c)).join('');
-  // labeled row: ^<b>Label</b>[: — –] content
-  const lm=s.match(/^<b>([^<]+)<\/b>[:—–\s]\s*([\s\S]*)/);
-  if(lm)return`<div style="display:flex;gap:11px;padding:6px 0;border-bottom:1px solid rgba(128,128,128,.1);align-items:flex-start"><span style="font-weight:700;min-width:88px;max-width:130px;flex-shrink:0;font-size:12px;opacity:.8;padding-top:2px;line-height:1.4">${lm[1]}</span><span style="flex:1;font-size:13.5px;line-height:1.55">${lm[2]}</span></div>`;
-  return`<div style="padding:4px 0;font-size:13.5px;line-height:1.55">${s}</div>`;}
 function prettyBox(raw,cls){
   if(!raw)return'';
-  const div=s=>`<div style="padding:4px 0;border-bottom:1px solid rgba(128,128,128,.1)">${s}</div>`;
+  const ROW=(label,content)=>`<div class="prow"><span class="plbl">${label}</span><span class="pval">${content}</span></div>`;
+  const BULLET=t=>`<div class="pbul"><span class="pbul-dot">▸</span><span>${t}</span></div>`;
+  // CALC: each \n line is a numbered step
   if(cls==='calc'){
     const lines=raw.split('\n').filter(l=>l.trim());
-    if(lines.length<2)return`<span style="white-space:pre-wrap">${esc(raw)}</span>`;
-    return lines.map(l=>div(`<span style="font-family:'IBM Plex Mono',monospace;font-size:13px">${esc(l)}</span>`)).join('');}
+    if(lines.length<2)return`<div class="pval" style="white-space:pre-wrap">${esc(raw)}</div>`;
+    return`<div class="psteps">`+lines.map((l,i)=>`<div class="pstep"><span class="pstep-n">${i+1}</span><span>${esc(l)}</span></div>`).join('')+`</div>`;}
+  // EQN: each \n line as a bullet row
   if(cls==='eqn'){
     const lines=raw.split('\n').filter(l=>l.trim());
-    if(lines.length<2)return raw;
-    return lines.map(l=>div(l)).join('');}
-  if(raw.includes('\n'))return raw.split('\n').filter(l=>l.trim()).map(l=>prettyLine(l)).join('');
-  return prettyLine(raw);}
+    if(lines.length<2)return`<div class="pval">${raw}</div>`;
+    return lines.map(l=>{
+      const m=l.match(/^([^:]+):\s+(.+)/);
+      return m?ROW(m[1],m[2]):BULLET(l);}).join('');}
+  // DEF / TIP / TRAP / MNEM
+  // Step 1: split on \n first if present
+  let segments=raw.includes('\n')?raw.split('\n').filter(l=>l.trim()):[raw];
+  // Step 2: within each segment, split at '. <b>' boundaries
+  segments=segments.flatMap(seg=>seg.split(/\.\s+(?=<b>)/).filter(s=>s.trim()));
+  // Step 3: render each segment
+  return segments.map(seg=>{
+    // <b>Label</b>: content  OR  <b>Label</b> — content
+    const lm=seg.match(/^<b>([^<]{1,40})<\/b>\s*[:—–]\s*([\s\S]+)/);
+    if(lm)return ROW(lm[1],lm[2]);
+    // plain text — strip any stray leading <b>...</b> from mid-sentence splits
+    const clean=seg.replace(/^\.\s*/,'').trim();
+    if(!clean)return'';
+    // if long prose, render as bullet; if short, render as plain row
+    return clean.length>60?BULLET(clean):`<div class="pval" style="padding:3px 0">${clean}</div>`;
+  }).join('');}
 
 function box(tid,cls,label,name,base,editable){
   const txt=field(tid,name,base);if(!txt&&!editable)return'';
@@ -1346,6 +1368,8 @@ document.getElementById('themeBtn').onclick=()=>{state.theme=state.theme==='dark
 document.getElementById('ioBtn').onclick=openIO;
 
 /* ========================= INIT ========================= */
+// always pin bio exam date regardless of localStorage
+if(!state.examDate||state.examDate==='2026-10-30'){state.examDate='2026-10-21';save();}
 applyTheme();refreshCountdown();buildNav();render();streakToday();snapshotHistory();
 </script>
 </body>
