@@ -135,7 +135,7 @@ textarea.notes:focus{outline:none;border-color:var(--accent)}
 <div class="toast" id="toast"></div>
 <script>
 const LS_KEY="hsceng_progress";
-const DEFAULT_STATE={notes:{},examDate:"2026-10-21",theme:"dark",quizStats:{},history:[]};
+const DEFAULT_STATE={notes:{},examDate:"2026-10-13",theme:"dark",quizStats:{},history:[]};
 let state=load();
 function load(){try{const s=JSON.parse(localStorage.getItem(LS_KEY));if(s)return Object.assign({},JSON.parse(JSON.stringify(DEFAULT_STATE)),s);}catch(e){}return JSON.parse(JSON.stringify(DEFAULT_STATE));}
 let saveT;function save(){clearTimeout(saveT);saveT=setTimeout(()=>localStorage.setItem(LS_KEY,JSON.stringify(state)),350);}

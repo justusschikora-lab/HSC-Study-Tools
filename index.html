@@ -162,16 +162,25 @@ a{color:inherit;text-decoration:none}
 <script>
 const KEY='hsc_dash';
 const SUBJECTS=[
-  {id:'bio',name:'Biology',short:'Bio',icon:'🧬',color:'var(--bio)',bg:'var(--biob)',border:'var(--bioborder)',url:'/biology/',lsKey:'hscbio_progress',
-   links:[{l:'Module 5 — Heredity',h:'m5'},{l:'Module 6 — Genetic Change',h:'m6'},{l:'Module 7 — Infectious Disease',h:'m7'},{l:'Module 8 — Immune System',h:'m8'}]},
-  {id:'chem',name:'Chemistry',short:'Chem',icon:'⚗️',color:'var(--chem)',bg:'var(--chemb)',border:'var(--chemborder)',url:'/chemistry/',lsKey:'hscchem_progress',
-   links:[{l:'Module 5 — Equilibrium',h:'m5'},{l:'Module 6 — Acid/Base',h:'m6'},{l:'Module 7 — Organic Chem',h:'m7'},{l:'Module 8 — Applying Chem',h:'m8'}]},
   {id:'eng',name:'English Advanced',short:'English',icon:'📚',color:'var(--eng)',bg:'var(--engb)',border:'var(--engborder)',url:'/english/',lsKey:'hsceng_progress',
+   examDate:'2026-10-13',examLabel:'Paper 1 · 13 Oct 09:50',examDate2:'2026-10-14',examLabel2:'Paper 2 · 14 Oct 09:25',
    links:[{l:'Common Module — 1984',h:'common'},{l:'Module A — Textual Conversations',h:'moda'},{l:'Module B — T.S. Eliot',h:'modb'},{l:'Module C — Discursive',h:'modc'}]},
   {id:'math',name:'Maths Standard 2',short:'Maths',icon:'📐',color:'var(--math)',bg:'var(--mathb)',border:'var(--mathborder)',url:'/math/',lsKey:'hscmath_progress',
+   examDate:'2026-10-19',examLabel:'Written · 19 Oct 09:20',
    links:[{l:'Algebra',h:'algebra'},{l:'Measurement',h:'measurement'},{l:'Financial Maths',h:'financial'},{l:'Statistics',h:'statistics'}]},
+  {id:'bio',name:'Biology',short:'Bio',icon:'🧬',color:'var(--bio)',bg:'var(--biob)',border:'var(--bioborder)',url:'/biology/',lsKey:'hscbio_progress',
+   examDate:'2026-10-21',examLabel:'Written · 21 Oct 09:25',
+   links:[{l:'Module 5 — Heredity',h:'m5'},{l:'Module 6 — Genetic Change',h:'m6'},{l:'Module 7 — Infectious Disease',h:'m7'},{l:'Module 8 — Immune System',h:'m8'}]},
+  {id:'chem',name:'Chemistry',short:'Chem',icon:'⚗️',color:'var(--chem)',bg:'var(--chemb)',border:'var(--chemborder)',url:'/chemistry/',lsKey:'hscchem_progress',
+   examDate:'2026-10-30',examLabel:'Written · 30 Oct 09:25',
+   links:[{l:'Module 5 — Equilibrium',h:'m5'},{l:'Module 6 — Acid/Base',h:'m6'},{l:'Module 7 — Organic Chem',h:'m7'},{l:'Module 8 — Applying Chem',h:'m8'}]},
 ];
-const DEF={examDate:'2026-10-21',todos:[],sessions:[],theme:'dark',streak:[],schedSeed:3,todoSubj:''};
+// Extra exams not in tools yet
+const EXTRA_EXAMS=[
+  {name:'German Continuers',short:'German',icon:'🇩🇪',examDate:'2026-08-08',examLabel:'Oral · 8 Aug 10:30',color:'#64748b'},
+  {name:'German Continuers',short:'German',icon:'🇩🇪',examDate:'2026-10-13',examLabel:'Written · 13 Oct 14:00',color:'#64748b'},
+];
+const DEF={examDate:'2026-10-13',todos:[],sessions:[],theme:'dark',streak:[],schedSeed:3,todoSubj:''};
 let S=load();
 
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s)return Object.assign({},JSON.parse(JSON.stringify(DEF)),s);}catch(e){}return JSON.parse(JSON.stringify(DEF));}
@@ -181,6 +190,14 @@ function esc(s){return(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;',
 function subj(id){return SUBJECTS.find(s=>s.id===id)||null;}
 function today(){return new Date().toISOString().slice(0,10);}
 function daysLeft(){return Math.max(0,Math.ceil((new Date(S.examDate)-new Date())/86400000));}
+function daysTo(dateStr){return Math.max(0,Math.ceil((new Date(dateStr)-new Date())/86400000));}
+function nextExam(){
+  const all=[
+    ...SUBJECTS.map(s=>({name:s.name,short:s.short,label:s.examLabel,date:s.examDate,color:s.color})),
+    ...EXTRA_EXAMS.map(e=>({name:e.name,short:e.short,label:e.examLabel,date:e.examDate,color:e.color})),
+  ].filter(e=>daysTo(e.date)>0).sort((a,b)=>new Date(a.date)-new Date(b.date));
+  return all[0]||{name:'All done!',label:'',date:S.examDate,color:'var(--muted)',short:''};
+}
 
 function getProg(s){
   try{const d=JSON.parse(localStorage.getItem(s.lsKey));if(!d)return 0;
@@ -219,26 +236,43 @@ function render(){
 }
 
 function renderHero(){
-  const dl=daysLeft(),streak=getStreak(),focus=todayFocus();
-  const pct=Math.min(100,Math.round((1-dl/365)*100));
+  const next=nextExam(),dl=daysTo(next.date),streak=getStreak(),focus=todayFocus();
+  // overall progress: days from Jan 1 2026 to first exam Oct 13
+  const start=new Date('2026-01-01'),end=new Date('2026-10-13');
+  const pct=Math.min(100,Math.round((new Date()-start)/(end-start)*100));
+  // full exam schedule
+  const allExams=[
+    ...SUBJECTS.map(s=>({name:s.short,label:s.examLabel,date:s.examDate,color:s.color})),
+    ...(SUBJECTS.filter(s=>s.examDate2).map(s=>({name:s.short,label:s.examLabel2,date:s.examDate2,color:s.color}))),
+    ...EXTRA_EXAMS.map(e=>({name:e.short,label:e.examLabel,date:e.examDate,color:e.color})),
+  ].sort((a,b)=>new Date(a.date)-new Date(b.date));
   return `<div class="card hero anim">
-  <div class="hero-eye">HSC Countdown</div>
-  <div class="hero-count">${dl}</div>
+  <div class="hero-eye">Next Exam — ${esc(next.short||next.name)}</div>
+  <div class="hero-count" style="color:unset;background:linear-gradient(135deg,#fff 20%,${next.color});-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${dl}</div>
   <div class="hero-unit">days remaining</div>
-  <div class="hero-datestr">${new Date(S.examDate).toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div>
+  <div class="hero-datestr" style="color:${next.color};opacity:.9;font-weight:600">${esc(next.label)}</div>
   <div class="streak-pill"><span style="font-size:18px">🔥</span><span class="streak-n">${streak}</span><span class="streak-lbl">day streak</span></div>
   <div class="yr-prog">
-    <div class="yr-top"><span>Year progress</span><span>${pct}%</span></div>
-    <div class="pbar"><i style="width:${pct}%;background:linear-gradient(90deg,var(--eng),var(--bio),var(--math))"></i></div>
+    <div class="yr-top"><span>2026 year progress</span><span>${Math.max(0,pct)}%</span></div>
+    <div class="pbar"><i style="width:${Math.max(0,pct)}%;background:linear-gradient(90deg,var(--eng),var(--bio),var(--math))"></i></div>
   </div>
   <div class="hdiv"></div>
-  <div class="focus-lbl">📌 Today's focus</div>
+  <div class="focus-lbl">📅 Full exam schedule</div>
+  <div style="width:100%;display:flex;flex-direction:column;gap:5px;margin-bottom:16px">
+    ${allExams.map(e=>{const d=daysTo(e.date);return`<div style="display:flex;align-items:center;gap:9px;padding:6px 10px;border-radius:9px;background:var(--surface2);border:1px solid var(--border);font-size:12px">
+      <span style="width:7px;height:7px;border-radius:50%;background:${e.color};flex-shrink:0;display:inline-block"></span>
+      <span style="flex:1;font-weight:600">${esc(e.name)}</span>
+      <span style="color:var(--muted)">${esc(e.label.split('·')[1]?.trim()||e.label)}</span>
+      <span style="font-weight:700;color:${e.color};min-width:32px;text-align:right">${d}d</span>
+    </div>`;}).join('')}
+  </div>
+  <div class="hdiv"></div>
+  <div class="focus-lbl">📌 Today's recommended focus</div>
   <button class="focus-btn" onclick="go('${focus.id}')">
     <span class="focus-dot" style="background:${focus.color}"></span>
     <span class="focus-name">${focus.name}</span>
     <span class="focus-arr">Open →</span>
   </button>
-  <div class="date-row"><label>Exam date</label><input type="date" value="${S.examDate}" onchange="setDate(this.value)"/></div>
 </div>`;
 }
 
@@ -285,6 +319,7 @@ function renderSubjRow(){
       <div><div class="subj-name">${s.name}</div><div class="subj-sub">${s.links.length} sections</div></div>
     </div>
     <div><div class="prog-row"><span>Progress</span><span style="color:${s.color};font-weight:700">${p}%</span></div><div class="pbar"><i style="width:${p}%;background:${s.color}"></i></div></div>
+    <div style="font-size:11px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:5px 9px;display:flex;justify-content:space-between"><span>${esc(s.examLabel)}</span><span style="color:${s.color};font-weight:700">${daysTo(s.examDate)}d</span></div>
     <div class="subj-links" onclick="event.stopPropagation()">
       ${s.links.map(l=>`<div class="sl" onclick="goSec('${s.id}','${l.h}')"><span class="sdot" style="background:${s.color}"></span>${l.l}</div>`).join('')}
     </div>
