@@ -141,6 +141,8 @@ function load(){try{const s=JSON.parse(localStorage.getItem(LS_KEY));if(s)return
 let saveT;function save(){clearTimeout(saveT);saveT=setTimeout(()=>localStorage.setItem(LS_KEY,JSON.stringify(state)),350);}
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800);}
 function esc(s){return(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function wc(s){return s?s.trim().split(/\s+/).filter(Boolean).length:0;}
+function wcpill(s){return `<span style="font-size:10px;padding:1px 7px;border-radius:20px;background:rgba(168,85,247,.15);color:#d8b4fe;border:1px solid rgba(168,85,247,.3);margin-left:7px;font-weight:400;letter-spacing:0">${wc(s)} words</span>`;}
 
 /* ==================== NAV DATA ==================== */
 const NAV=[
@@ -549,17 +551,17 @@ function renderCommon(m){
   <div id="cm-intro">
     <div class="card">
       <h3>Intro Template <span class="pill purple">Manipulable</span></h3>
-      <div class="block intro"><span class="bl">Intro</span>${esc(d.intro).replace(/\n/g,'<br>')}</div>
+      <div class="block intro"><span class="bl">Intro${wcpill(d.intro)}</span>${esc(d.intro).replace(/\n/g,'<br>')}</div>
       <div class="divider"></div>
       <h3 style="font-size:14px;color:var(--muted)">Placeholders</h3>
       ${d.placeholders.map(([ph,desc])=>`<div class="kv"><span style="color:var(--accent);font-family:monospace;font-size:13px">${esc(ph)}</span><span class="small muted">${esc(desc)}</span></div>`).join('')}
     </div>
     <div class="card"><span class="bl" style="font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;font-weight:700;color:var(--muted)">Conclusion</span>
-      <div class="block conc" style="margin-top:8px"><span class="bl">Conclusion</span>${esc(d.conclusion)}</div>
+      <div class="block conc" style="margin-top:8px"><span class="bl">Conclusion${wcpill(d.conclusion)}</span>${esc(d.conclusion)}</div>
     </div>
   </div>
   <div id="cm-bodies" class="hidden">
-    ${d.bodies.map((b,i)=>`<div class="card"><h3>${esc(b.label)}</h3><div class="block body${i+1}"><span class="bl">Body ${i+1}</span><pre style="white-space:pre-wrap;font-family:inherit;margin:0;font-size:13.5px">${esc(b.content)}</pre></div></div>`).join('')}
+    ${d.bodies.map((b,i)=>`<div class="card"><h3>${esc(b.label)}</h3><div class="block body${i+1}"><span class="bl">Body ${i+1}${wcpill(b.content)}</span><pre style="white-space:pre-wrap;font-family:inherit;margin:0;font-size:13.5px">${esc(b.content)}</pre></div></div>`).join('')}
   </div>
   <div id="cm-quotes" class="hidden">
     <div class="card"><h3>Key Quotes — 1984</h3>
@@ -586,10 +588,10 @@ function renderTempest(m){
     <button class="tab" onclick="showTab('t','notes',this)">My Notes</button>
   </div>
   <div id="t-intro">
-    <div class="card"><h3>Introduction</h3><div class="block intro"><span class="bl">Intro</span><pre style="white-space:pre-wrap;font-family:inherit;margin:0;font-size:13.5px">${esc(d.intro)}</pre></div></div>
+    <div class="card"><h3>Introduction</h3><div class="block intro"><span class="bl">Intro${wcpill(d.intro)}</span><pre style="white-space:pre-wrap;font-family:inherit;margin:0;font-size:13.5px">${esc(d.intro)}</pre></div></div>
   </div>
   <div id="t-bodies" class="hidden">
-    ${d.bodies.map((b,i)=>`<div class="card"><h3>${esc(b.label)}</h3><div class="block body${i+1}"><span class="bl">BP${i+1}</span><pre style="white-space:pre-wrap;font-family:inherit;margin:0;font-size:13.5px">${esc(b.content)}</pre></div></div>`).join('')}
+    ${d.bodies.map((b,i)=>`<div class="card"><h3>${esc(b.label)}</h3><div class="block body${i+1}"><span class="bl">BP${i+1}${wcpill(b.content)}</span><pre style="white-space:pre-wrap;font-family:inherit;margin:0;font-size:13.5px">${esc(b.content)}</pre></div></div>`).join('')}
   </div>
   <div id="t-quotes" class="hidden">
     <div class="card"><h3>Key Quotes — The Tempest</h3>
@@ -622,12 +624,12 @@ function renderHagseed(m){
     <button class="tab" onclick="showTab('h','notes',this)">My Notes</button>
   </div>
   <div id="h-intro">
-    <div class="card"><h3>Swing Sentence (Context → Hagseed)</h3><div class="block intro"><span class="bl">Swing Sentence</span>${esc(d.swingSentence)}</div>
+    <div class="card"><h3>Swing Sentence (Context → Hagseed)</h3><div class="block intro"><span class="bl">Swing Sentence${wcpill(d.swingSentence)}</span>${esc(d.swingSentence)}</div>
     <div class="block note" style="margin-top:12px"><span class="bl">Context</span>${esc(d.context)}</div>
     </div>
   </div>
   <div id="h-bodies" class="hidden">
-    ${d.bodies.map((b,i)=>`<div class="card"><h3>${esc(b.label)}</h3><div class="block body${i+1}"><span class="bl">BP${i+1}</span><pre style="white-space:pre-wrap;font-family:inherit;margin:0;font-size:13.5px">${esc(b.content)}</pre></div></div>`).join('')}
+    ${d.bodies.map((b,i)=>`<div class="card"><h3>${esc(b.label)}</h3><div class="block body${i+1}"><span class="bl">BP${i+1}${wcpill(b.content)}</span><pre style="white-space:pre-wrap;font-family:inherit;margin:0;font-size:13.5px">${esc(b.content)}</pre></div></div>`).join('')}
   </div>
   <div id="h-quotes" class="hidden">
     <div class="card"><h3>Key Quotes — Hagseed</h3>
@@ -663,7 +665,7 @@ function renderEliot(m){
   <div id="e-${p.id}" class="hidden">
     <div class="card"><h3>${esc(p.title)}</h3>
       <div style="margin-bottom:12px">${p.keyIdeas.map(k=>`<div style="display:flex;gap:8px;padding:4px 0;font-size:13.5px"><span style="color:var(--accent);flex-shrink:0">▸</span>${esc(k)}</div>`).join('')}</div>
-      <div class="block body1"><span class="bl">Analysis</span><pre style="white-space:pre-wrap;font-family:inherit;margin:0;font-size:13.5px">${esc(p.analysis)}</pre></div>
+      <div class="block body1"><span class="bl">Analysis${wcpill(p.analysis)}</span><pre style="white-space:pre-wrap;font-family:inherit;margin:0;font-size:13.5px">${esc(p.analysis)}</pre></div>
       <div class="divider"></div>
       <h3 style="font-size:14px">Key Quotes</h3>
       ${p.quotes.map(([q,a])=>`<div class="kv"><span class="quote" style="flex:1;margin:0">${esc(q)}</span><span class="small muted" style="max-width:280px;text-align:right">${esc(a)}</span></div>`).join('')}
@@ -698,7 +700,7 @@ function renderModC(m){
   <div id="c-reflection" class="hidden">
     <div class="card">
       <h3>Reflection / Statement of Intentions</h3>
-      <div class="block intro"><span class="bl">Full Reflection (444 words)</span><pre style="white-space:pre-wrap;font-family:inherit;margin:0;font-size:13.5px">${esc(d.reflection.fullText)}</pre></div>
+      <div class="block intro"><span class="bl">Full Reflection${wcpill(d.reflection.fullText)}</span><pre style="white-space:pre-wrap;font-family:inherit;margin:0;font-size:13.5px">${esc(d.reflection.fullText)}</pre></div>
       <div class="divider"></div>
       <h3 style="font-size:14px">Metalanguage to Use</h3>
       <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">
