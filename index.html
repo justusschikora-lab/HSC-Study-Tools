@@ -55,19 +55,19 @@ a{color:inherit;text-decoration:none}
 .card-title .ic{font-size:15px;opacity:.8}
 
 /* HERO (centre column, spans 2 rows) */
-.hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding:30px 22px 24px;grid-column:2;grid-row:1/3;border-color:rgba(168,85,247,.2);box-shadow:0 0 60px rgba(168,85,247,.06)}
+.hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding:22px 20px 20px;grid-column:2;grid-row:1/3;border-color:rgba(168,85,247,.2);box-shadow:0 0 60px rgba(168,85,247,.06)}
 .hero-eye{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:10px}
-.hero-count{font-size:82px;font-weight:800;font-family:'Bricolage Grotesque',sans-serif;line-height:1;letter-spacing:-.04em;background:linear-gradient(135deg,#fff 20%,rgba(168,85,247,.75));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:2px}
+.hero-count{font-size:76px;font-weight:800;font-family:'Bricolage Grotesque',sans-serif;line-height:1;letter-spacing:-.04em;background:linear-gradient(135deg,#fff 20%,rgba(168,85,247,.75));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:2px}
 .hero-unit{font-size:16px;color:var(--muted);font-weight:500;margin-bottom:6px}
 .hero-datestr{font-size:12px;color:var(--muted2);margin-bottom:20px}
-.streak-pill{display:inline-flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:40px;padding:8px 18px;margin-bottom:22px}
-.streak-n{font-size:24px;font-weight:800;font-family:'Bricolage Grotesque',sans-serif;line-height:1}
+.streak-pill{display:inline-flex;align-items:center;gap:7px;background:var(--surface2);border:1px solid var(--border);border-radius:40px;padding:6px 14px;margin-bottom:14px}
+.streak-n{font-size:20px;font-weight:800;font-family:'Bricolage Grotesque',sans-serif;line-height:1}
 .streak-lbl{font-size:11.5px;color:var(--muted)}
 .yr-prog{width:100%;margin-bottom:20px}
 .yr-top{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px}
 .pbar{height:7px;background:var(--surface2);border-radius:20px;overflow:hidden;border:1px solid var(--border)}
 .pbar i{display:block;height:100%;border-radius:20px;transition:width .7s cubic-bezier(.4,0,.2,1)}
-.hdiv{width:100%;height:1px;background:var(--border);margin:0 0 18px}
+.hdiv{width:100%;height:1px;background:var(--border);margin:0 0 12px}
 .focus-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:10px;text-align:left;width:100%}
 .focus-btn{display:flex;align-items:center;gap:10px;width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);padding:11px 13px;cursor:pointer;transition:.15s;text-align:left}
 .focus-btn:hover{border-color:var(--border2);background:rgba(255,255,255,.1)}
@@ -245,25 +245,20 @@ function renderHero(){
     ...EXTRA_EXAMS.map(e=>({name:e.short,label:e.examLabel,date:e.examDate,color:e.color})),
   ].sort((a,b)=>new Date(a.date)-new Date(b.date));
   return `<div class="card hero anim">
-  <div class="hero-eye">First exam — ${esc(first.name)}</div>
+  <div class="hero-eye">First exam · German Oral</div>
   <div class="hero-count">${daysTo('2026-08-08')}</div>
-  <div class="hero-unit">days remaining</div>
-  <div class="hero-datestr">German Oral · 8 Aug 2026 · 10:30</div>
-  <div class="streak-pill"><span style="font-size:18px">🔥</span><span class="streak-n">${streak}</span><span class="streak-lbl">day streak</span></div>
-  <div class="yr-prog">
-    <div class="yr-top"><span>To first exam</span><span>${pct}%</span></div>
-    <div class="pbar"><i style="width:${pct}%;background:linear-gradient(90deg,var(--eng),var(--bio),var(--math))"></i></div>
-  </div>
+  <div style="font-size:12px;color:var(--muted2);margin-bottom:14px">8 Aug 2026 · 10:30</div>
+  <div class="streak-pill"><span style="font-size:16px">🔥</span><span class="streak-n">${streak}</span><span class="streak-lbl">day streak</span></div>
   <div class="hdiv"></div>
-  <div style="width:100%;display:flex;flex-direction:column;gap:4px;margin-bottom:16px">
-    ${allExams.map(e=>`<div style="display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--muted);padding:2px 0">
-      <span style="width:6px;height:6px;border-radius:50%;background:${e.color};flex-shrink:0;display:inline-block"></span>
+  <div style="width:100%;display:flex;flex-direction:column;gap:3px;margin-bottom:14px">
+    ${allExams.map(e=>`<div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);padding:1px 0">
+      <span style="width:5px;height:5px;border-radius:50%;background:${e.color};flex-shrink:0;display:inline-block"></span>
       <span style="flex:1">${esc(e.label)}</span>
-      <span style="font-weight:700;color:${e.color}">${daysTo(e.date)}d</span>
+      <span style="font-weight:700;color:${e.color};min-width:26px;text-align:right">${daysTo(e.date)}d</span>
     </div>`).join('')}
   </div>
   <div class="hdiv"></div>
-  <div class="focus-lbl">📌 Today's recommended focus</div>
+  <div class="focus-lbl">📌 Today's focus</div>
   <button class="focus-btn" onclick="go('${focus.id}')">
     <span class="focus-dot" style="background:${focus.color}"></span>
     <span class="focus-name">${focus.name}</span>
