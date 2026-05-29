@@ -151,6 +151,32 @@ textarea.notes:focus{outline:none;border-color:var(--accent)}
   <main class="main" id="main"></main>
 </div>
 <div class="toast" id="toast"></div>
+<div id="ftimer" style="display:none;position:fixed;bottom:20px;right:20px;background:rgba(10,8,2,.92);border:1px solid rgba(232,160,32,.4);border-radius:14px;padding:10px 15px;backdrop-filter:blur(20px);z-index:500;align-items:center;gap:10px;box-shadow:0 8px 30px rgba(0,0,0,.5);cursor:pointer;font-family:'IBM Plex Sans',system-ui,sans-serif" onclick="window.location='/'">
+  <div id="ft-icon" style="font-size:16px">🇩🇪</div>
+  <div><div id="ft-subj" style="font-size:10px;color:rgba(245,232,208,.4);text-transform:uppercase;letter-spacing:.08em;margin-bottom:1px"></div><div id="ft-time" style="font-size:18px;font-weight:800;color:#e8a020;font-family:'Bricolage Grotesque',system-ui,sans-serif;letter-spacing:-.01em">00:00:00</div></div>
+  <div style="font-size:10px;color:rgba(245,232,208,.3);padding-left:6px;border-left:1px solid rgba(245,232,208,.1)">↗ dash</div>
+</div>
+<script>
+(function(){
+  const TK='hsc_timer_v2';
+  const SUBJ_MAP={eng:{name:'English',icon:'📚',color:'#a855f7'},bio:{name:'Biology',icon:'🧬',color:'#22c55e'},chem:{name:'Chem',icon:'⚗️',color:'#f59e0b'},math:{name:'Maths',icon:'📐',color:'#3b82f6'},ger:{name:'German',icon:'🇩🇪',color:'#e8a020'}};
+  function getTS(){try{return JSON.parse(localStorage.getItem(TK))||{running:false,elapsed:0,startedAt:null};}catch(e){return{running:false,elapsed:0,startedAt:null};}}
+  function timerSec(){const ts=getTS();return(ts.running&&ts.startedAt)?ts.elapsed+Math.floor((Date.now()-ts.startedAt)/1000):ts.elapsed;}
+  function fmt(s){return[Math.floor(s/3600),Math.floor((s%3600)/60),s%60].map(n=>String(n).padStart(2,'0')).join(':');}
+  function update(){
+    const ts=getTS(),el=document.getElementById('ftimer');
+    if(!el)return;
+    if(!ts.running&&ts.elapsed===0){el.style.display='none';return;}
+    el.style.display='flex';
+    const s=SUBJ_MAP[ts.subject]||SUBJ_MAP.ger;
+    document.getElementById('ft-icon').textContent=s.icon;
+    document.getElementById('ft-subj').textContent=s.name;
+    document.getElementById('ft-time').textContent=fmt(timerSec());
+    document.getElementById('ft-time').style.color=s.color;
+  }
+  update();setInterval(update,1000);
+})();
+</script>
 <script>
 const LS_KEY="hscger_v1";
 const DEFAULT_STATE={notes:{},examDate:"2026-10-14",theme:"dark"};
