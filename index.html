@@ -261,7 +261,7 @@ const SUBJECTS=[
    links:[{l:'Text Analysis Devices',h:'lang'},{l:'Oral Exam Prep',h:'oral'},{l:'Topic Vocab Banks',h:'vocab'},{l:'Quiz Mode',h:'quiz'}]},
 ];
 const EXTRA=[];
-const DEF={todos:[],sessions:[],theme:'black',streak:[],todoSubj:'',dailyGoalSec:10800,layout:null};
+const DEF={todos:[],sessions:[],theme:'black',streak:[],todoSubj:'',dailyGoalSec:10800,layout:null,notes:'',papers:{},targets:{}};
 let S=load();
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s)return Object.assign({},JSON.parse(JSON.stringify(DEF)),s);}catch(e){}return JSON.parse(JSON.stringify(DEF));}
 let svT;function save(){clearTimeout(svT);svT=setTimeout(()=>localStorage.setItem(KEY,JSON.stringify(S)),300);}
@@ -401,8 +401,15 @@ const WM={
   ger:   {label:'🇩🇪 German',    wide:false},
   timer: {label:'⏱ Timer',       wide:false},
   goals: {label:'🎯 Goals',      wide:false},
-  graph: {label:'📊 Study Graph',wide:true},
-  sessions:{label:'🕐 Sessions', wide:false},
+  graph:   {label:'📊 Study Graph',  wide:true},
+  sessions:{label:'🕐 Sessions',    wide:false},
+  notes:   {label:'📝 Quick Notes',  wide:false},
+  pomodoro:{label:'🍅 Pomodoro',     wide:false},
+  papers:  {label:'📋 Past Papers',  wide:true},
+  weekplan:{label:'📅 Week Planner', wide:false},
+  balance: {label:'📈 Subject Balance',wide:false},
+  targets: {label:'🎯 Daily Targets',wide:false},
+  nextexam:{label:'🗓️ Next Exam',    wide:false},
 };
 const DEF_LAYOUT=[
   {id:'hero',wide:true},
@@ -441,11 +448,18 @@ function setupDrag(){
 /* ===== RENDER ===== */
 function wHTML(id){
   switch(id){
-    case 'hero':return rHero();
-    case 'timer':return rTimer();
-    case 'goals':return rGoals();
-    case 'graph':return rGraph();
+    case 'hero':    return rHero();
+    case 'timer':   return rTimer();
+    case 'goals':   return rGoals();
+    case 'graph':   return rGraph();
     case 'sessions':return rSessions();
+    case 'notes':   return rNotes();
+    case 'pomodoro':return rPomodoro();
+    case 'papers':  return rPapers();
+    case 'weekplan':return rWeekPlan();
+    case 'balance': return rBalance();
+    case 'targets': return rTargets();
+    case 'nextexam':return rNextExam();
     default:{const s=sj(id);return s?rSubjectCard(s):'';}
   }
 }
@@ -545,6 +559,189 @@ function rSessions(){
     <div class="slist">${sess.length?sess.map(s=>{const sb=sj(s.subject)||SUBJECTS[0];return`<div class="si"><span class="sd" style="background:${sb.color}"></span><span style="flex:1"><b>${sb.short}</b> · ${fmt(s.duration)}</span><span style="font-size:10.5px;color:var(--mu)">${s.date===today()?'Today '+s.time:s.date}</span></div>`;}).join(''):`<div class="empty">No sessions yet</div>`}</div>
   </div>`;}
 
+/* ===== POMODORO ===== */
+const PK='hsc_pomo_v1';
+function getPomo(){try{return JSON.parse(localStorage.getItem(PK))||{phase:'work',remaining:1500,running:false,startedAt:null,round:0};}catch(e){return{phase:'work',remaining:1500,running:false,startedAt:null,round:0};}}
+function savePomo(p){localStorage.setItem(PK,JSON.stringify(p));}
+let pomoIv=null;
+function pomoTick(){
+  const p=getPomo();if(!p.running)return;
+  const rem=Math.max(0,p.remaining-Math.floor((Date.now()-p.startedAt)/1000));
+  const te=document.getElementById('pomoTime');
+  if(te)te.textContent=Math.floor(rem/60).toString().padStart(2,'0')+':'+(rem%60).toString().padStart(2,'0');
+  const be=document.getElementById('pomoBar');
+  if(be)be.style.width=Math.round((1-rem/(p.phase==='work'?1500:300))*100)+'%';
+  if(rem===0){
+    const nph=p.phase==='work'?'break':'work';
+    savePomo({phase:nph,remaining:nph==='work'?1500:300,running:false,startedAt:null,round:p.phase==='work'?p.round:p.round+1});
+    clearInterval(pomoIv);pomoIv=null;
+    toast(p.phase==='work'?'🍅 Break time! 5 min':'💪 Work time! 25 min');
+    render();
+  }
+}
+function pomoToggle(){
+  let p=getPomo();
+  if(p.running){p.remaining=Math.max(0,p.remaining-Math.floor((Date.now()-p.startedAt)/1000));p.running=false;p.startedAt=null;clearInterval(pomoIv);pomoIv=null;}
+  else{p.running=true;p.startedAt=Date.now();if(!pomoIv)pomoIv=setInterval(pomoTick,1000);}
+  savePomo(p);render();
+}
+function pomoReset(){const p=getPomo();savePomo({...p,remaining:p.phase==='work'?1500:300,running:false,startedAt:null});clearInterval(pomoIv);pomoIv=null;render();}
+function pomoSetPhase(ph){savePomo({phase:ph,remaining:ph==='work'?1500:300,running:false,startedAt:null,round:getPomo().round});clearInterval(pomoIv);pomoIv=null;render();}
+
+/* ===== PAPERS & TARGETS ===== */
+const PAPER_YEARS={eng:[2019,2020,2021,2022,2023,2024],math:[2019,2020,2021,2022,2023,2024],bio:[2019,2020,2021,2022,2023,2024],chem:[2019,2020,2021,2022,2023,2024],ger:[2019,2020,2021,2022,2023,2024]};
+function togglePaper(sid,yr){if(!S.papers)S.papers={};if(!S.papers[sid])S.papers[sid]={};const p=S.papers[sid][yr]||{done:false,score:null};S.papers[sid][yr]={done:!p.done,score:!p.done?p.score:null};save();render();}
+function setPaperScore(sid,yr,val){if(!S.papers)S.papers={};if(!S.papers[sid])S.papers[sid]={};if(!S.papers[sid][yr])S.papers[sid][yr]={done:true,score:null};S.papers[sid][yr].score=val!=null&&val!==''?+val:null;save();}
+function setTarget(sid,hrs){if(!S.targets)S.targets={};S.targets[sid]=hrs;save();render();}
+
+/* ===== NEW WIDGET RENDERERS ===== */
+function rNotes(){
+  return`<div class="card anim">
+    <div class="ct">📝 Quick Notes</div>
+    <textarea style="width:100%;min-height:130px;background:var(--sf2);border:1px solid var(--bd);color:var(--tx);border-radius:10px;padding:10px 12px;font-size:13px;font-family:inherit;resize:vertical;line-height:1.6;outline:none;transition:border-color .15s" placeholder="Formulas, reminders, ideas…" onfocus="this.style.borderColor='var(--engbr)'" onblur="this.style.borderColor='var(--bd)'" oninput="S.notes=this.value;save()">${esc(S.notes||'')}</textarea>
+  </div>`;}
+
+function rPomodoro(){
+  const p=getPomo();
+  const rem=p.running&&p.startedAt?Math.max(0,p.remaining-Math.floor((Date.now()-p.startedAt)/1000)):p.remaining;
+  const isWork=p.phase==='work',total=isWork?1500:300,ac=isWork?'#ef4444':'#22c55e';
+  const pct=Math.round((1-rem/total)*100);
+  const disp=Math.floor(rem/60).toString().padStart(2,'0')+':'+(rem%60).toString().padStart(2,'0');
+  return`<div class="card anim">
+    <div class="ct">🍅 Pomodoro<span style="margin-left:auto;font-size:11px;color:var(--mu)">Round ${p.round+1}</span></div>
+    <div class="ts-row">
+      <button class="tsb${isWork?' on':''}" style="${isWork?'background:#ef4444;border-color:rgba(239,68,68,.4);color:#fff':''}" onclick="pomoSetPhase('work')">Work 25m</button>
+      <button class="tsb${!isWork?' on':''}" style="${!isWork?'background:#22c55e;border-color:rgba(34,197,94,.4);color:#fff':''}" onclick="pomoSetPhase('break')">Break 5m</button>
+    </div>
+    <div id="pomoTime" style="font-size:46px;font-weight:800;font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;text-align:center;color:${ac};margin:8px 0 6px">${disp}</div>
+    <div class="pb" style="height:5px"><i id="pomoBar" style="width:${pct}%;background:${ac};transition:width 1s linear"></i></div>
+    <div class="tbtns" style="margin-top:10px">
+      <button class="tbtn ${p.running?'pause':'start'}" style="${!p.running?'background:'+ac+';border:none':''}" onclick="pomoToggle()">${p.running?'⏸ Pause':'▶ Start'}</button>
+      <button class="tbtn stop" onclick="pomoReset()" title="Reset">↺ Reset</button>
+    </div>
+  </div>`;}
+
+function rPapers(){
+  const totalDone=SUBJECTS.reduce((a,s)=>{const sp=(S.papers||{})[s.id]||{};return a+(PAPER_YEARS[s.id]||[]).filter(y=>sp[y]?.done).length;},0);
+  const totalPapers=SUBJECTS.reduce((a,s)=>a+(PAPER_YEARS[s.id]||[]).length,0);
+  return`<div class="card anim">
+    <div class="ct">📋 Past Papers<span class="pill" style="margin-left:auto">${totalDone}/${totalPapers}</span></div>
+    <div style="font-size:11px;color:var(--mu);margin-bottom:14px">Source: <span style="color:var(--eng)">nesa.edu.au → HSC exam papers</span> — tick a year once done, enter % score</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+    ${SUBJECTS.map(s=>{
+      const sp=(S.papers||{})[s.id]||{};
+      const yrs=PAPER_YEARS[s.id]||[];
+      const done=yrs.filter(y=>sp[y]?.done).length;
+      const scores=yrs.filter(y=>sp[y]?.done&&sp[y]?.score!=null).map(y=>sp[y].score);
+      const avg=scores.length?Math.round(scores.reduce((a,b)=>a+b)/scores.length):null;
+      return`<div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+          <span style="font-size:13px">${s.icon}</span>
+          <span style="font-size:12px;font-weight:700;color:var(--tx)">${s.short}</span>
+          <span style="margin-left:auto;font-size:10.5px;color:${done===yrs.length?'var(--bio)':'var(--mu)'}">${done}/${yrs.length}${avg!=null?' · avg '+avg+'%':''}</span>
+        </div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap">
+          ${yrs.map(y=>{
+            const pp=sp[y]||{done:false,score:null};
+            return`<div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+              <button onclick="togglePaper('${s.id}',${y})" style="width:46px;padding:5px 0;border-radius:8px;border:1px solid ${pp.done?s.color:'var(--bd)'};background:${pp.done?s.bg:'var(--sf2)'};color:${pp.done?s.color:'var(--mu)'};font-size:10.5px;font-weight:700;cursor:pointer;transition:.15s">${y}</button>
+              ${pp.done?`<input type="number" min="0" max="100" value="${pp.score!=null?pp.score:''}" placeholder="%" style="width:46px;background:var(--sf2);border:1px solid var(--bd);color:var(--tx);border-radius:6px;padding:2px 4px;font-size:10px;text-align:center;font-family:inherit;outline:none" onchange="setPaperScore('${s.id}',${y},this.value)" />`:'<div style="height:20px"></div>'}
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+    }).join('')}
+    </div>
+  </div>`;}
+
+function rWeekPlan(){
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const n=new Date(),mon=new Date(n);mon.setDate(n.getDate()-((n.getDay()+6)%7));
+  const dd=days.map((_,i)=>{
+    const d=new Date(mon);d.setDate(mon.getDate()+i);
+    const ds=d.toISOString().slice(0,10);
+    const sec=S.sessions.filter(s=>s.date===ds&&s.duration>0).reduce((a,s)=>a+(s.duration||0),0);
+    return{label:days[i],ds,sec,isToday:ds===today()};
+  });
+  const maxSec=Math.max(...dd.map(d=>d.sec),1800);
+  const tot=dd.reduce((a,d)=>a+d.sec,0);
+  return`<div class="card anim">
+    <div class="ct">📅 This Week<span style="margin-left:auto;font-size:11px;color:var(--mu)">${(tot/3600).toFixed(1)}h total</span></div>
+    <div style="display:flex;align-items:flex-end;gap:5px;height:80px;margin-bottom:7px">
+      ${dd.map(d=>{const pct=d.sec/maxSec*100;return`<div style="flex:1;height:100%;display:flex;align-items:flex-end"><div style="width:100%;height:${Math.max(2,pct)}%;background:${d.isToday?'var(--eng)':d.sec>0?'var(--bd2)':'var(--sf2)'};border-radius:5px 5px 0 0;transition:height .5s ease;border:1px solid ${d.isToday?'var(--engbr)':'var(--bd)'}"></div></div>`;}).join('')}
+    </div>
+    <div style="display:flex;gap:5px;margin-bottom:3px">
+      ${dd.map(d=>`<div style="flex:1;text-align:center;font-size:10px;font-weight:${d.isToday?700:400};color:${d.isToday?'var(--eng)':'var(--mu)'}">${d.label}</div>`).join('')}
+    </div>
+    <div style="display:flex;gap:5px">
+      ${dd.map(d=>`<div style="flex:1;text-align:center;font-size:9px;color:var(--mu2)">${d.sec>0?((d.sec/3600).toFixed(1)+'h'):''}</div>`).join('')}
+    </div>
+  </div>`;}
+
+function rBalance(){
+  const wDays=[];const n=new Date(),mon=new Date(n);mon.setDate(n.getDate()-((n.getDay()+6)%7));
+  for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);wDays.push(d.toISOString().slice(0,10));}
+  const cMap={eng:'#a855f7',bio:'#22c55e',chem:'#f59e0b',math:'#3b82f6',ger:'#e8a020'};
+  const total=S.sessions.filter(s=>wDays.includes(s.date)&&s.duration>0).reduce((a,s)=>a+(s.duration||0),0);
+  if(!total)return`<div class="card anim"><div class="ct">📈 Subject Balance</div><div class="empty" style="padding:24px">No sessions this week</div></div>`;
+  const data=SUBJECTS.map(s=>({short:s.short,icon:s.icon,sec:S.sessions.filter(ss=>wDays.includes(ss.date)&&ss.subject===s.id&&ss.duration>0).reduce((a,ss)=>a+(ss.duration||0),0),color:cMap[s.id]})).filter(d=>d.sec>0);
+  return`<div class="card anim">
+    <div class="ct">📈 Subject Balance<span style="margin-left:auto;font-size:11px;color:var(--mu)">this week · ${(total/3600).toFixed(1)}h</span></div>
+    <div style="display:flex;height:14px;border-radius:8px;overflow:hidden;gap:2px;margin-bottom:14px">
+      ${data.map(d=>`<div style="flex:${d.sec};background:${d.color};min-width:3px"></div>`).join('')}
+    </div>
+    ${data.map(d=>{const pct=Math.round(d.sec/total*100);return`<div style="display:flex;align-items:center;gap:10px;margin-bottom:7px;font-size:12.5px">
+      <span style="width:10px;height:10px;border-radius:3px;background:${d.color};flex-shrink:0;display:inline-block"></span>
+      <span style="flex:1;color:var(--mu)">${d.icon} ${d.short}</span>
+      <span style="color:var(--tx);font-weight:600">${(d.sec/3600).toFixed(1)}h</span>
+      <span style="color:var(--mu2);min-width:32px;text-align:right">${pct}%</span>
+    </div>`;}).join('')}
+  </div>`;}
+
+function rTargets(){
+  const ts=getTS(),sec=timerSec(),tgt=S.targets||{};
+  const todayByS={};
+  SUBJECTS.forEach(s=>{
+    todayByS[s.id]=S.sessions.filter(ss=>ss.date===today()&&ss.subject===s.id&&ss.duration>0).reduce((a,ss)=>a+(ss.duration||0),0);
+    if(ts.running&&ts.subject===s.id)todayByS[s.id]+=sec;
+  });
+  return`<div class="card anim">
+    <div class="ct">🎯 Daily Targets<span style="margin-left:auto;font-size:11px;color:var(--mu)">h/day goal</span></div>
+    ${SUBJECTS.map(s=>{
+      const goal=tgt[s.id]||0,done=todayByS[s.id]||0;
+      const pct=goal>0?Math.min(100,Math.round(done/(goal*3600)*100)):0;
+      const col=pct>=100?'var(--bio)':'var(--mu)';
+      return`<div style="margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <span>${s.icon}</span><span style="font-size:12px;flex:1;color:var(--tx)">${s.short}</span>
+          <input type="number" min="0" max="12" step="0.5" value="${goal||''}" placeholder="h" title="Daily goal (hours)" style="width:40px;background:var(--sf2);border:1px solid var(--bd);color:var(--tx);border-radius:6px;padding:2px 5px;font-size:11px;text-align:center;font-family:inherit;outline:none" onchange="setTarget('${s.id}',+this.value||0)"/>
+          <span style="font-size:11px;color:${col};font-weight:600;min-width:34px;text-align:right">${goal>0?pct+'%':''}</span>
+        </div>
+        ${goal>0?`<div class="pb" style="height:4px"><i style="width:${pct}%;background:${s.color}"></i></div>`:''}
+      </div>`;
+    }).join('')}
+  </div>`;}
+
+function rNextExam(){
+  const allExams=[
+    ...SUBJECTS.map(s=>({name:s.name,icon:s.icon,color:s.color,bg:s.bg,label:s.examLabel,date:s.examDate})),
+    ...SUBJECTS.filter(s=>s.examDate2).map(s=>({name:s.name,icon:s.icon,color:s.color,bg:s.bg,label:s.examLabel2,date:s.examDate2})),
+  ].filter(e=>daysTo(e.date)>0).sort((a,b)=>new Date(a.date)-new Date(b.date));
+  if(!allExams.length)return`<div class="card anim" style="text-align:center;padding:24px 0"><div style="font-size:40px">🎉</div><div class="empty">All exams done!</div></div>`;
+  const e=allExams[0],d=daysTo(e.date);
+  return`<div class="card anim" style="border-color:${e.color};box-shadow:0 0 32px ${e.bg}">
+    <div class="ct" style="color:var(--mu);font-size:11px;text-transform:uppercase;letter-spacing:.08em">🗓️ Next Exam</div>
+    <div style="text-align:center;padding:10px 0 8px">
+      <div style="font-size:11px;color:var(--mu);margin-bottom:8px">${e.icon} ${e.name}</div>
+      <div style="font-size:66px;font-weight:800;font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.04em;line-height:1;color:${e.color}">${d}</div>
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--mu);margin-top:5px">days away</div>
+      <div style="font-size:11.5px;color:var(--mu2);margin-top:10px;background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:5px 10px;display:inline-block">${e.label}</div>
+    </div>
+    ${allExams.length>1?`<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--bd)">
+      ${allExams.slice(1,3).map(ex=>`<div class="er" style="padding:3px 0"><span class="ed" style="background:${ex.color}"></span><span class="el">${ex.label}</span><span class="ev" style="color:${ex.color}">${daysTo(ex.date)}d</span></div>`).join('')}
+    </div>`:''}
+  </div>`;}
+
 /* ===== INIT ===== */
 // migrate old theme names
 if(!['black','white','forest','ocean','ember'].includes(S.theme))S.theme=S.theme==='light'?'white':S.theme==='midnight'?'ocean':'black';
@@ -552,6 +749,7 @@ document.documentElement.setAttribute('data-theme',S.theme||'black');
 markStreak();
 render();
 const _ts=getTS();if(_ts.running)startTick();
+const _ps=getPomo();if(_ps.running)pomoIv=setInterval(pomoTick,1000);
 </script>
 </body>
 </html>
