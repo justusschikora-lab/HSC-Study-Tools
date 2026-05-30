@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "hscchem",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": ["run", "--allow-net", "--allow-read", "jsr:@std/http/file-server", "--port", "8123"],
+      "port": 8123
+    }
+  ]
+}

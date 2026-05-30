@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(py --version)",
+      "Bash(pdftotext -layout \"Justus Y12 Study Doc-1.pdf\" sd.txt)",
+      "Bash(pdftotext -layout \"Titrates.pdf\" tit.txt)",
+      "Bash(pdftotext -layout \"chem- organic chemistry.pdf\" org.txt)",
+      "mcp__Claude_Preview__preview_start"
+    ]
+  }
+}

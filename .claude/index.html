@@ -23,7 +23,7 @@ a{color:var(--accent)}
 .app{display:flex;min-height:100vh}
 .sidebar{width:250px;background:var(--surface);border-right:1px solid var(--line);position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:14px 12px;gap:10px;overflow-y:auto;flex-shrink:0}
 .brand{font-size:18px;display:flex;align-items:center;gap:8px}
-.brand .logo{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#04201c;font-weight:800;font-size:13px}
+.brand .logo{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;color:#04201c;font-weight:800;font-size:13px}
 .brand small{display:block;color:var(--muted);font-size:11px;font-weight:500;letter-spacing:0}
 .search{display:flex;flex-direction:column;gap:4px;position:relative}
 .search input{width:100%;background:var(--surface2);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:8px 10px;font-size:13px}
@@ -92,32 +92,6 @@ a{color:var(--accent)}
 .box.calc .body{white-space:pre-wrap;font-family:"IBM Plex Mono",monospace;font-size:13px}
 .box [contenteditable]{outline:none}
 .box.editing{box-shadow:inset 0 0 0 1px var(--accent)}
-.prow{display:flex;gap:10px;padding:6px 0;border-bottom:1px solid rgba(128,128,128,.12);align-items:flex-start}
-.prow:last-child{border-bottom:none}
-.plbl{font-weight:700;font-size:12px;min-width:90px;max-width:140px;flex-shrink:0;opacity:.8;padding-top:2px;line-height:1.4}
-.pval{flex:1;font-size:13.5px;line-height:1.55}
-.pbul{display:flex;gap:7px;padding:5px 0;border-bottom:1px solid rgba(128,128,128,.08);font-size:13.5px;line-height:1.55;align-items:flex-start}
-.pbul:last-child{border-bottom:none}
-.pbul-dot{color:var(--accent);font-size:10px;flex-shrink:0;padding-top:4px;opacity:.7}
-/* flashcard back layouts */
-.fc-vs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:2px 0}
-.fc-vs-col{background:var(--surface2);border-radius:9px;padding:10px 12px;text-align:left}
-.fc-vs-hd{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:7px;border-bottom:1px solid var(--line);padding-bottom:4px}
-.fc-row{display:flex;gap:8px;padding:5px 0;border-bottom:1px solid rgba(128,128,128,.1);font-size:13px;line-height:1.55;align-items:flex-start;text-align:left}
-.fc-row:last-child{border-bottom:none}
-.fc-rl{font-weight:700;min-width:75px;max-width:110px;flex-shrink:0;font-size:11.5px;color:var(--accent);padding-top:1px;line-height:1.4}
-.fc-rv{flex:1}
-.fc-bul{display:flex;gap:7px;padding:4px 0;border-bottom:1px solid rgba(128,128,128,.08);font-size:13px;line-height:1.55;align-items:flex-start;text-align:left}
-.fc-bul:last-child{border-bottom:none}
-.fc-bd{color:var(--accent);font-size:10px;flex-shrink:0;padding-top:4px;opacity:.8}
-.fc-step{display:flex;gap:8px;padding:4px 0;font-size:13px;line-height:1.55;border-bottom:1px solid rgba(128,128,128,.08);text-align:left}
-.fc-step:last-child{border-bottom:none}
-.fc-sn{color:var(--accent);font-weight:700;min-width:16px;font-size:11px;padding-top:2px;flex-shrink:0}
-.fc-def{font-size:14px;line-height:1.7;text-align:left}
-.psteps{display:flex;flex-direction:column;gap:3px}
-.pstep{display:flex;gap:10px;padding:4px 0;border-bottom:1px solid rgba(128,128,128,.08);align-items:flex-start;font-family:"IBM Plex Mono",monospace;font-size:13px}
-.pstep:last-child{border-bottom:none}
-.pstep-n{color:var(--accent);font-weight:700;min-width:18px;flex-shrink:0;font-size:11px;padding-top:2px}
 .q{border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin:9px 0;background:var(--surface2)}
 .q .qq{font-size:14px;margin-bottom:7px;font-weight:500}
 .q .ans{display:none;border-top:1px dashed var(--line);margin-top:9px;padding-top:9px;font-size:13.5px;color:#bfe;white-space:pre-wrap}
@@ -168,7 +142,7 @@ svg.diagram{width:100%;max-width:540px;height:auto;display:block;margin:10px 0;b
 <body>
 <div class="app">
   <aside class="sidebar">
-    <div class="brand"><a href="/HSC-Study-Tools/" style="text-decoration:none"><span class="logo" style="width:38px;height:44px;font-size:18px;flex-direction:column;gap:1px">⌂<span style="font-size:8px;font-weight:700;letter-spacing:.04em;opacity:.85">HOME</span></span></a><div>HSC Chemistry<small>Year 12 · Modules 5–8</small></div></div>
+    <div class="brand"><span class="logo">Cl</span><div>HSC Chemistry<small>Year 12 · Modules 5–8</small></div></div>
     <div class="search">
       <input id="globalSearch" type="text" placeholder="🔍 Search topics & terms…" autocomplete="off"/>
       <div id="searchRes" class="searchres hidden"></div>
@@ -507,20 +481,6 @@ const QBANK=[
   criteria:"Criteria (3): q = mcΔT = 100 g × 4.18 × 6.8 = 2843 J = 2.84 kJ; n(H₂O) = n(HCl) = 0.0500 mol; ΔH = −q/n = −2.84/0.0500 = −56.8 kJ mol⁻¹. Marks: correct q (using combined mass 100 g), correct n, and ΔH with negative sign + units."}
 ];
 
-/* ============================ MC QUESTION BANK ============================ */
-const MC_BANK=[
- {q:"Which statement correctly describes dynamic equilibrium?",choices:["A) [reactants] = [products]","B) The forward and reverse rates are equal and non-zero","C) The forward reaction has stopped completely","D) The system must be in an open container"],correct:1,a:"B — dynamic equilibrium requires both the forward and reverse reactions to continue at equal rates. Concentrations remain constant but are not necessarily equal to each other.",type:"HSC",mod:5,marks:1,qtype:"mc",tid:"m5.1"},
- {q:"Which of the following does NOT change the value of Keq for a given reaction?",choices:["A) Increasing the temperature","B) Adding a catalyst","C) Decreasing the temperature","D) Raising the temperature from 25 °C to 80 °C"],correct:1,a:"B — a catalyst lowers the activation energy equally for both forward and reverse reactions. It increases the rate of reaching equilibrium but does not affect the equilibrium position or Keq. Only temperature changes Keq.",type:"HSC",mod:5,marks:1,qtype:"mc",tid:"m5.2"},
- {q:"For the reaction N₂(g) + 3H₂(g) ⇌ 2NH₃(g), what is the effect of increasing pressure?",choices:["A) Shifts equilibrium left; decreases NH₃ yield","B) Shifts equilibrium right; increases NH₃ yield","C) No change to equilibrium position","D) Increases Keq"],correct:1,a:"B — increasing pressure shifts the equilibrium toward the side with fewer moles of gas. The left has 4 mol gas, the right has 2 mol, so the equilibrium shifts right, increasing NH₃ yield. Keq is unchanged.",type:"HSC",mod:5,marks:1,qtype:"mc",tid:"m5.3"},
- {q:"A solution has [H⁺] = 1×10⁻⁴ mol L⁻¹. What is the pH?",choices:["A) −4","B) 4","C) 10","D) 0.0001"],correct:1,a:"B — pH = −log₁₀[H⁺] = −log₁₀(1×10⁻⁴) = −(−4) = 4.",type:"HSC",mod:6,marks:1,qtype:"mc",tid:"m6.3"},
- {q:"Which of the following is amphiprotic?",choices:["A) HCl","B) NaOH","C) HCO₃⁻","D) SO₄²⁻"],correct:2,a:"C — HCO₃⁻ can donate a proton (acting as acid: HCO₃⁻ → CO₃²⁻ + H⁺) or accept a proton (acting as base: HCO₃⁻ + H⁺ → H₂CO₃). This makes it amphiprotic.",type:"HSC",mod:6,marks:1,qtype:"mc",tid:"m6.1"},
- {q:"In the reaction NH₃ + H₂O ⇌ NH₄⁺ + OH⁻, which is the Brønsted–Lowry acid?",choices:["A) NH₃","B) H₂O","C) NH₄⁺","D) OH⁻"],correct:1,a:"B — H₂O donates a proton (H⁺) to NH₃ in this reaction, making it the Brønsted–Lowry acid. NH₃ accepts the proton, making it the base.",type:"HSC",mod:6,marks:1,qtype:"mc",tid:"m6.2"},
- {q:"25.0 mL of 0.100 mol L⁻¹ NaOH is titrated against HCl with an average titre of 20.0 mL. What is the concentration of HCl?",choices:["A) 0.0500 mol L⁻¹","B) 0.100 mol L⁻¹","C) 0.125 mol L⁻¹","D) 0.200 mol L⁻¹"],correct:2,a:"C — n(NaOH) = 0.100 × 0.0250 = 2.50×10⁻³ mol. 1:1 ratio → n(HCl) = 2.50×10⁻³ mol. c(HCl) = 2.50×10⁻³ / 0.0200 = 0.125 mol L⁻¹.",type:"HSC",mod:6,marks:1,qtype:"mc",tid:"m6.4"},
- {q:"What is the IUPAC name of CH₃CH(OH)CH₂CH₃?",choices:["A) Butan-1-ol","B) Butan-2-ol","C) 2-methylpropan-1-ol","D) Propan-2-ol"],correct:1,a:"B — the longest carbon chain contains 4 carbons (butane). The −OH group is on C2 when numbered from the end that gives the lowest locant. Name: butan-2-ol.",type:"HSC",mod:7,marks:1,qtype:"mc",tid:"m7.1"},
- {q:"Which functional group gives the highest boiling point for molecules of similar molecular mass?",choices:["A) Alkane (C−C only)","B) Halogenoalkane (C−X)","C) Ketone (C=O)","D) Alcohol (−OH)"],correct:3,a:"D — alcohols form hydrogen bonds (H bonded to highly electronegative O), which are the strongest IMF among the options listed. Hydrogen bonding requires significantly more energy to break, giving higher boiling points.",type:"HSC",mod:7,marks:1,qtype:"mc",tid:"m7.3"},
- {q:"Which statement about strong acids is correct?",choices:["A) Strong acids are highly concentrated","B) Strong acids ionise completely in water","C) Strong acids have a high pH","D) Strong acids form weak conjugate bases"],correct:1,a:"B — 'strong' refers to the degree of ionisation, not concentration. A strong acid ionises (dissociates) essentially 100% in water. Note: a strong acid actually has a WEAK conjugate base (option D is incorrect — strong acids have weak conjugate bases, not strong ones).",type:"HSC",mod:6,marks:1,qtype:"mc",tid:"m6.3"}
-];
-
 /* ============================ EXAM TECHNIQUE — NESA DIRECTIVE VERBS ============================ */
 const DIRECTIVES=[
  ["Account for","State reasons for; give the cause of (a 'why' question)."],
@@ -588,15 +548,15 @@ const DATASHEET=[
 
 /* periodic table: [Z, symbol, name, atomic weight, group(x 1-18), period(y 1-7) or 'La'/'Ac'] */
 const PTABLE=[
-[1,"H","Hydrogen","1.008",1,1,{en:2.20,config:"1s¹",state:"Gas",ox:"+1, −1"}],[2,"He","Helium","4.003",18,1,{en:null,config:"1s²",state:"Gas",ox:"none"}],
-[3,"Li","Lithium","6.941",1,2,{en:0.98,config:"[He] 2s¹",state:"Solid",ox:"+1"}],[4,"Be","Beryllium","9.012",2,2,{en:1.57,config:"[He] 2s²",state:"Solid",ox:"+2"}],[5,"B","Boron","10.81",13,2,{en:2.04,config:"[He] 2s² 2p¹",state:"Solid",ox:"+3"}],[6,"C","Carbon","12.01",14,2,{en:2.55,config:"[He] 2s² 2p²",state:"Solid",ox:"+4"}],[7,"N","Nitrogen","14.01",15,2,{en:3.04,config:"[He] 2s² 2p³",state:"Gas",ox:"−3"}],[8,"O","Oxygen","16.00",16,2,{en:3.44,config:"[He] 2s² 2p⁴",state:"Gas",ox:"−2"}],[9,"F","Fluorine","19.00",17,2,{en:3.98,config:"[He] 2s² 2p⁵",state:"Gas",ox:"−1"}],[10,"Ne","Neon","20.18",18,2,{en:null,config:"[He] 2s² 2p⁶",state:"Gas",ox:"none"}],
-[11,"Na","Sodium","22.99",1,3,{en:0.93,config:"[Ne] 3s¹",state:"Solid",ox:"+1"}],[12,"Mg","Magnesium","24.31",2,3,{en:1.31,config:"[Ne] 3s²",state:"Solid",ox:"+2"}],[13,"Al","Aluminium","26.98",13,3,{en:1.61,config:"[Ne] 3s² 3p¹",state:"Solid",ox:"+3"}],[14,"Si","Silicon","28.09",14,3,{en:1.90,config:"[Ne] 3s² 3p²",state:"Solid",ox:"+4"}],[15,"P","Phosphorus","30.97",15,3,{en:2.19,config:"[Ne] 3s² 3p³",state:"Solid",ox:"−3"}],[16,"S","Sulfur","32.07",16,3,{en:2.58,config:"[Ne] 3s² 3p⁴",state:"Solid",ox:"−2"}],[17,"Cl","Chlorine","35.45",17,3,{en:3.16,config:"[Ne] 3s² 3p⁵",state:"Gas",ox:"−1"}],[18,"Ar","Argon","39.95",18,3,{en:null,config:"[Ne] 3s² 3p⁶",state:"Gas",ox:"none"}],
-[19,"K","Potassium","39.10",1,4,{en:0.82,config:"[Ar] 4s¹",state:"Solid",ox:"+1"}],[20,"Ca","Calcium","40.08",2,4,{en:1.00,config:"[Ar] 4s²",state:"Solid",ox:"+2"}],[21,"Sc","Scandium","44.96",3,4,{en:1.36,config:"[Ar] 3d¹ 4s²",state:"Solid",ox:"+3"}],[22,"Ti","Titanium","47.87",4,4,{en:1.54,config:"[Ar] 3d² 4s²",state:"Solid",ox:"+4"}],[23,"V","Vanadium","50.94",5,4,{en:1.63,config:"[Ar] 3d³ 4s²",state:"Solid",ox:"+5"}],[24,"Cr","Chromium","52.00",6,4,{en:1.66,config:"[Ar] 3d⁵ 4s¹",state:"Solid",ox:"+6"}],[25,"Mn","Manganese","54.94",7,4,{en:1.55,config:"[Ar] 3d⁵ 4s²",state:"Solid",ox:"+7"}],[26,"Fe","Iron","55.85",8,4,{en:1.83,config:"[Ar] 3d⁶ 4s²",state:"Solid",ox:"+2, +3"}],[27,"Co","Cobalt","58.93",9,4,{en:1.88,config:"[Ar] 3d⁷ 4s²",state:"Solid",ox:"+3"}],[28,"Ni","Nickel","58.69",10,4,{en:1.91,config:"[Ar] 3d⁸ 4s²",state:"Solid",ox:"+2"}],[29,"Cu","Copper","63.55",11,4,{en:1.90,config:"[Ar] 3d¹⁰ 4s¹",state:"Solid",ox:"+2"}],[30,"Zn","Zinc","65.38",12,4,{en:1.65,config:"[Ar] 3d¹⁰ 4s²",state:"Solid",ox:"+2"}],[31,"Ga","Gallium","69.72",13,4,{en:1.81,config:"[Ar] 3d¹⁰ 4s² 4p¹",state:"Solid",ox:"+3"}],[32,"Ge","Germanium","72.63",14,4,{en:2.01,config:"[Ar] 3d¹⁰ 4s² 4p²",state:"Solid",ox:"+4"}],[33,"As","Arsenic","74.92",15,4,{en:2.18,config:"[Ar] 3d¹⁰ 4s² 4p³",state:"Solid",ox:"+5"}],[34,"Se","Selenium","78.97",16,4,{en:2.55,config:"[Ar] 3d¹⁰ 4s² 4p⁴",state:"Solid",ox:"+6"}],[35,"Br","Bromine","79.90",17,4,{en:2.96,config:"[Ar] 3d¹⁰ 4s² 4p⁵",state:"Liquid",ox:"+5"}],[36,"Kr","Krypton","83.80",18,4,{en:3.00,config:"[Ar] 3d¹⁰ 4s² 4p⁶",state:"Gas",ox:"none"}],
-[37,"Rb","Rubidium","85.47",1,5,{en:0.82,config:"[Kr] 5s¹",state:"Solid",ox:"+1"}],[38,"Sr","Strontium","87.62",2,5,{en:0.95,config:"[Kr] 5s²",state:"Solid",ox:"+2"}],[39,"Y","Yttrium","88.91",3,5,{en:1.22,config:"[Kr] 4d¹ 5s²",state:"Solid",ox:"+3"}],[40,"Zr","Zirconium","91.22",4,5,{en:1.33,config:"[Kr] 4d² 5s²",state:"Solid",ox:"+4"}],[41,"Nb","Niobium","92.91",5,5,{en:1.60,config:"[Kr] 4d⁴ 5s¹",state:"Solid",ox:"+5"}],[42,"Mo","Molybdenum","95.95",6,5,{en:2.16,config:"[Kr] 4d⁵ 5s¹",state:"Solid",ox:"+6"}],[43,"Tc","Technetium","(98)",7,5,{en:1.90,config:"[Kr] 4d⁵ 5s²",state:"Solid",ox:"+7"}],[44,"Ru","Ruthenium","101.1",8,5,{en:2.20,config:"[Kr] 4d⁷ 5s¹",state:"Solid",ox:"+4"}],[45,"Rh","Rhodium","102.9",9,5,{en:2.28,config:"[Kr] 4d⁸ 5s¹",state:"Solid",ox:"+3"}],[46,"Pd","Palladium","106.4",10,5,{en:2.20,config:"[Kr] 4d¹⁰",state:"Solid",ox:"+4"}],[47,"Ag","Silver","107.9",11,5,{en:1.93,config:"[Kr] 4d¹⁰ 5s¹",state:"Solid",ox:"+1"}],[48,"Cd","Cadmium","112.4",12,5,{en:1.69,config:"[Kr] 4d¹⁰ 5s²",state:"Solid",ox:"+2"}],[49,"In","Indium","114.8",13,5,{en:1.78,config:"[Kr] 4d¹⁰ 5s² 5p¹",state:"Solid",ox:"+3"}],[50,"Sn","Tin","118.7",14,5,{en:1.96,config:"[Kr] 4d¹⁰ 5s² 5p²",state:"Solid",ox:"+4"}],[51,"Sb","Antimony","121.8",15,5,{en:2.05,config:"[Kr] 4d¹⁰ 5s² 5p³",state:"Solid",ox:"+5"}],[52,"Te","Tellurium","127.6",16,5,{en:2.10,config:"[Kr] 4d¹⁰ 5s² 5p⁴",state:"Solid",ox:"+6"}],[53,"I","Iodine","126.9",17,5,{en:2.66,config:"[Kr] 4d¹⁰ 5s² 5p⁵",state:"Solid",ox:"+7"}],[54,"Xe","Xenon","131.3",18,5,{en:2.60,config:"[Kr] 4d¹⁰ 5s² 5p⁶",state:"Gas",ox:"none"}],
-[55,"Cs","Caesium","132.9",1,6,{en:0.79,config:"[Xe] 6s¹",state:"Solid",ox:"+1"}],[56,"Ba","Barium","137.3",2,6,{en:0.89,config:"[Xe] 6s²",state:"Solid",ox:"+2"}],[57,"La","Lanthanum","138.9",3,6,{en:1.10,config:"[Xe] 5d¹ 6s²",state:"Solid",ox:"+3"}],[72,"Hf","Hafnium","178.5",4,6,{en:1.30,config:"[Xe] 4f¹⁴ 5d² 6s²",state:"Solid",ox:"+4"}],[73,"Ta","Tantalum","180.9",5,6,{en:1.50,config:"[Xe] 4f¹⁴ 5d³ 6s²",state:"Solid",ox:"+5"}],[74,"W","Tungsten","183.8",6,6,{en:2.36,config:"[Xe] 4f¹⁴ 5d⁴ 6s²",state:"Solid",ox:"+6"}],[75,"Re","Rhenium","186.2",7,6,{en:1.90,config:"[Xe] 4f¹⁴ 5d⁵ 6s²",state:"Solid",ox:"+7"}],[76,"Os","Osmium","190.2",8,6,{en:2.20,config:"[Xe] 4f¹⁴ 5d⁶ 6s²",state:"Solid",ox:"+4"}],[77,"Ir","Iridium","192.2",9,6,{en:2.20,config:"[Xe] 4f¹⁴ 5d⁷ 6s²",state:"Solid",ox:"+4"}],[78,"Pt","Platinum","195.1",10,6,{en:2.28,config:"[Xe] 4f¹⁴ 5d⁹ 6s¹",state:"Solid",ox:"+4"}],[79,"Au","Gold","197.0",11,6,{en:2.54,config:"[Xe] 4f¹⁴ 5d¹⁰ 6s¹",state:"Solid",ox:"+3"}],[80,"Hg","Mercury","200.6",12,6,{en:2.00,config:"[Xe] 4f¹⁴ 5d¹⁰ 6s²",state:"Liquid",ox:"+2"}],[81,"Tl","Thallium","204.4",13,6,{en:1.62,config:"[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p¹",state:"Solid",ox:"+3"}],[82,"Pb","Lead","207.2",14,6,{en:2.33,config:"[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p²",state:"Solid",ox:"+4"}],[83,"Bi","Bismuth","209.0",15,6,{en:2.02,config:"[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p³",state:"Solid",ox:"+5"}],[84,"Po","Polonium","(209)",16,6,{en:2.00,config:"[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁴",state:"Solid",ox:"+4"}],[85,"At","Astatine","(210)",17,6,{en:2.20,config:"[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁵",state:"Solid",ox:"+1"}],[86,"Rn","Radon","(222)",18,6,{en:null,config:"[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁶",state:"Gas",ox:"none"}],
-[87,"Fr","Francium","(223)",1,7,{en:0.70,config:"[Rn] 7s¹",state:"Solid",ox:"+1"}],[88,"Ra","Radium","(226)",2,7,{en:0.90,config:"[Rn] 7s²",state:"Solid",ox:"+2"}],[89,"Ac","Actinium","(227)",3,7,{en:1.10,config:"[Rn] 6d¹ 7s²",state:"Solid",ox:"+3"}],
-[58,"Ce","Cerium","140.1",4,9,{en:1.12,config:"[Xe] 4f¹ 5d¹ 6s²",state:"Solid",ox:"+4"}],[59,"Pr","Praseodymium","140.9",5,9,{en:1.13,config:"[Xe] 4f³ 6s²",state:"Solid",ox:"+3"}],[60,"Nd","Neodymium","144.2",6,9,{en:1.14,config:"[Xe] 4f⁴ 6s²",state:"Solid",ox:"+3"}],[61,"Pm","Promethium","(145)",7,9,{en:1.13,config:"[Xe] 4f⁵ 6s²",state:"Solid",ox:"+3"}],[62,"Sm","Samarium","150.4",8,9,{en:1.17,config:"[Xe] 4f⁶ 6s²",state:"Solid",ox:"+3"}],[63,"Eu","Europium","152.0",9,9,{en:1.20,config:"[Xe] 4f⁷ 6s²",state:"Solid",ox:"+3"}],[64,"Gd","Gadolinium","157.3",10,9,{en:1.20,config:"[Xe] 4f⁷ 5d¹ 6s²",state:"Solid",ox:"+3"}],[65,"Tb","Terbium","158.9",11,9,{en:1.10,config:"[Xe] 4f⁹ 6s²",state:"Solid",ox:"+3"}],[66,"Dy","Dysprosium","162.5",12,9,{en:1.22,config:"[Xe] 4f¹⁰ 6s²",state:"Solid",ox:"+3"}],[67,"Ho","Holmium","164.9",13,9,{en:1.23,config:"[Xe] 4f¹¹ 6s²",state:"Solid",ox:"+3"}],[68,"Er","Erbium","167.3",14,9,{en:1.24,config:"[Xe] 4f¹² 6s²",state:"Solid",ox:"+3"}],[69,"Tm","Thulium","168.9",15,9,{en:1.25,config:"[Xe] 4f¹³ 6s²",state:"Solid",ox:"+3"}],[70,"Yb","Ytterbium","173.0",16,9,{en:1.10,config:"[Xe] 4f¹⁴ 6s²",state:"Solid",ox:"+3"}],[71,"Lu","Lutetium","175.0",17,9,{en:1.27,config:"[Xe] 4f¹⁴ 5d¹ 6s²",state:"Solid",ox:"+3"}],
-[90,"Th","Thorium","232.0",4,10,{en:1.30,config:"[Rn] 6d² 7s²",state:"Solid",ox:"+4"}],[91,"Pa","Protactinium","231.0",5,10,{en:1.50,config:"[Rn] 5f² 6d¹ 7s²",state:"Solid",ox:"+5"}],[92,"U","Uranium","238.0",6,10,{en:1.38,config:"[Rn] 5f³ 6d¹ 7s²",state:"Solid",ox:"+6"}],[93,"Np","Neptunium","(237)",7,10,{en:1.36,config:"[Rn] 5f⁴ 6d¹ 7s²",state:"Solid",ox:"+5"}],[94,"Pu","Plutonium","(244)",8,10,{en:1.28,config:"[Rn] 5f⁶ 7s²",state:"Solid",ox:"+4"}],[95,"Am","Americium","(243)",9,10,{en:1.30,config:"[Rn] 5f⁷ 7s²",state:"Solid",ox:"+3"}],[96,"Cm","Curium","(247)",10,10,{en:1.30,config:"[Rn] 5f⁷ 6d¹ 7s²",state:"Solid",ox:"+3"}],[97,"Bk","Berkelium","(247)",11,10,{en:1.30,config:"[Rn] 5f⁹ 7s²",state:"Solid",ox:"+3"}],[98,"Cf","Californium","(251)",12,10,{en:1.30,config:"[Rn] 5f¹⁰ 7s²",state:"Solid",ox:"+3"}],[99,"Es","Einsteinium","(252)",13,10,{en:1.30,config:"[Rn] 5f¹¹ 7s²",state:"Solid",ox:"+3"}],[100,"Fm","Fermium","(257)",14,10,{en:1.30,config:"[Rn] 5f¹² 7s²",state:"Solid",ox:"+3"}],[101,"Md","Mendelevium","(258)",15,10,{en:1.30,config:"[Rn] 5f¹³ 7s²",state:"Solid",ox:"+3"}],[102,"No","Nobelium","(259)",16,10,{en:1.30,config:"[Rn] 5f¹⁴ 7s²",state:"Solid",ox:"+2"}],[103,"Lr","Lawrencium","(266)",17,10,{en:1.30,config:"[Rn] 5f¹⁴ 7s² 7p¹",state:"Solid",ox:"+3"}]
+[1,"H","Hydrogen","1.008",1,1],[2,"He","Helium","4.003",18,1],
+[3,"Li","Lithium","6.941",1,2],[4,"Be","Beryllium","9.012",2,2],[5,"B","Boron","10.81",13,2],[6,"C","Carbon","12.01",14,2],[7,"N","Nitrogen","14.01",15,2],[8,"O","Oxygen","16.00",16,2],[9,"F","Fluorine","19.00",17,2],[10,"Ne","Neon","20.18",18,2],
+[11,"Na","Sodium","22.99",1,3],[12,"Mg","Magnesium","24.31",2,3],[13,"Al","Aluminium","26.98",13,3],[14,"Si","Silicon","28.09",14,3],[15,"P","Phosphorus","30.97",15,3],[16,"S","Sulfur","32.07",16,3],[17,"Cl","Chlorine","35.45",17,3],[18,"Ar","Argon","39.95",18,3],
+[19,"K","Potassium","39.10",1,4],[20,"Ca","Calcium","40.08",2,4],[21,"Sc","Scandium","44.96",3,4],[22,"Ti","Titanium","47.87",4,4],[23,"V","Vanadium","50.94",5,4],[24,"Cr","Chromium","52.00",6,4],[25,"Mn","Manganese","54.94",7,4],[26,"Fe","Iron","55.85",8,4],[27,"Co","Cobalt","58.93",9,4],[28,"Ni","Nickel","58.69",10,4],[29,"Cu","Copper","63.55",11,4],[30,"Zn","Zinc","65.38",12,4],[31,"Ga","Gallium","69.72",13,4],[32,"Ge","Germanium","72.63",14,4],[33,"As","Arsenic","74.92",15,4],[34,"Se","Selenium","78.97",16,4],[35,"Br","Bromine","79.90",17,4],[36,"Kr","Krypton","83.80",18,4],
+[37,"Rb","Rubidium","85.47",1,5],[38,"Sr","Strontium","87.62",2,5],[39,"Y","Yttrium","88.91",3,5],[40,"Zr","Zirconium","91.22",4,5],[41,"Nb","Niobium","92.91",5,5],[42,"Mo","Molybdenum","95.95",6,5],[43,"Tc","Technetium","(98)",7,5],[44,"Ru","Ruthenium","101.1",8,5],[45,"Rh","Rhodium","102.9",9,5],[46,"Pd","Palladium","106.4",10,5],[47,"Ag","Silver","107.9",11,5],[48,"Cd","Cadmium","112.4",12,5],[49,"In","Indium","114.8",13,5],[50,"Sn","Tin","118.7",14,5],[51,"Sb","Antimony","121.8",15,5],[52,"Te","Tellurium","127.6",16,5],[53,"I","Iodine","126.9",17,5],[54,"Xe","Xenon","131.3",18,5],
+[55,"Cs","Caesium","132.9",1,6],[56,"Ba","Barium","137.3",2,6],[57,"La","Lanthanum","138.9",3,6],[72,"Hf","Hafnium","178.5",4,6],[73,"Ta","Tantalum","180.9",5,6],[74,"W","Tungsten","183.8",6,6],[75,"Re","Rhenium","186.2",7,6],[76,"Os","Osmium","190.2",8,6],[77,"Ir","Iridium","192.2",9,6],[78,"Pt","Platinum","195.1",10,6],[79,"Au","Gold","197.0",11,6],[80,"Hg","Mercury","200.6",12,6],[81,"Tl","Thallium","204.4",13,6],[82,"Pb","Lead","207.2",14,6],[83,"Bi","Bismuth","209.0",15,6],[84,"Po","Polonium","(209)",16,6],[85,"At","Astatine","(210)",17,6],[86,"Rn","Radon","(222)",18,6],
+[87,"Fr","Francium","(223)",1,7],[88,"Ra","Radium","(226)",2,7],[89,"Ac","Actinium","(227)",3,7],[104,"Rf","Rutherfordium","(267)",4,7],[105,"Db","Dubnium","(268)",5,7],[106,"Sg","Seaborgium","(269)",6,7],[107,"Bh","Bohrium","(270)",7,7],[108,"Hs","Hassium","(269)",8,7],[109,"Mt","Meitnerium","(278)",9,7],[110,"Ds","Darmstadtium","(281)",10,7],[111,"Rg","Roentgenium","(282)",11,7],[112,"Cn","Copernicium","(285)",12,7],[113,"Nh","Nihonium","(286)",13,7],[114,"Fl","Flerovium","(289)",14,7],[115,"Mc","Moscovium","(290)",15,7],[116,"Lv","Livermorium","(293)",16,7],[117,"Ts","Tennessine","(294)",17,7],[118,"Og","Oganesson","(294)",18,7],
+[58,"Ce","Cerium","140.1",4,9],[59,"Pr","Praseodymium","140.9",5,9],[60,"Nd","Neodymium","144.2",6,9],[61,"Pm","Promethium","(145)",7,9],[62,"Sm","Samarium","150.4",8,9],[63,"Eu","Europium","152.0",9,9],[64,"Gd","Gadolinium","157.3",10,9],[65,"Tb","Terbium","158.9",11,9],[66,"Dy","Dysprosium","162.5",12,9],[67,"Ho","Holmium","164.9",13,9],[68,"Er","Erbium","167.3",14,9],[69,"Tm","Thulium","168.9",15,9],[70,"Yb","Ytterbium","173.0",16,9],[71,"Lu","Lutetium","175.0",17,9],
+[90,"Th","Thorium","232.0",4,10],[91,"Pa","Protactinium","231.0",5,10],[92,"U","Uranium","238.0",6,10],[93,"Np","Neptunium","(237)",7,10],[94,"Pu","Plutonium","(244)",8,10],[95,"Am","Americium","(243)",9,10],[96,"Cm","Curium","(247)",10,10],[97,"Bk","Berkelium","(247)",11,10],[98,"Cf","Californium","(251)",12,10],[99,"Es","Einsteinium","(252)",13,10],[100,"Fm","Fermium","(257)",14,10],[101,"Md","Mendelevium","(258)",15,10],[102,"No","Nobelium","(259)",16,10],[103,"Lr","Lawrencium","(266)",17,10]
 ];
 const PT_CATEGORY=z=>{ // simple colour grouping
   if([1].includes(z))return'#22c55e';
@@ -608,13 +568,6 @@ const PT_CATEGORY=z=>{ // simple colour grouping
   if([9,17,35,53,85,117].includes(z))return'#eab308';
   if([2,10,18,36,54,86,118].includes(z))return'#8b5cf6';
   return'#64748b';};
-let ptMode=null; // null | 'en' | 'ie' | 'cond'
-const enColor=en=>{if(en==null)return'#64748b';const norm=(en-0.7)/(3.98-0.7);const clamped=Math.max(0,Math.min(1,norm));if(clamped<0.5){const t=clamped*2;return`rgb(${Math.floor(t*100)},${Math.floor(50+t*130)},${Math.floor(255-t*155)})`;}else{const t=(clamped-0.5)*2;return`rgb(${Math.floor(100+t*155)},${Math.floor(180-t*160)},${Math.floor(100-t*100)})`;}}; /* EN: blue(low)→red(high) */
-const IE_DATA={1:1312,2:2372,3:520,4:900,5:800,6:1086,7:1402,8:1314,9:1681,10:2081,11:496,12:738,13:577,14:786,15:1012,16:1000,17:1251,18:1521,19:419,20:590,21:633,22:659,23:651,24:653,25:717,26:762,27:760,28:737,29:745,30:906,31:579,32:762,33:947,34:941,35:1140,36:1351,37:403,38:550,39:600,40:640,41:652,42:685,43:702,44:711,45:720,46:805,47:731,48:868,49:558,50:709,51:834,52:869,53:1008,54:1170,55:376,56:503,57:538,72:659,73:761,74:770,75:760,76:840,77:880,78:870,79:890,80:1007,81:589,82:716,83:703,84:812,85:890,86:1037,87:393,88:509,89:499,58:534,59:527,60:533,61:540,62:545,63:547,64:593,65:566,66:573,67:581,68:589,69:597,70:603,71:524,90:587,91:568,92:598,93:605,94:585,95:578,96:581,97:601,98:608,99:619,100:627,101:635,102:642,103:443};
-const ieColor=ie=>{if(ie==null)return'#64748b';const norm=(ie-376)/(2372-376);const clamped=Math.max(0,Math.min(1,norm));if(clamped<0.5){const t=clamped*2;return`rgb(${Math.floor(t*100)},${Math.floor(50+t*130)},${Math.floor(255-t*155)})`;}else{const t=(clamped-0.5)*2;return`rgb(${Math.floor(100+t*155)},${Math.floor(180-t*160)},${Math.floor(100-t*100)})`;}}; /* IE: blue(low metals)→red(high noble gases) */
-const COND_DATA={1:0,2:0,3:4,4:4,5:2,6:2,7:0,8:0,9:0,10:0,11:4,12:4,13:5,14:2,15:1,16:1,17:0,18:0,19:4,20:4,21:4,22:4,23:4,24:4,25:4,26:4,27:4,28:4,29:5,30:4,31:4,32:2,33:2,34:1,35:1,36:0,37:4,38:4,39:4,40:4,41:4,42:4,43:4,44:4,45:4,46:4,47:5,48:4,49:4,50:4,51:2,52:2,53:1,54:0,55:4,56:4,57:4,72:4,73:4,74:4,75:4,76:4,77:4,78:4,79:5,80:3,81:4,82:4,83:3,84:3,85:1,86:0,87:4,88:4,89:4,58:4,59:4,60:4,61:4,62:4,63:4,64:4,65:4,66:4,67:4,68:4,69:4,70:4,71:4,90:4,91:4,92:4,93:4,94:4,95:4,96:4,97:4,98:4,99:4,100:4,101:4,102:4,103:4};
-const COND_LABEL={5:'Excellent conductor',4:'Metal (conductor)',3:'Poor conductor',2:'Semiconductor',1:'Insulator',0:'Non-conductive'};
-const condColor=l=>{if(l==null)return'#64748b';return['#1e293b','#1e3a8a','#0d9488','#f59e0b','#fb923c','#fbbf24'][Math.max(0,Math.min(5,l))];};
 
 /* ============================ SVG DIAGRAMS ============================ */
 const DIAGRAMS={
@@ -717,7 +670,7 @@ function effConf(tid){const c=confOf(tid);if(c)return c;if(isAutoWeak(tid))retur
 
 /* readiness score 0-100: blends completion, confidence, quiz accuracy */
 function readiness(){const dots=allDots();if(!dots.length)return 0;
-  let comp=0,conf=0;dots.forEach(({t})=>{if(state.check[t.id])comp++;const c=effConf(t.id);conf+=(c==='good'||(!c&&state.check[t.id]))?1:c==='shaky'?0.5:c==='weak'?0:0;});
+  let comp=0,conf=0;dots.forEach(({t})=>{if(state.check[t.id])comp++;const c=effConf(t.id);conf+=(c==='good'||(!c&&state.check[t.id]))?1:c==='shaky'?0.5:c==='weak'?0:0.0;});
   comp/=dots.length;conf/=dots.length;
   const ql=state.quizLog;const acc=ql.length?ql.reduce((s,q)=>s+q.score/q.total,0)/ql.length:0;
   const qWeight=ql.length?0.25:0;const cWeight=0.35,compWeight=0.40+(ql.length?0:0.25);
@@ -771,12 +724,7 @@ function buildNav(){const nav=document.getElementById('nav');nav.innerHTML=NAV.m
   else if(n.id==='flashcards'){const d=dueCount();if(d)badge=`<span class="badge" style="background:var(--accent);color:#042">${d}</span>`;}
   return `<button class="navbtn ${n.id===CURRENT?'active':''}" data-nav="${n.id}"><span class="ic">${n.ic}</span>${esc(n.label)}${badge}</button>`;
 }).join('');}
-function go(view){
-  if(view==='quiz'){quiz=null;}
-  if(view==='flashcards'){fc.deck=null;fc.i=0;fc.flipped=false;}
-  if(view==='drills'){drill.current=null;drill.revealed=false;}
-  if(view==='revision'){revFilter={mod:"all",status:"all"};}
-  CURRENT=view;buildNav();render();window.scrollTo(0,0);}
+function go(view){CURRENT=view;buildNav();render();window.scrollTo(0,0);}
 
 /* ============================ RENDER: ROUTER ============================ */
 function render(){
@@ -852,40 +800,12 @@ function viewModule(modId){
   ${dots}
   ${edit?`<button class="btn ghost" data-add-dot="${m.id}">+ Add a new dot point to Module ${m.num}</button>`:''}`;
 }
-/* --- pretty-format box content --- */
-function prettyBox(raw,cls){
-  if(!raw)return'';
-  const ROW=(label,content)=>`<div class="prow"><span class="plbl">${label}</span><span class="pval">${content}</span></div>`;
-  const BULLET=t=>`<div class="pbul"><span class="pbul-dot">▸</span><span>${t}</span></div>`;
-  if(cls==='calc'){
-    const lines=raw.split('\n').filter(l=>l.trim());
-    if(lines.length<2)return`<div class="pval" style="white-space:pre-wrap">${esc(raw)}</div>`;
-    return`<div class="psteps">`+lines.map((l,i)=>`<div class="pstep"><span class="pstep-n">${i+1}</span><span>${esc(l)}</span></div>`).join('')+`</div>`;}
-  if(cls==='eqn'){
-    const lines=raw.split('\n').filter(l=>l.trim());
-    if(lines.length<2)return`<div class="pval">${raw}</div>`;
-    return lines.map(l=>{const m=l.match(/^([^:]+):\s+(.+)/);return m?ROW(m[1],m[2]):BULLET(l);}).join('');}
-  let segments=raw.includes('\n')?raw.split('\n').filter(l=>l.trim()):[raw];
-  segments=segments.flatMap(seg=>seg.split(/\.\s+(?=<b>)/).filter(s=>s.trim()));
-  return segments.map(seg=>{
-    const lm=seg.match(/^<b>([^<]{1,50})<\/b>\s*[:—–\-]?\s*([\s\S]+)/);
-    if(lm)return ROW(lm[1],lm[2]);
-    const clean=seg.replace(/^\.\s*/,'').trim();
-    if(!clean)return'';
-    return BULLET(clean);
-  }).join('');}
-
 function box(tid,cls,label,name,base,editable){
   const txt=field(tid,name,base);
   if(!txt && !editable)return '';
-  let body;
-  if(editable){
-    body=cls==='calc'
-      ?`<div class="body" contenteditable data-ek="${tid}:${name}">${esc(txt)}</div>`
-      :`<div contenteditable data-ek="${tid}:${name}">${txt||'<span class="muted">(empty — click to add)</span>'}</div>`;
-  } else {
-    body=`<div>${prettyBox(txt,cls)}</div>`;}
-  return `<div class="box ${cls}${editable?' editing':''}"><span class="bx-l">${label}</span>${body}</div>`;
+  const body=cls==='calc'?`<div class="body" ${editable?'contenteditable':''} data-ek="${tid}:${name}">${editable?esc(txt):esc(txt)}</div>`
+    :`<div ${editable?'contenteditable':''} data-ek="${tid}:${name}">${txt||(editable?'<span class="muted">(empty — click to add)</span>':'')}</div>`;
+  return `<div class="box ${cls} ${editable?'editing':''}"><span class="bx-l">${label}</span>${body}</div>`;
 }
 function dotHTML(t,m){
   const tid=t.id;const checked=state.check[tid]?'checked':'';const conf=confOf(tid);const edit=state.editMode;
@@ -930,105 +850,44 @@ function dotHTML(t,m){
 
 /* ---------- QUIZ ---------- */
 let quiz=null;
-function noOx(t){return t.replace(/,\s+(and|or)(\s)/gi,' $1$2');}
-function stripEg(t){return t.replace(/\s*\([^)]{1,80}\)/g,'').replace(/[\s,]+(e\.g\.|for example|such as|including|like)[^;.,]*/gi,'').trim().replace(/[,;]\s*$/,'');}
-function shortCrit(t){let s=stripEg(t);const w=s.split(' ');if(w.length>22)s=w.slice(0,22).join(' ')+'…';return noOx(s);}
-function sampleAns(t){const sents=t.split(/\.\s+(?=[A-Z])/).filter(s=>s.trim().length>5);const out=sents.slice(0,3).join('. ');return noOx(out.endsWith('.')?out:out+'.');}
-function parseCriteria(ans,marks){
-  const numbered=ans.split(/\s*\(\d+\)\s+/).filter(s=>s.trim().length>8);
-  if(numbered.length>=marks)return numbered.slice(0,marks).map(t=>t.replace(/\.$/,'').trim());
-  const semis=ans.split(/;\s+/).filter(s=>s.trim().length>8);
-  if(semis.length>=marks)return semis.slice(0,marks).map(t=>t.replace(/\.$/,'').trim());
-  const sents=ans.split(/\.\s+(?=[A-Z])/).filter(s=>s.trim().length>8);
-  if(sents.length>=marks)return sents.slice(0,marks).map(t=>t.trim());
-  const words=ans.split(' ');const chunk=Math.ceil(words.length/marks);
-  return Array.from({length:marks},(_,i)=>words.slice(i*chunk,(i+1)*chunk).join(' ')).filter(Boolean);}
-function gatherQuestions(modIds){
-  const out=[];
-  MODULES.filter(m=>modIds.includes(m.id)).forEach(m=>{allTopics(m).forEach(t=>{const base=t.questions||[];const n=qCount(t.id,base.length);for(let i=0;i<n;i++){const bq=base[i];const q=field(t.id,'q'+i,bq?bq.q:'');const a=field(t.id,'a'+i,bq?bq.a:'');if(q&&a)out.push({q,a,type:bq?bq.type:'Custom',mod:m.num,tid:t.id,marks:bq&&bq.marks?bq.marks:1,qtype:bq&&bq.qtype?bq.qtype:'short',part:bq&&bq.part?bq.part:'',choices:bq?bq.choices||null:null,correct:bq&&bq.correct!=null?bq.correct:null});}});});
-  MC_BANK.filter(q=>modIds.some(id=>{const m=moduleById(id);return m&&m.num===q.mod;})).forEach(q=>out.push(q));
-  return out;
-}
+function gatherQuestions(modIds){const out=[];MODULES.filter(m=>modIds.includes(m.id)).forEach(m=>{allTopics(m).forEach(t=>{const base=t.questions||[];const n=qCount(t.id,base.length);for(let i=0;i<n;i++){const bq=base[i];const q=field(t.id,'q'+i,bq?bq.q:'');const a=field(t.id,'a'+i,bq?bq.a:'');if(q&&a)out.push({q,a,type:bq?bq.type:'Custom',mod:m.num,tid:t.id});}});});return out;}
 function viewQuiz(){
   if(quiz&&quiz.active)return quizRunningHTML();
   if(quiz&&quiz.done)return quizResultHTML();
-  if(!quiz)quiz={sel:MODULES.map(m=>m.id),len:10,qtype:'all'};
-  if(!quiz.qtype)quiz.qtype='all';
-  const modChips=MODULES.map(m=>`<button class="chip ${quiz.sel.includes(m.id)?'on':''}" data-quizmod="${m.id}">Mod ${m.num}</button>`).join('');
-  const typeChips=[['all','All types'],['short','Written'],['mc','Multiple Choice']].map(([v,l])=>`<button class="chip ${quiz.qtype===v?'on':''}" data-qtype="${v}">${l}</button>`).join('');
-  let pool=gatherQuestions(quiz.sel);
-  if(quiz.qtype!=='all')pool=pool.filter(q=>(q.qtype||'short')===quiz.qtype);
-  const avail=pool.length;
-  const availMarks=pool.reduce((s,q)=>s+(q.marks||1),0);
-  const hist=state.quizLog.slice().reverse().slice(0,8).map(q=>`<div class="kv"><span>${esc(q.date)} · Mods ${q.mods}</span><span class="${q.score/q.total>=0.7?'accent':''}">${q.score}/${q.total} marks (${Math.round(q.score/q.total*100)}%)</span></div>`).join('')||'<div class="muted small">No quizzes logged yet.</div>';
+  const modChips=MODULES.map(m=>`<button class="chip ${(!quiz||quiz.sel.includes(m.id))?'on':''}" data-quizmod="${m.id}">Mod ${m.num}</button>`).join('');
+  if(!quiz)quiz={sel:MODULES.map(m=>m.id),len:10};
+  const avail=gatherQuestions(quiz.sel).length;
+  const hist=state.quizLog.slice().reverse().slice(0,8).map(q=>`<div class="kv"><span>${esc(q.date)} · Mods ${q.mods}</span><span class="${q.score/q.total>=0.7?'accent':''}">${q.score}/${q.total} (${Math.round(q.score/q.total*100)}%)</span></div>`).join('')||'<div class="muted small">No quizzes logged yet.</div>';
   return `
-  <div class="page-head"><div><h1>Quiz Mode</h1><p>Typed answers, multiple choice, and mark-based scoring.</p></div></div>
+  <div class="page-head"><div><h1>Quiz Mode</h1><p>Randomised questions — self-marked, with score history.</p></div></div>
   <div class="card">
     <b>1. Pick modules</b><div class="chips" style="margin:8px 0 14px">${modChips}</div>
-    <b>2. Question type</b><div class="chips" style="margin:8px 0 14px">${typeChips}</div>
-    <b>3. How many questions?</b>
+    <b>2. How many questions?</b>
     <div class="row" style="margin:8px 0 14px"><select id="quizLen">
       ${[5,10,15,20].map(n=>`<option value="${n}" ${quiz.len===n?'selected':''}>${n} questions</option>`).join('')}
-    </select><span class="muted small">${avail} questions · ${availMarks} marks available</span></div>
+    </select><span class="muted small">${avail} questions available in selection</span></div>
     <button class="btn" data-quizstart ${avail===0?'disabled':''}>Start quiz →</button>
   </div>
   <h3 style="margin:18px 0 8px">History</h3><div class="card">${hist}</div>`;
 }
 function quizRunningHTML(){
   const q=quiz.items[quiz.i];
-  const marks=q.marks||1;
-  const qtype=q.qtype||'short';
-  const isMC=qtype==='mc';
-  const part=q.part?`<span class="muted">(${q.part})</span> `:'';
-  const markPips='●'.repeat(Math.min(marks,5))+(marks>5?'+':'');
-  let body='';
-  if(isMC){
-    const choices=q.choices||[];
-    const done=quiz.mcSelected!=null;
-    body=choices.map((c,i)=>{
-      let style='width:100%;text-align:left;margin:5px 0;padding:10px 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);cursor:pointer;color:var(--text)';
-      if(done){if(i===q.correct)style+='background:#14532d44;border-color:#22c55e';else if(i===quiz.mcSelected)style+='background:#7f1d1d44;border-color:#ef4444';}
-      return `<button style="${style}" data-quizmcanswer="${i}" ${done?'disabled':''}>${esc(c)}</button>`;
-    }).join('');
-    if(done){
-      const correct=quiz.mcSelected===q.correct;
-      body+=`<div class="box ${correct?'def':'trap'}" style="margin-top:12px"><span class="bx-l">${correct?'✓ Correct +'+marks+' mark'+(marks>1?'s':''):'✗ Incorrect'}</span>${esc(q.a)}</div>
-      <div class="row" style="margin-top:12px"><button class="btn" data-quizmark="${correct?marks:0}">Next →</button></div>`;
-    }
-  } else {
-    body=`<textarea class="notes" style="width:100%;min-height:90px;margin:10px 0 6px;box-sizing:border-box" placeholder="Type your answer here…" id="quizAnswer">${esc(quiz.userAnswer||'')}</textarea>`;
-    if(!quiz.revealed){
-      body+=`<button class="btn" data-quizreveal>Done →</button>`;
-    } else {
-      if(quiz.userAnswer)body+=`<div style="background:var(--surface2);border-left:3px solid var(--line);border-radius:6px;padding:10px 12px;font-size:13px;margin:10px 0 14px;white-space:pre-wrap"><span style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em">Your answer</span>${esc(quiz.userAnswer)}</div>`;
-      const criteria=parseCriteria(q.a,marks);
-      const breakdown=criteria.map(c=>`<div style="display:flex;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);align-items:flex-start"><span style="color:var(--accent);font-weight:700;white-space:nowrap;min-width:58px;font-size:13px">1 mark —</span><span style="flex:1;font-size:14px;line-height:1.45">${esc(shortCrit(c))}</span></div>`).join('');
-      body+=`<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px">Marks breakdown</div>${breakdown}</div>`;
-      body+=`<div class="box def" style="margin-bottom:14px"><span class="bx-l">Sample answer</span><div style="font-size:14px;line-height:1.55">${esc(sampleAns(q.a))}</div></div>`;
-      const markBtns=Array.from({length:marks+1},(_,n)=>`<button class="btn sm ${n===marks?'':'ghost'}" data-quizmark="${n}" style="min-width:46px">${n}/${marks}</button>`).join(' ');
-      body+=`<div style="margin-top:14px"><div class="row" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><span class="muted small">Award yourself:</span><div class="row" style="flex-wrap:wrap;gap:6px">${markBtns}</div></div></div>`;
-    }
-  }
-  const marksStr=quiz.marksAvail>0?`${quiz.marksEarned}/${quiz.marksAvail} marks`:'';
-  return `<div class="page-head"><div><h1>Quiz · Q${quiz.i+1}/${quiz.items.length}</h1><p>${marksStr}</p></div></div>
+  return `<div class="page-head"><div><h1>Quiz · Q${quiz.i+1}/${quiz.items.length}</h1><p>Score so far: ${quiz.score}/${quiz.answered}</p></div></div>
   <div class="card">
-    <div class="row" style="justify-content:space-between;margin-bottom:12px">
-      <div class="chips" style="gap:4px"><span class="chip on" style="pointer-events:none">${esc(q.type)}</span><span class="chip on" style="pointer-events:none">Mod ${q.mod}</span><span class="chip on" style="pointer-events:none">${isMC?'Multiple Choice':marks+' mark'+(marks>1?'s':'')}</span>${q.part?`<span class="chip on" style="pointer-events:none">Part (${q.part})</span>`:''}</div>
-      <span class="accent" title="${marks} mark${marks>1?'s':''}">${markPips}</span>
-    </div>
-    <div class="qq" style="font-size:16px;margin-bottom:12px">${part}${q.q}</div>
-    ${body}
+    <div class="row" style="justify-content:space-between"><span class="tag ${q.type==='HSC'?'hsc':q.type==='Custom'?'custom':'syl'}">${esc(q.type)} · Mod ${q.mod}</span><span class="muted small">${quiz.answered} answered</span></div>
+    <div class="qq" style="font-size:16px;margin:12px 0">${q.q}</div>
+    <button class="btn ghost sm" data-quizreveal>Reveal answer</button>
+    <div class="ans ${quiz.revealed?'':'hidden'}" style="margin-top:12px;white-space:pre-wrap;border-top:1px dashed var(--line);padding-top:12px">${q.a}</div>
+    ${quiz.revealed?`<div class="row" style="margin-top:14px"><span class="muted small">Mark yourself:</span>
+      <button class="btn sm" data-quizmark="1">✓ I got it right</button>
+      <button class="btn sm ghost" data-quizmark="0">✗ Got it wrong</button></div>`:''}
   </div>`;
 }
 function quizResultHTML(){
-  const pct=quiz.marksAvail>0?Math.round(quiz.marksEarned/quiz.marksAvail*100):0;
-  const grade=pct>=90?'🏆 Outstanding':pct>=75?'⭐ Strong':pct>=50?'📈 Developing':'📚 Needs work';
-  return `<div class="page-head"><div><h1>Quiz complete</h1><p>${grade} — logged to your history.</p></div></div>
-  <div class="card" style="text-align:center">
-    <div class="ring" style="--p:${pct}"><div class="inner"><b>${pct}%</b><small>${quiz.marksEarned}/${quiz.marksAvail}</small></div></div>
-    <p class="muted" style="margin:8px 0 16px">${quiz.marksEarned} marks earned of ${quiz.marksAvail} available</p>
-    <div class="row" style="justify-content:center"><button class="btn" data-quizagain>New quiz</button><button class="btn ghost" data-nav="revision">Revise weak spots</button></div>
-  </div>`;
+  const pct=Math.round(quiz.score/quiz.items.length*100);
+  return `<div class="page-head"><div><h1>Quiz complete</h1><p>Nice work — logged to your history.</p></div></div>
+  <div class="card" style="text-align:center"><div class="ring" style="--p:${pct}"><div class="inner"><b>${pct}%</b><small>${quiz.score}/${quiz.items.length}</small></div></div>
+    <div class="row" style="justify-content:center;margin-top:16px"><button class="btn" data-quizagain>New quiz</button><button class="btn ghost" data-nav="revision">Revise weak spots</button></div></div>`;
 }
 
 /* ---------- SMART REVISION ---------- */
@@ -1095,56 +954,6 @@ function viewGlossary(){
 }
 function filterGloss(){let shown=0;document.querySelectorAll('#glossList [data-gloss]').forEach(c=>{const m=!glossFilter||c.dataset.gloss.includes(glossFilter);c.style.display=m?'':'none';if(m)shown++;});const e=document.getElementById('glossEmpty');if(e)e.classList.toggle('hidden',shown>0);}
 
-/* ---------- FLASHCARD FORMATTER ---------- */
-function fcFormat(card){
-  const raw=(card.back||'').trim();
-  const front=(card.front||'');
-  const fl=front.toLowerCase();
-  const be=s=>{const t=(s||'').replace(/^[•▸\-–\s]+/,'').trim();return t?`<div class="fc-bul"><span class="fc-bd">▸</span><span>${esc(t)}</span></div>`:''};
-  const buls=arr=>arr.filter(s=>(s||'').trim().length>3).map(be).join('');
-  const sideItems=t=>{
-    const c=t.replace(/^[A-Z][a-zA-Z\s\-]+:\s+/,'');
-    const dotIdx=c.search(/\.\s+[A-Z]/);
-    const first=dotIdx>0?c.slice(0,dotIdx):c;
-    return first.split(/;\s+/).map(s=>s.replace(/\.$/,'').trim()).filter(s=>s.length>3).slice(0,3);
-  };
-  // 1. VS comparison (front has exactly one " vs ")
-  const vi=fl.indexOf(' vs ');
-  if(vi>=0&&!fl.slice(vi+4).includes(' vs ')){
-    const lblA=front.slice(0,vi).trim(), lblB=front.slice(vi+4).trim();
-    const keyB=lblB.split(/[\s(]/)[0].replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-    const sm=raw.match(new RegExp('\\.\\s+(?='+keyB+'[a-z]*[\\s:,])','i'));
-    if(sm){
-      const idx=raw.indexOf(sm[0]);
-      const tA=raw.slice(0,idx),tB=raw.slice(idx+sm[0].length);
-      const sA=sideItems(tA),sB=sideItems(tB);
-      return `<div class="fc-vs"><div class="fc-vs-col"><div class="fc-vs-hd">${esc(lblA)}</div>${buls(sA)}</div><div class="fc-vs-col"><div class="fc-vs-hd">${esc(lblB)}</div>${buls(sB)}</div></div>`;
-    }
-  }
-  // 2. Labeled types: "Label: text. Label2: text2." — ≥3 parts
-  const typeParts=raw.split(/\.\s+(?=[A-Z][a-zA-Z \/\-]{1,30}: )/);
-  if(typeParts.length>=3){
-    const rows=typeParts.filter(p=>p.trim().length>3).map(p=>{
-      const m=p.match(/^([A-Z][a-zA-Z \/\-\(\)]{0,35}?):\s+([\s\S]+)/);
-      return m?`<div class="fc-row"><span class="fc-rl">${esc(m[1].trim())}</span><span class="fc-rv">${esc(m[2].replace(/\.$/,'').trim())}</span></div>`:be(p);
-    }).join('');
-    if(rows)return rows;
-  }
-  // 3. Numbered: (1) ... (2) ...
-  if(/\(1\)/.test(raw)){
-    const nParts=raw.split(/\([1-9]\)\s*/).filter(p=>p.trim().length>3);
-    if(nParts.length>=2)return nParts.map((p,i)=>`<div class="fc-step"><span class="fc-sn">${i+1}</span><span>${esc(p.replace(/\.$/,'').trim())}</span></div>`).join('');
-  }
-  // 4. Semicolons ≥3
-  const semParts=raw.split(/;\s+/);
-  if(semParts.length>=3)return buls(semParts);
-  // 5. Sentence bullets ≥3
-  const sentParts=raw.split(/\.\s+(?=[A-Z])/).filter(s=>s.trim().length>8);
-  if(sentParts.length>=3)return buls(sentParts.slice(0,5));
-  // 6. Default
-  return `<div class="fc-def">${esc(raw)}</div>`;
-}
-
 /* ---------- FLASHCARDS / SPACED REPETITION ---------- */
 let fc={deck:null,i:0,flipped:false,scope:"due",mod:"all"};
 function buildDeck(){let cards=srsCards();if(fc.mod!=="all")cards=cards.filter(c=>c.mod===+fc.mod);
@@ -1160,10 +969,10 @@ function viewFlashcards(){
   let body;
   if(!fc.deck.length){body=`<div class="card" style="text-align:center;padding:40px"><div style="font-size:40px">✅</div><h3>${fc.scope==='due'?'No cards due — you are caught up!':'No cards in this selection.'}</h3><p class="muted">${fc.scope==='due'?'Spaced repetition will resurface cards on their due dates. Switch to "Whole deck" to review anything now.':''}</p></div>`;}
   else{const c=fc.deck[Math.min(fc.i,fc.deck.length-1)];const r=state.srs[c.id];
-    body=`<div class="card" style="min-height:230px;cursor:pointer;display:flex;flex-direction:column;justify-content:${fc.flipped?'flex-start':'center'};text-align:center;position:relative;${fc.flipped?'padding-top:46px;':''}" data-fcflip>
+    body=`<div class="card" style="min-height:230px;cursor:pointer;display:flex;flex-direction:column;justify-content:center;text-align:center" data-fcflip>
       <div class="row" style="justify-content:space-between;position:absolute;top:14px;left:16px;right:16px"><span class="tag ${c.kind==='Question'?'syl':''}">${esc(c.kind)} · Mod ${c.mod}</span><span class="muted small">${r?('seen '+r.reps+'× · next +'+r.interval+'d'):'new card'}</span></div>
-      ${fc.flipped?`<div style="text-align:left">${fcFormat(c)}</div>`:`<div style="font-size:18px;padding:14px 10px"><b>${esc(c.front)}</b></div>`}
-      <div class="muted small" style="margin-top:8px;text-align:center">${fc.flipped?'':'click to flip ↩'}</div></div>
+      <div style="font-size:${fc.flipped?'15px':'18px'};padding:14px 10px">${fc.flipped?esc(c.back):'<b>'+esc(c.front)+'</b>'}</div>
+      <div class="muted small">${fc.flipped?'':'click to flip ↩'}</div></div>
     ${fc.flipped?`<div class="row" style="justify-content:center"><span class="muted small" style="align-self:center">How well did you know it?</span>
       <button class="cbtn weak" data-fcrate="again">Again</button>
       <button class="cbtn shaky" data-fcrate="hard">Hard</button>
@@ -1225,7 +1034,7 @@ function viewReference(){
   const sheet=DATASHEET.map(g=>`<div class="card"><h3 style="margin:0 0 10px">${esc(g.group)}</h3><table class="tablebox">${g.rows.map(r=>`<tr><td>${esc(r[0])}</td><td style="font-family:'IBM Plex Mono',monospace">${esc(r[1])}</td></tr>`).join('')}</table></div>`).join('');
   return `<div class="page-head"><div><h1>Data Sheet &amp; Periodic Table</h1><p>The reference data you can assume in the HSC, plus an interactive periodic table.</p></div></div>
   <h3 style="margin:6px 0 8px">Interactive periodic table</h3>
-  <div class="card" style="overflow-x:auto"><div class="chips" style="margin-bottom:10px"><button class="btn sm ${ptMode==='en'?'on':'ghost'}" data-ptmode="en">🎨 Electronegativity</button><button class="btn sm ${ptMode==='ie'?'on':'ghost'}" data-ptmode="ie">⚡ Ionisation Energy</button><button class="btn sm ${ptMode==='cond'?'on':'ghost'}" data-ptmode="cond">🔌 Conductivity</button></div><div id="ptWrap"></div><div id="ptInfo" class="muted small" style="margin-top:10px">Click an element to see its details.</div></div>
+  <div class="card" style="overflow-x:auto"><div id="ptWrap"></div><div id="ptInfo" class="muted small" style="margin-top:10px">Click an element to see its details.</div></div>
   <h3 style="margin:16px 0 8px">NESA data sheet</h3>
   <div class="grid g2">${sheet}</div>`;
 }
@@ -1233,7 +1042,7 @@ function drawPeriodic(){
   const wrap=document.getElementById('ptWrap');if(!wrap)return;
   const cell=33,gap=3;const W=18*(cell+gap)+gap, H=10*(cell+gap)+gap;
   let cells='';
-  PTABLE.forEach(([z,sym,name,wt,x,y,data])=>{const col=ptMode==='en'&&data?enColor(data.en):ptMode==='ie'?ieColor(IE_DATA[z]):ptMode==='cond'?condColor(COND_DATA[z]):PT_CATEGORY(z);const px=gap+(x-1)*(cell+gap),py=gap+(y-1)*(cell+gap);
+  PTABLE.forEach(([z,sym,name,wt,x,y])=>{const col=PT_CATEGORY(z);const px=gap+(x-1)*(cell+gap),py=gap+(y-1)*(cell+gap);
     cells+=`<g class="ptcell" data-z="${z}" style="cursor:pointer"><rect x="${px}" y="${py}" width="${cell}" height="${cell}" rx="4" fill="${col}22" stroke="${col}" stroke-width="1"/>
       <text x="${px+3}" y="${py+9}" font-size="6" fill="var(--muted)">${z}</text>
       <text x="${px+cell/2}" y="${py+20}" font-size="11" text-anchor="middle" font-weight="700" fill="var(--text)">${sym}</text>
@@ -1280,7 +1089,7 @@ function applyTheme(){document.documentElement.setAttribute('data-theme',state.t
 
 /* ============================ EVENT DELEGATION ============================ */
 document.addEventListener('click',e=>{
-  const el=e.target.closest('[data-nav],[data-jump],[data-dot-head],[data-conf],[data-reveal],[data-toggle-edit],[data-add-dot],[data-add-q],[data-quizmod],[data-quizstart],[data-quizreveal],[data-quizmark],[data-quizagain],[data-revmod],[data-revstat],[data-drillnew],[data-drillreveal],[data-prac],[data-sres],[data-fcflip],[data-fcrate],[data-fcscope],[data-fcmod],[data-qb],[data-qbreveal],[data-qbmod],[data-ettab],[data-etreveal],[data-etnewdrill],[data-ptmode],[data-qtype],[data-quizmcanswer],[data-z]');
+  const el=e.target.closest('[data-nav],[data-jump],[data-dot-head],[data-conf],[data-reveal],[data-toggle-edit],[data-add-dot],[data-add-q],[data-quizmod],[data-quizstart],[data-quizreveal],[data-quizmark],[data-quizagain],[data-revmod],[data-revstat],[data-drillnew],[data-drillreveal],[data-prac],[data-sres],[data-fcflip],[data-fcrate],[data-fcscope],[data-fcmod],[data-qb],[data-qbreveal],[data-qbmod],[data-ettab],[data-etreveal],[data-etnewdrill],[data-z]');
   if(!el)return;
   if(el.dataset.nav){go(el.dataset.nav);}
   else if(el.dataset.jump){openDot(el.dataset.jump);}
@@ -1291,12 +1100,10 @@ document.addEventListener('click',e=>{
   else if(el.dataset.addDot){const mid=el.dataset.addDot;state.addedDots[mid]=state.addedDots[mid]||[];const idx=state.addedDots[mid].length+1;state.addedDots[mid].push({id:mid+'.custom'+Date.now(),title:'New custom dot point',tags:['Custom'],questions:[]});save();SEARCH_IDX=null;render();}
   else if(el.dataset.addQ){const tid=el.dataset.addQ;state.addedQ[tid]=(state.addedQ[tid]||0)+1;save();render();setTimeout(()=>openDot(tid),20);}
   // quiz
-  else if(el.dataset.qtype){if(!quiz)quiz={sel:MODULES.map(m=>m.id),len:10,qtype:'all'};quiz.qtype=el.dataset.qtype;render();}
-  else if(el.dataset.quizmod){if(!quiz)quiz={sel:MODULES.map(m=>m.id),len:10,qtype:'all'};const id=el.dataset.quizmod;const i=quiz.sel.indexOf(id);if(i>=0){if(quiz.sel.length>1)quiz.sel.splice(i,1);}else quiz.sel.push(id);render();}
+  else if(el.dataset.quizmod){const id=el.dataset.quizmod;const i=quiz.sel.indexOf(id);if(i>=0){if(quiz.sel.length>1)quiz.sel.splice(i,1);}else quiz.sel.push(id);render();}
   else if(el.hasAttribute('data-quizstart')){startQuiz();}
-  else if(el.hasAttribute('data-quizreveal')){const ta=document.getElementById('quizAnswer');if(ta)quiz.userAnswer=ta.value;quiz.revealed=true;render();}
-  else if(el.dataset.quizmcanswer!=null){quiz.mcSelected=+el.dataset.quizmcanswer;render();}
-  else if(el.dataset.quizmark!=null){const earned=+el.dataset.quizmark;const maxM=quiz.items[quiz.i]?quiz.items[quiz.i].marks||1:1;const it=quiz.items[quiz.i];if(it&&it.tid){const s=state.quizStats[it.tid]||{r:0,w:0};earned>=maxM?s.r++:s.w++;state.quizStats[it.tid]=s;}quiz.marksEarned+=earned;quiz.answered++;quiz.i++;quiz.revealed=false;quiz.userAnswer='';quiz.mcSelected=null;if(quiz.i>=quiz.items.length){finishQuiz();}save();buildNav();render();}
+  else if(el.hasAttribute('data-quizreveal')){quiz.revealed=true;render();}
+  else if(el.dataset.quizmark!=null){const correct=+el.dataset.quizmark;const it=quiz.items[quiz.i];if(it&&it.tid){const s=state.quizStats[it.tid]||{r:0,w:0};correct?s.r++:s.w++;state.quizStats[it.tid]=s;}quiz.score+=correct;quiz.answered++;quiz.i++;quiz.revealed=false;if(quiz.i>=quiz.items.length){finishQuiz();}save();buildNav();render();}
   else if(el.hasAttribute('data-quizagain')){quiz=null;render();}
   else if(el.dataset.revmod){revFilter.mod=el.dataset.revmod;render();}
   else if(el.dataset.revstat){revFilter.status=el.dataset.revstat;render();}
@@ -1319,28 +1126,19 @@ document.addEventListener('click',e=>{
   else if(el.dataset.ettab){etTab=el.dataset.ettab;render();}
   else if(el.hasAttribute('data-etreveal')){const a=document.querySelector('[data-eterrans]');if(a){a.classList.remove('hidden');el.style.display='none';}}
   else if(el.hasAttribute('data-etnewdrill')){let n;do{n=PRACTICALS[Math.floor(Math.random()*PRACTICALS.length)];}while(n===etDrill&&PRACTICALS.length>1);etDrill=n;render();}
-  // periodic table heat map toggle
-  else if(el.dataset.ptmode){ptMode=(ptMode===el.dataset.ptmode?null:el.dataset.ptmode);render();drawPeriodic();}
   // periodic element
-  else if(el.dataset.z){const z=+el.dataset.z;const r=PTABLE.find(p=>p[0]===z);if(r&&r[6]){const d=r[6];const info=document.getElementById('ptInfo');if(info){let h=`<b class="accent" style="font-size:15px">${r[1]} — ${esc(r[2])}</b><br/><div class="small muted" style="margin:6px 0 10px"><span class="pill">Z=${r[0]}</span><span class="pill">A=${r[3]}</span><span class="pill">Group ${r[4]}</span><span class="pill">Period ${r[5]}</span></div>`;h+=`<div class="kv"><span>Electronegativity (Pauling)</span><span class="accent">${d.en!=null?d.en.toFixed(2):'N/A'}</span></div>`;h+=`<div class="kv"><span>Electron configuration</span><span class="small">${esc(d.config)}</span></div>`;h+=`<div class="kv"><span>State (room temp)</span><span>${esc(d.state)}</span></div>`;h+=`<div class="kv"><span>Common oxidation states</span><span>${esc(d.ox)}</span></div>`;h+=`<div class="kv"><span>1st ionisation energy</span><span>${IE_DATA[z]!=null?IE_DATA[z]+' kJ mol⁻¹':'N/A'}</span></div>`;h+=`<div class="kv"><span>Electrical conductivity</span><span>${COND_DATA[z]!=null?COND_LABEL[COND_DATA[z]]:'Unknown'}</span></div>`;info.innerHTML=h;}}}
+  else if(el.dataset.z){const z=+el.dataset.z;const r=PTABLE.find(p=>p[0]===z);if(r){const info=document.getElementById('ptInfo');if(info)info.innerHTML=`<b class="accent" style="font-size:15px">${r[1]} — ${esc(r[2])}</b> · Atomic number ${r[0]} · Atomic weight ${r[3]} · Group ${r[4]<=18&&r[5]<=7?r[4]:'(f-block)'} , Period ${r[5]<=7?r[5]:(r[5]===9?6:7)}`;}}
 });
 
-function startQuiz(){
-  let all=gatherQuestions(quiz.sel);
-  if(quiz.qtype&&quiz.qtype!=='all')all=all.filter(q=>(q.qtype||'short')===quiz.qtype);
-  for(let i=all.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[all[i],all[j]]=[all[j],all[i]];}
-  quiz.items=all.slice(0,Math.min(quiz.len,all.length));
-  quiz.i=0;quiz.marksEarned=0;quiz.marksAvail=quiz.items.reduce((s,q)=>s+(q.marks||1),0);
-  quiz.answered=0;quiz.revealed=false;quiz.userAnswer='';quiz.mcSelected=null;
-  quiz.active=true;quiz.done=false;streakToday();render();}
-function finishQuiz(){quiz.active=false;quiz.done=true;state.quizLog.push({date:new Date().toISOString().slice(0,10),score:quiz.marksEarned,total:quiz.marksAvail,mods:quiz.sel.map(m=>moduleById(m).num).join(',')});save();}
+function startQuiz(){const all=gatherQuestions(quiz.sel);for(let i=all.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[all[i],all[j]]=[all[j],all[i]];}
+  quiz.items=all.slice(0,Math.min(quiz.len,all.length));quiz.i=0;quiz.score=0;quiz.answered=0;quiz.revealed=false;quiz.active=true;quiz.done=false;streakToday();render();}
+function finishQuiz(){quiz.active=false;quiz.done=true;state.quizLog.push({date:new Date().toISOString().slice(0,10),score:quiz.score,total:quiz.items.length,mods:quiz.sel.map(m=>moduleById(m).num).join(',')});save();}
 
 /* ============================ INPUT EVENTS ============================ */
 document.addEventListener('input',e=>{
   const t=e.target;
   if(t.dataset.note!=null){state.notes[t.dataset.note]=t.value;save();}
-  else if(t.id==='quizAnswer'){if(quiz)quiz.userAnswer=t.value;}
-  else if(t.id==='quizLen'){if(!quiz)quiz={sel:MODULES.map(m=>m.id),len:10,qtype:'all'};quiz.len=+t.value;}
+  else if(t.id==='quizLen'){quiz.len=+t.value;}
   else if(t.id==='drillType'){drill.type=t.value;drill.current=DRILLS.find(d=>d.id===drill.type).gen();drill.revealed=false;render();}
   else if(t.id==='glossSearch'){glossFilter=t.value.toLowerCase();filterGloss();}
   else if(t.id==='examDate'){state.examDate=t.value;save();refreshCountdown();render();}
@@ -1356,49 +1154,6 @@ document.addEventListener('click',e=>{if(!e.target.closest('.search')){document.
 
 /* ============================ INIT ============================ */
 applyTheme();refreshCountdown();buildNav();render();streakToday();
-</script>
-<div id="ft" style="position:fixed;bottom:18px;right:18px;z-index:9999;background:rgba(10,10,20,.92);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:10px 14px;display:flex;align-items:center;gap:10px;backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(0,0,0,.4);cursor:pointer" onclick="window.location='/HSC-Study-Tools/'" title="Back to Dashboard">
-  <div id="ft-dot" style="width:8px;height:8px;border-radius:50%;background:#f59e0b;flex-shrink:0;transition:background .3s"></div>
-  <div style="display:flex;flex-direction:column;gap:2px">
-    <div id="ft-time" style="font-size:15px;font-weight:700;font-family:'Bricolage Grotesque',system-ui,sans-serif;color:#f0f0ff;letter-spacing:-.02em;line-height:1">00:00:00</div>
-    <div id="ft-sub" style="font-size:10px;color:rgba(240,240,255,.4);line-height:1">← Dashboard</div>
-  </div>
-</div>
-<script>
-(function(){
-  const TK='hsc_timer_v2';
-  const COLORS={eng:'#a855f7',math:'#3b82f6',bio:'#22c55e',chem:'#f59e0b',ger:'#e8a020'};
-  const NAMES={eng:'English',math:'Maths',bio:'Biology',chem:'Chemistry',ger:'German'};
-  function fmt(s){return[Math.floor(s/3600),Math.floor((s%3600)/60),s%60].map(n=>String(n).padStart(2,'0')).join(':');}
-  function tick(){
-    let ts;try{ts=JSON.parse(localStorage.getItem(TK));}catch(e){return;}
-    if(!ts)return;
-    const dot=document.getElementById('ft-dot');
-    const timeEl=document.getElementById('ft-time');
-    const subEl=document.getElementById('ft-sub');
-    if(!timeEl)return;
-    const c=COLORS[ts.subject]||'#f59e0b';
-    dot.style.background=c;
-    if(ts.running){
-      dot.style.boxShadow='0 0 7px '+c;
-      const sec=ts.elapsed+Math.floor((Date.now()-ts.startedAt)/1000);
-      timeEl.style.color=c;
-      timeEl.textContent=fmt(sec);
-      subEl.textContent=(NAMES[ts.subject]||'Timer')+' running ← Dashboard';
-    } else if(ts.elapsed>0){
-      dot.style.boxShadow='none';
-      timeEl.style.color='rgba(240,240,255,.55)';
-      timeEl.textContent=fmt(ts.elapsed);
-      subEl.textContent=(NAMES[ts.subject]||'Timer')+' paused ← Dashboard';
-    } else {
-      dot.style.boxShadow='none';
-      timeEl.style.color='rgba(240,240,255,.3)';
-      timeEl.textContent='00:00:00';
-      subEl.textContent='← Dashboard';
-    }
-  }
-  tick();setInterval(tick,1000);
-})();
 </script>
 </body>
 </html>
