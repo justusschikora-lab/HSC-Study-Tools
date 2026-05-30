@@ -393,12 +393,13 @@ function drawGraph(){
 
 /* ===== LAYOUT SYSTEM ===== */
 const WM={
-  hero:  {label:'📅 Countdown',  wide:true, lock:true},
-  eng:   {label:'📚 English',    wide:false},
-  math:  {label:'📐 Maths',      wide:false},
-  bio:   {label:'🧬 Biology',    wide:false},
-  chem:  {label:'⚗️ Chemistry',  wide:false},
-  ger:   {label:'🇩🇪 German',    wide:false},
+  hero:     {label:'📅 Countdown',   wide:true, lock:true},
+  subjects: {label:'📚 Subjects',    wide:true},
+  eng:      {label:'📚 English',     wide:false},
+  math:     {label:'📐 Maths',       wide:false},
+  bio:      {label:'🧬 Biology',     wide:false},
+  chem:     {label:'⚗️ Chemistry',   wide:false},
+  ger:      {label:'🇩🇪 German',     wide:false},
   timer: {label:'⏱ Timer',       wide:false},
   goals: {label:'🎯 Goals',      wide:false},
   graph:   {label:'📊 Study Graph',  wide:true},
@@ -413,18 +414,22 @@ const WM={
 };
 const DEF_LAYOUT=[
   {id:'hero',wide:true},
-  {id:'eng',wide:false},{id:'math',wide:false},
-  {id:'bio',wide:false},{id:'chem',wide:false},
-  {id:'ger',wide:false},{id:'timer',wide:false},
+  {id:'subjects',wide:true},
+  {id:'timer',wide:false},
   {id:'goals',wide:false},
   {id:'graph',wide:true},
   {id:'sessions',wide:false},
 ];
 function ensureLayout(){
   if(!Array.isArray(S.layout)||!S.layout.length){S.layout=DEF_LAYOUT.map(x=>({...x}));save();return;}
-  // migrate: replace old grouped 'subjects' widget with individual cards
-  const si=S.layout.findIndex(w=>w.id==='subjects');
-  if(si>=0){S.layout.splice(si,1,{id:'eng',wide:false},{id:'math',wide:false},{id:'bio',wide:false},{id:'chem',wide:false},{id:'ger',wide:false});save();}
+  // migrate: replace individual subject cards with combined subjects widget
+  const hasOldSubjects=['eng','math','bio','chem','ger'].some(id=>S.layout.find(w=>w.id===id));
+  const hasNew=S.layout.find(w=>w.id==='subjects');
+  if(hasOldSubjects&&!hasNew){
+    S.layout=S.layout.filter(w=>!['eng','math','bio','chem','ger'].includes(w.id));
+    S.layout.splice(1,0,{id:'subjects',wide:true});
+    save();
+  }
   // remove any unknown ids
   S.layout=S.layout.filter(w=>WM[w.id]);
   if(!S.layout.length){S.layout=DEF_LAYOUT.map(x=>({...x}));save();}
@@ -448,8 +453,9 @@ function setupDrag(){
 /* ===== RENDER ===== */
 function wHTML(id){
   switch(id){
-    case 'hero':    return rHero();
-    case 'timer':   return rTimer();
+    case 'hero':     return rHero();
+    case 'subjects': return rSubjects();
+    case 'timer':    return rTimer();
     case 'goals':   return rGoals();
     case 'graph':   return rGraph();
     case 'sessions':return rSessions();
@@ -492,6 +498,27 @@ function rHero(){
   <div class="hl"><div class="hl-num">${daysTo(first.date)}</div><div class="hl-meta"><div class="hl-label">Days to first exam</div><div class="hl-exam">${esc(first.short)}</div><div class="hl-date">${esc(first.label.split('·')[1]?.trim()||first.label)}</div></div></div>
   <div class="hm"><div class="streak-badge"><span style="font-size:15px">🔥</span><span class="sn">${streak}</span><span class="sl2">day streak</span></div></div>
   <div class="hr">${allExams.filter(e=>daysTo(e.date)>0).slice(0,6).map(e=>`<div class="er"><span class="ed" style="background:${e.color}"></span><span class="el">${esc(e.label)}</span><span class="ev" style="color:${e.color}">${daysTo(e.date)}d</span></div>`).join('')}</div>
+</div>`;}
+
+function rSubjects(){
+  return`<div class="card anim">
+  <div class="ct">📚 Subjects</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px">
+    ${SUBJECTS.map(s=>{const p=getProg(s);return`<div style="background:var(--sf2);border:1px solid ${s.br};border-radius:var(--rs);padding:12px;cursor:pointer;transition:transform .15s" onclick="go('${s.id}')" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div style="width:30px;height:30px;border-radius:8px;background:${s.bg};border:1px solid ${s.br};display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">${s.icon}</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;font-family:'Bricolage Grotesque',sans-serif;line-height:1.2">${s.name}</div>
+          <div style="font-size:10px;color:${s.color};font-weight:600;margin-top:1px">${p}%</div>
+        </div>
+      </div>
+      <div class="pb" style="height:4px"><i style="width:${p}%;background:${s.color}"></i></div>
+      <div style="font-size:10px;color:var(--mu);margin-top:6px;display:flex;justify-content:space-between">
+        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">${esc(s.examLabel)}</span>
+        <span style="color:${s.color};font-weight:700;flex-shrink:0;margin-left:6px">${daysTo(s.examDate)}d</span>
+      </div>
+    </div>`;}).join('')}
+  </div>
 </div>`;}
 
 function rSubjectCard(s){
