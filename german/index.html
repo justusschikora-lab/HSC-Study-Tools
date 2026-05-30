@@ -1273,7 +1273,7 @@ function renderGrammar(m){
     ${cat.items.map((item,ii)=>`
     <div class="dot">
       <div class="dot-h" onclick="toggleDot(this)">
-        <span class="ttl">${esc(item.name)} <span class="pill">${esc(item.en)}</span></span>
+        <span class="ttl">${esc(item.name)}</span>
         <span class="chev">▶</span>
       </div>
       <div class="dot-body">
@@ -1304,17 +1304,19 @@ function renderLang(m){
   <div class="page-head"><div><h1>🔍 Language Devices</h1><p>What each is · when it appears in HSC texts · how to cite it</p></div></div>
   <div class="block amber" style="margin-bottom:16px"><span class="bl">How to use in analysis questions</span>
   <b>Quote</b> the specific German word/phrase → <b>Name</b> the device → <b>Explain</b> the effect → <b>Link</b> to character state or author's purpose. Never just name a device without explaining what it does.</div>
-  <div class="device-grid">
   ${DEVICES.map(d=>`
-  <div class="device-card">
-    <div class="dname">${esc(d.de)}</div>
-    <div class="den">${esc(d.en)}</div>
-    <div class="drow"><b>What</b>${esc(d.what)}</div>
-    <div class="drow"><b>When / HSC context</b>${esc(d.when)}</div>
-    <div class="drow"><b>How to cite</b><span class="muted small">${esc(d.how)}</span></div>
-    <div class="ex">${esc(d.ex)}</div>
+  <div class="dot">
+    <div class="dot-h" onclick="toggleDot(this)">
+      <span class="ttl">${esc(d.de)}</span>
+      <span class="chev">▶</span>
+    </div>
+    <div class="dot-body">
+      <div class="block amber"><span class="bl">What</span>${esc(d.what)}</div>
+      <div class="block blue"><span class="bl">When / HSC context</span>${esc(d.when)}</div>
+      <div class="block muted"><span class="bl">How to cite</span>${esc(d.how)}</div>
+      <div class="ex" style="margin-top:8px">${esc(d.ex)}</div>
+    </div>
   </div>`).join('')}
-  </div>
   <div class="card" style="margin-top:20px"><h3>My Notes — Language Devices</h3>
   <textarea class="notes" rows="5" placeholder="Notes on specific devices, teacher feedback…" onchange="saveNote('lang',this.value)">${esc(state.notes['lang']||'')}</textarea>
   </div>`;
