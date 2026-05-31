@@ -201,6 +201,28 @@ select:focus,input:focus{outline:none;border-color:var(--accent)}
 .pp-q.show .pp-ans{display:block}
 .pp-q .pp-hint{display:none;border-top:1px dashed var(--line);margin-top:8px;padding-top:8px;font-size:13px;color:#fcd34d;font-style:italic}
 .pp-q.hint-shown .pp-hint{display:block}
+/* ── Exam Papers (PDF) ── */
+.ep-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:4px}
+.ep-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;transition:.15s}
+.ep-card:hover{border-color:rgba(249,115,22,.4);transform:translateY(-1px)}
+.ep-year{font-size:22px;font-weight:800;font-family:"Bricolage Grotesque",sans-serif;color:var(--accent)}
+.ep-label{font-size:13px;color:var(--text);font-weight:600}
+.ep-meta{font-size:11.5px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
+.ep-meta span{background:var(--surface2);padding:2px 8px;border-radius:20px;border:1px solid var(--line)}
+.ep-btns{display:flex;gap:6px;margin-top:2px;flex-wrap:wrap}
+.ep-pill{font-size:11px;padding:3px 9px;border-radius:20px;border:1px solid rgba(34,197,94,.35);background:rgba(34,197,94,.1);color:#22c55e;white-space:nowrap}
+.ep-pill.att{border-color:rgba(249,115,22,.4);background:rgba(249,115,22,.1);color:var(--accent)}
+/* ── Exam Timer Modal ── */
+.etimer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(8px);z-index:200;align-items:center;justify-content:center}
+.etimer-overlay.open{display:flex}
+.etimer-box{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:32px 36px;text-align:center;min-width:320px;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.etimer-title{font-size:14px;color:var(--muted);margin-bottom:4px}
+.etimer-paper{font-size:16px;font-weight:700;margin-bottom:20px}
+.etimer-display{font-size:58px;font-weight:800;font-family:"Bricolage Grotesque",sans-serif;letter-spacing:-.02em;line-height:1;margin-bottom:6px;transition:color .3s}
+.etimer-display.warn{color:#f59e0b}
+.etimer-display.danger{color:#ef4444}
+.etimer-sub{font-size:12px;color:var(--muted);margin-bottom:24px}
+.etimer-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 
 /* ── Formula Sheet ── */
 .formula-group{margin-bottom:18px}
@@ -255,6 +277,24 @@ select:focus,input:focus{outline:none;border-color:var(--accent)}
 </div>
 <div class="toast" id="toast"></div>
 
+<!-- Exam Timer Modal -->
+<div class="etimer-overlay" id="etimerOverlay" onclick="if(event.target===this)etimerClose()">
+  <div class="etimer-box">
+    <div class="etimer-title" id="etimerTitle"></div>
+    <div class="etimer-paper" id="etimerSubs"></div>
+    <div class="etimer-display" id="etimerDisplay">00:00</div>
+    <div style="height:5px;background:var(--surface2);border-radius:20px;margin:0 0 10px;overflow:hidden">
+      <div id="etimerPct" style="height:100%;width:0%;background:var(--accent);border-radius:20px;transition:width 1s linear"></div>
+    </div>
+    <div class="etimer-sub">Press Start when you open the PDF</div>
+    <div class="etimer-btns">
+      <button class="btn" id="etimerStartBtn" onclick="etimerToggle()">▶ Start</button>
+      <button class="btn ghost" onclick="etimerReset()">↺ Reset</button>
+      <button class="btn ghost" onclick="etimerClose()">✕ Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- Session Timer FAB -->
 <div class="timer-fab" id="timerFab">
   <div class="timer-bubble hidden" id="timerBubble">
@@ -305,7 +345,7 @@ const LS_KEY = "hscmath_progress";
 const DEFAULT_STATE = {
   check:{}, conf:{}, notes:{}, examDate:"2026-10-22",
   theme:"dark", streak:[], quizLog:[], bookmarks:{},
-  sessions:[], edits:{}, addedQ:{}
+  sessions:[], edits:{}, addedQ:{}, paperAttempts:{}
 };
 const TODAY = () => new Date().toISOString().slice(0,10);
 let state = load();
@@ -580,6 +620,44 @@ const FORMULAS = [
 /* =====================================================================
    PAST PAPER QUESTIONS (HSC-style)
    ===================================================================== */
+/* ── Real HSC Exam Papers (PDF links) ──────────────────────────────────
+   To add a paper: drop the PDF into math/papers/ then add an entry here.
+   Fields: id, year, label, file (relative path), type, duration (mins),
+           sections (array of {label, marks}), notes (optional string)
+   ───────────────────────────────────────────────────────────────────── */
+const EXAM_PAPERS = [
+  // ── 2024 ──
+  {id:'2024-hsc',    year:'2024', label:'HSC Examination',
+   file:'papers/2024-hsc.pdf',    type:'HSC Exam',  duration:150,
+   sections:[{label:'Section I (MC)',marks:15},{label:'Section II',marks:85}],
+   notes:''},
+  // ── 2023 ──
+  {id:'2023-hsc',    year:'2023', label:'HSC Examination',
+   file:'papers/2023-hsc.pdf',    type:'HSC Exam',  duration:150,
+   sections:[{label:'Section I (MC)',marks:15},{label:'Section II',marks:85}],
+   notes:''},
+  // ── 2022 ──
+  {id:'2022-hsc',    year:'2022', label:'HSC Examination',
+   file:'papers/2022-hsc.pdf',    type:'HSC Exam',  duration:150,
+   sections:[{label:'Section I (MC)',marks:15},{label:'Section II',marks:85}],
+   notes:''},
+  // ── 2021 ──
+  {id:'2021-hsc',    year:'2021', label:'HSC Examination',
+   file:'papers/2021-hsc.pdf',    type:'HSC Exam',  duration:150,
+   sections:[{label:'Section I (MC)',marks:15},{label:'Section II',marks:85}],
+   notes:''},
+  // ── 2020 ──
+  {id:'2020-hsc',    year:'2020', label:'HSC Examination',
+   file:'papers/2020-hsc.pdf',    type:'HSC Exam',  duration:150,
+   sections:[{label:'Section I (MC)',marks:15},{label:'Section II',marks:85}],
+   notes:''},
+  // ── Sample Paper ──
+  {id:'sample-nesa', year:'Sample', label:'NESA Sample Paper',
+   file:'papers/sample-nesa.pdf', type:'Sample',    duration:150,
+   sections:[{label:'Section I (MC)',marks:15},{label:'Section II',marks:85}],
+   notes:'Official NESA sample — good first attempt'},
+];
+
 const PAST_PAPERS = [
   {year:"HSC Style", topic:"alg", subtopic:"a4_1", marks:3,
    q:"The cost C (in dollars) to produce x items is C = 150 + 4x. The revenue R (in dollars) from selling x items is R = 9x. (i) Find the break-even point. (ii) Calculate the profit if 50 items are sold.",
@@ -937,24 +1015,142 @@ function renderWeak(el){
 }
 
 /* ── Past Papers Page ── */
-let ppFilter = 'all';
+/* ── Papers page state ── */
+let ppTab='exams', ppFilter='all';
+
 function renderPapers(el){
-  el.innerHTML = `
-  <div class="page-head"><div><h1>📋 Past Paper Questions</h1><p>HSC-style questions by topic</p></div></div>
-  <div class="pp-filter">
+  el.innerHTML=`
+  <div class="page-head"><div><h1>📋 Past Papers</h1><p>HSC exam papers &amp; practice questions</p></div></div>
+  <div class="tabs" style="margin-bottom:18px">
+    <button class="tab${ppTab==='exams'?' on':''}" onclick="setPPTab('exams')">📄 Exam Papers</button>
+    <button class="tab${ppTab==='practice'?' on':''}" onclick="setPPTab('practice')">📝 Practice Questions</button>
+  </div>
+  <div id="ppContent"></div>`;
+  renderPPContent();
+}
+function setPPTab(t){ppTab=t;renderPapers(document.getElementById('main'));}
+function setPPFilter(f){ppFilter=f;renderPapers(document.getElementById('main'));}
+
+function renderPPContent(){
+  const c=document.getElementById('ppContent'); if(!c) return;
+  if(ppTab==='exams') renderExamPapers(c);
+  else renderPPList(c);
+}
+
+/* ── Exam Papers (PDF) ── */
+function renderExamPapers(el){
+  const attempted=Object.keys(state.paperAttempts||{}).filter(k=>(state.paperAttempts[k]||[]).length>0);
+  el.innerHTML=`
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+    <span class="small muted">${EXAM_PAPERS.length} papers · ${attempted.length} attempted</span>
+    <div style="flex:1"></div>
+    <span class="small muted" style="font-style:italic">Drop PDFs into <code style="font-size:11px;background:var(--surface2);padding:2px 6px;border-radius:5px">math/papers/</code> and they'll appear below</span>
+  </div>
+  <div class="ep-grid">
+    ${EXAM_PAPERS.map(p=>{
+      const atts=(state.paperAttempts||{})[p.id]||[];
+      const last=atts.length?atts[atts.length-1]:null;
+      const totalMarks=p.sections.reduce((s,x)=>s+x.marks,0);
+      return`<div class="ep-card">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px">
+          <div class="ep-year">${esc(p.year)}</div>
+          ${atts.length?`<span class="ep-pill att">✓ ${atts.length}× done</span>`:'<span class="ep-pill">Not started</span>'}
+        </div>
+        <div class="ep-label">${esc(p.label)}</div>
+        <div class="ep-meta">
+          <span>⏱ ${p.duration} min</span>
+          <span>${totalMarks} marks</span>
+          <span>${esc(p.type)}</span>
+        </div>
+        ${p.sections.map(s=>`<div style="font-size:11px;color:var(--muted)">${esc(s.label)} — ${s.marks} marks</div>`).join('')}
+        ${p.notes?`<div style="font-size:11.5px;color:var(--muted);font-style:italic">${esc(p.notes)}</div>`:''}
+        ${last?`<div style="font-size:11px;color:var(--muted)">Last: ${last.date}${last.score!=null?' · Score: '+last.score+'/'+totalMarks:''}</div>`:''}
+        <div class="ep-btns">
+          <button class="btn sm" onclick="openExamPaper('${p.id}')">📄 Open PDF</button>
+          <button class="btn ghost sm" onclick="startExamTimer('${p.id}')">⏱ Timer</button>
+          <button class="btn ghost sm" onclick="logAttempt('${p.id}')">✓ Log</button>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function openExamPaper(id){
+  const p=EXAM_PAPERS.find(x=>x.id===id); if(!p) return;
+  window.open(p.file,'_blank');
+}
+
+function logAttempt(id){
+  const p=EXAM_PAPERS.find(x=>x.id===id); if(!p) return;
+  const totalMarks=p.sections.reduce((s,x)=>s+x.marks,0);
+  const scoreStr=prompt(`Log attempt for ${p.year} ${p.label}\nEnter your score out of ${totalMarks} (or leave blank to just mark as attempted):`);
+  if(scoreStr===null) return;
+  if(!state.paperAttempts) state.paperAttempts={};
+  if(!state.paperAttempts[id]) state.paperAttempts[id]=[];
+  const score=scoreStr.trim()===''?null:parseInt(scoreStr,10);
+  state.paperAttempts[id].push({date:TODAY(),score:isNaN(score)?null:score});
+  save();
+  toast(score!=null?`Logged: ${score}/${totalMarks}`:'Attempt logged');
+  renderPapers(document.getElementById('main'));
+}
+
+/* ── Exam Timer ── */
+let _et={paperId:null,total:0,remaining:0,running:false,_iv:null};
+
+function startExamTimer(id){
+  const p=EXAM_PAPERS.find(x=>x.id===id); if(!p) return;
+  if(_et._iv) clearInterval(_et._iv);
+  _et={paperId:id,total:p.duration*60,remaining:p.duration*60,running:false,_iv:null};
+  const ov=document.getElementById('etimerOverlay');
+  document.getElementById('etimerTitle').textContent=`${p.year} ${p.label}`;
+  document.getElementById('etimerSubs').textContent=`${p.duration} minutes · ${p.sections.map(s=>s.label).join(' + ')}`;
+  updateTimerDisplay();
+  ov.classList.add('open');
+}
+
+function updateTimerDisplay(){
+  const r=_et.remaining;
+  const m=Math.floor(r/60),s=r%60;
+  const disp=document.getElementById('etimerDisplay');
+  if(!disp) return;
+  disp.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  disp.className='etimer-display'+(r<600?' danger':r<1200?' warn':'');
+  document.getElementById('etimerPct').style.width=((_et.total-r)/_et.total*100)+'%';
+  document.getElementById('etimerStartBtn').textContent=_et.running?'⏸ Pause':'▶ Start';
+}
+
+function etimerToggle(){
+  if(_et.remaining<=0) return;
+  _et.running=!_et.running;
+  if(_et.running){
+    _et._iv=setInterval(()=>{
+      if(_et.remaining>0){_et.remaining--;updateTimerDisplay();}
+      else{clearInterval(_et._iv);_et.running=false;updateTimerDisplay();toast('⏰ Time is up!');}
+    },1000);
+  } else {
+    clearInterval(_et._iv);
+  }
+  updateTimerDisplay();
+}
+
+function etimerReset(){
+  clearInterval(_et._iv);_et.running=false;_et.remaining=_et.total;updateTimerDisplay();
+}
+
+function etimerClose(){
+  clearInterval(_et._iv);_et.running=false;
+  document.getElementById('etimerOverlay').classList.remove('open');
+}
+
+/* ── Practice Questions ── */
+function renderPPList(el){
+  const fHtml=`<div class="pp-filter" style="margin-bottom:16px">
     <button class="chip${ppFilter==='all'?' on':''}" onclick="setPPFilter('all')">All Topics</button>
     ${TOPICS.map(t=>`<button class="chip${ppFilter===t.id?' on':''}" onclick="setPPFilter('${t.id}')">${t.icon} ${esc(t.title)}</button>`).join('')}
-  </div>
-  <div id="ppList"></div>`;
-  renderPPList();
-}
-function setPPFilter(f){ ppFilter=f; renderPapers(document.getElementById('main')); }
-function renderPPList(){
-  const list = document.getElementById('ppList');
-  if(!list) return;
-  const filtered = ppFilter==='all'?PAST_PAPERS:PAST_PAPERS.filter(p=>p.topic===ppFilter);
-  if(!filtered.length){ list.innerHTML=`<div class="card muted" style="text-align:center;padding:24px">No questions for this filter.</div>`; return; }
-  list.innerHTML = filtered.map((p,i)=>{
+  </div>`;
+  const filtered=ppFilter==='all'?PAST_PAPERS:PAST_PAPERS.filter(p=>p.topic===ppFilter);
+  if(!filtered.length){el.innerHTML=fHtml+`<div class="card muted" style="text-align:center;padding:24px">No questions for this filter.</div>`;return;}
+  el.innerHTML=fHtml+filtered.map((p,i)=>{
     const ppid=`pp_${i}`;
     return`<div class="pp-q" id="${ppid}">
       <div class="pp-meta">
