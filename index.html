@@ -171,7 +171,7 @@ a{color:inherit;text-decoration:none}
 .fo-stop:hover{background:rgba(239,68,68,.15);color:#ef4444;border-color:rgba(239,68,68,.3)}
 .fo-esc{position:absolute;top:18px;right:22px;font-size:11px;color:rgba(255,255,255,.2);cursor:pointer}
 .fo-esc:hover{color:rgba(255,255,255,.5)}
-canvas#sg{width:100%;height:170px;display:block}
+canvas#sg{width:100%;height:100%;display:block}
 .pill{display:inline-block;font-size:10.5px;padding:2px 7px;border-radius:20px;background:var(--sf2);border:1px solid var(--bd);color:var(--mu)}
 .empty{color:var(--mu);font-size:13px;text-align:center;padding:16px;opacity:.6}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(10,10,20,.96);border:1px solid var(--eng);color:var(--tx);padding:10px 18px;border-radius:10px;z-index:2000;box-shadow:0 8px 30px rgba(0,0,0,.5);opacity:0;transition:.25s;pointer-events:none;backdrop-filter:blur(20px);font-size:13px}
@@ -179,34 +179,37 @@ canvas#sg{width:100%;height:170px;display:block}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:4px}
 .anim{animation:fu .35s ease both}
 @keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-/* LAYOUT ENGINE */
-.wgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.wslot{grid-column:span 1;position:relative;min-width:0;transition:opacity .18s,transform .18s}
-.wslot.wide{grid-column:span 2}
-.wgrid .hero-strip{margin-bottom:0}
-@media(max-width:1000px){.wgrid{grid-template-columns:1fr}.wslot,.wslot.wide{grid-column:span 1}}
-/* EDIT MODE */
-body.editing .wslot{animation:wgg .3s ease-in-out infinite alternate;cursor:grab;user-select:none}
-body.editing .wslot:active{cursor:grabbing}
-@keyframes wgg{0%{transform:rotate(-.4deg) scale(1.005)}100%{transform:rotate(.4deg) scale(1.005)}}
-.wslot.drag-over>.card,.wslot.drag-over>.hero-strip{outline:2px solid var(--eng);outline-offset:-1px;box-shadow:0 0 28px var(--engb)!important}
-.wslot.dragging{opacity:.22;transform:scale(.97);pointer-events:none}
-/* EDIT CONTROLS */
-.eov{display:flex;align-items:center;gap:7px;padding-bottom:8px}
-.erm{width:22px;height:22px;border-radius:50%;background:var(--red);border:2px solid rgba(255,255,255,.2);color:#fff;font-size:16px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;flex-shrink:0;transition:.12s}
-.erm:hover{transform:scale(1.1)}
-.eseg{display:inline-flex;border:1px solid var(--bd2);border-radius:8px;overflow:hidden;background:var(--sf)}
-.eseg button{border:none;padding:3px 11px;font-size:10.5px;cursor:pointer;font-family:inherit;color:var(--mu);background:none;line-height:1.4;white-space:nowrap;transition:.1s}
-.eseg button:not(:last-child){border-right:1px solid var(--bd2)}
-.eseg button.act{background:var(--bd2);color:var(--tx);font-weight:600;cursor:default}
-.eseg button:not(.act):hover{color:var(--tx)}
-.edh{margin-left:auto;font-size:15px;color:var(--mu2);cursor:grab;padding:2px 5px;letter-spacing:2px;line-height:1}
-/* ADD TRAY */
-.add-tray{grid-column:span 2;background:var(--sf);border:1.5px dashed var(--bd2);border-radius:var(--r);padding:14px}
-.add-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.add-chip{padding:8px 16px;background:var(--sf2);border:1px solid var(--bd2);border-radius:30px;cursor:pointer;font-size:13px;color:var(--mu);transition:.15s;display:flex;align-items:center;gap:7px}
-.add-chip:hover{border-color:var(--eng);color:var(--eng);background:var(--engb)}
+/* ─── BENTO LAYOUT ─── */
+.wrap{padding:12px 16px 12px}
+.bento{display:grid;grid-template-columns:220px 1fr 248px;grid-template-rows:1fr 148px;gap:10px;height:calc(100vh - 52px);min-height:0}
+.b-left{display:flex;flex-direction:column;overflow:hidden;min-height:0}
+.b-center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;border-color:var(--engbr)!important;box-shadow:0 0 70px var(--engb),inset 0 0 70px var(--engb)!important}
+.b-right{display:flex;flex-direction:column;gap:10px;min-height:0}
+.b-rt{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column}
+.b-rb{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column}
+.b-graph{min-height:0;overflow:hidden;display:flex;flex-direction:column}
+/* Subject rows */
+.sr{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s,padding .12s,margin .12s;border-radius:0}
+.sr:last-child{border-bottom:none}
+.sr:hover{background:var(--sf2);margin:0 -18px;padding-left:18px;padding-right:18px}
+.sr-ico{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sr-name{font-size:13px;font-weight:700;font-family:'Bricolage Grotesque',sans-serif;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Countdown centre */
+.cd-glow{position:absolute;inset:0;background:radial-gradient(ellipse 75% 55% at 50% 30%,var(--engb),transparent 70%);pointer-events:none;border-radius:inherit}
+.cd-num{font-size:88px;font-weight:800;font-family:'Bricolage Grotesque',sans-serif;line-height:1;letter-spacing:-.04em;color:var(--tx)}
+.cd-exam-row{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--mu);padding:3px 0;width:100%;max-width:340px}
+/* Timer/Goals tweaks */
+.ts-row{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+.tsb{font-size:10.5px;padding:3px 8px;border-radius:20px;border:1px solid var(--bd);background:var(--sf2);color:var(--mu);cursor:pointer;transition:.12s}
+.tsb.on{color:#fff}
+.tdisp{font-size:38px;font-weight:800;font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;line-height:1;text-align:center;margin:6px 0 5px}
+.tbtns{display:flex;gap:6px;justify-content:center;margin-top:7px}
+.tbtn{border:none;border-radius:9px;padding:7px 14px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s}
+.tbtn.start{background:var(--eng);color:#fff}
+.tbtn.pause{background:var(--chemb);color:var(--chem);border:1px solid var(--chembr)}
+.tbtn.stop{background:var(--sf2);border:1px solid var(--bd);color:var(--mu)}
 .hbtn-on{background:var(--eng)!important;color:#fff!important;border-color:var(--eng)!important}
+@media(max-width:900px){.bento{grid-template-columns:1fr 1fr;grid-template-rows:auto auto auto auto}.b-center{grid-column:1/-1}.b-right{flex-direction:row}.b-graph{grid-column:1/-1}}
 </style>
 </head>
 <body>
@@ -214,7 +217,6 @@ body.editing .wslot:active{cursor:grabbing}
   <div class="hdr anim">
     <div class="hdr-brand">HSC Dashboard</div>
     <div class="hdr-r">
-      <button class="hbtn" id="editBtn" onclick="toggleEdit()">✏ Customise</button>
       <button class="hbtn" id="themeBtn" onclick="toggleTP()">🎨 Theme</button>
       <button class="hbtn" id="bkBtn">⇅ Backup</button>
     </div>
@@ -391,7 +393,105 @@ function drawGraph(){
   });
 }
 
-/* ===== LAYOUT SYSTEM ===== */
+/* ===== BENTO RENDER ===== */
+function render(){
+  const ts=getTS(),sec=timerSec(),tS=sj(ts.subject)||SUBJECTS[0];
+  const todayS=todayStudiedSec()+(ts.running?sec:0),gPct=Math.min(100,Math.round(todayS/S.dailyGoalSec*100));
+  const wDays=[];const n=new Date(),mon=new Date(n);mon.setDate(n.getDate()-((n.getDay()+6)%7));
+  for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);wDays.push(d.toISOString().slice(0,10));}
+  const wSec=S.sessions.filter(s=>wDays.includes(s.date)&&s.duration>0).reduce((a,s)=>a+(s.duration||0),0);
+  const wPct=Math.min(100,Math.round(wSec/S.dailyGoalSec/7*100));
+  const allExams=[...SUBJECTS.map(s=>({short:s.short,label:s.examLabel,date:s.examDate,color:s.color})),...SUBJECTS.filter(s=>s.examDate2).map(s=>({short:s.short,label:s.examLabel2,date:s.examDate2,color:s.color})),...EXTRA.map(e=>({short:e.short,label:e.examLabel,date:e.examDate,color:e.color}))].sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const first=allExams[0];
+  const streak=getStreak();
+  document.getElementById('root').innerHTML=`<div class="bento">
+
+  <!-- LEFT: SUBJECTS -->
+  <div class="card b-left">
+    <div class="ct" style="margin-bottom:2px;flex-shrink:0">📚 Subjects</div>
+    <div style="flex:1;overflow-y:auto;min-height:0">
+      ${SUBJECTS.map(s=>{const p=getProg(s);return`<div class="sr" onclick="go('${s.id}')">
+        <div class="sr-ico" style="background:${s.bg};border:1px solid ${s.br}">${s.icon}</div>
+        <div style="flex:1;min-width:0">
+          <div class="sr-name">${s.name}</div>
+          <div class="pb" style="height:3px;margin-top:4px"><i style="width:${p}%;background:${s.color}"></i></div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:11px;font-weight:700;color:${s.color}">${daysTo(s.examDate)}d</div>
+          <div style="font-size:9px;color:var(--mu);margin-top:2px">${p}%</div>
+        </div>
+      </div>`;}).join('')}
+    </div>
+    <div style="flex-shrink:0;padding-top:10px;border-top:1px solid var(--bd);margin-top:6px">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--mu);margin-bottom:6px">Recent sessions</div>
+      ${S.sessions.filter(s=>s.duration>0).slice().reverse().slice(0,3).map(s=>{const sb=sj(s.subject)||SUBJECTS[0];return`<div style="display:flex;align-items:center;gap:7px;padding:3px 0;font-size:11px"><span style="width:5px;height:5px;border-radius:50%;background:${sb.color};display:block;flex-shrink:0"></span><span style="flex:1;color:var(--mu)">${sb.short}</span><span style="color:var(--tx)">${fmt(s.duration)}</span></div>`;}).join('')||`<div style="font-size:11px;color:var(--mu2)">No sessions yet</div>`}
+    </div>
+  </div>
+
+  <!-- CENTRE: COUNTDOWN -->
+  <div class="card b-center">
+    <div class="cd-glow"></div>
+    <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:var(--mu);margin-bottom:4px">Next exam</div>
+      <div class="cd-num">${daysTo(first.date)}</div>
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--mu);margin-bottom:6px">days</div>
+      <div style="font-size:17px;font-weight:700;font-family:'Bricolage Grotesque',sans-serif;color:var(--tx)">${esc(first.short)}</div>
+      <div style="font-size:12px;color:var(--mu2);margin-bottom:14px">${esc(first.label.split('·')[1]?.trim()||first.label)}</div>
+      <div style="display:inline-flex;align-items:center;gap:7px;background:var(--sf2);border:1px solid var(--bd);border-radius:30px;padding:5px 14px;margin-bottom:16px">
+        <span style="font-size:14px">🔥</span>
+        <span style="font-size:16px;font-weight:800;font-family:'Bricolage Grotesque',sans-serif">${streak}</span>
+        <span style="font-size:11px;color:var(--mu)">day streak</span>
+      </div>
+      <div style="width:100%;max-width:360px;height:1px;background:var(--bd);margin-bottom:12px"></div>
+      <div style="width:100%;max-width:360px;display:flex;flex-direction:column;gap:0">
+        ${allExams.filter(e=>daysTo(e.date)>0).slice(0,7).map(e=>`<div class="cd-exam-row">
+          <span style="width:6px;height:6px;border-radius:50%;background:${e.color};flex-shrink:0;display:block"></span>
+          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(e.label)}</span>
+          <span style="font-weight:700;color:${e.color};flex-shrink:0">${daysTo(e.date)}d</span>
+        </div>`).join('')}
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: TIMER + GOALS -->
+  <div class="b-right">
+    <div class="card b-rt">
+      <div class="ct" style="flex-shrink:0;margin-bottom:6px">⏱ Study Timer</div>
+      <div class="ts-row">${SUBJECTS.map(s=>`<button id="tsb_${s.id}" class="tsb${ts.subject===s.id?' on':''}" style="${ts.subject===s.id?`background:${s.color};border-color:${s.br}`:''}" onclick="setTimerSubj('${s.id}')">${s.short}</button>`).join('')}</div>
+      <div class="tdisp" id="tDisp" style="color:${tS.color};flex:1;display:flex;align-items:center;justify-content:center">${fmt(sec)}</div>
+      <div class="pb" style="height:5px"><i id="tGoalBar" style="width:${gPct}%;background:${tS.color}"></i></div>
+      <div style="font-size:10.5px;color:var(--mu);text-align:right;margin-top:3px" id="tGoalLbl">${fmt(todayS)} today</div>
+      <div class="tbtns" style="flex-shrink:0">
+        <button class="tbtn ${ts.running?'pause':'start'}" id="tStartBtn" onclick="${ts.running?'timerPause()':'timerStart()'}">${ts.running?'⏸ Pause':'▶ Start'}</button>
+        <button class="tbtn stop" id="tStopBtn" style="display:${ts.running||ts.elapsed>0?'inline-block':'none'}" onclick="timerStop()">⏹ Stop</button>
+        <button class="tbtn stop" onclick="enterFocus()" style="padding:7px 10px" title="Focus mode">⛶</button>
+      </div>
+    </div>
+    <div class="card b-rb" style="overflow-y:auto">
+      <div class="ct" style="flex-shrink:0;margin-bottom:8px">🎯 Goals</div>
+      <div style="margin-bottom:8px"><div class="gt"><span>Today</span><b>${fmt(todayS)} / 3h</b></div><div class="pb" style="height:6px"><i style="width:${gPct}%;background:linear-gradient(90deg,var(--eng),var(--math))"></i></div><div style="font-size:10px;color:${gPct>=100?'var(--bio)':'var(--mu)'};text-align:right;margin-top:2px">${gPct>=100?'✅ Goal reached!':gPct+'%'}</div></div>
+      <div style="margin-bottom:10px"><div class="gt"><span>This week</span><b>${(wSec/3600).toFixed(1)}h / 21h</b></div><div class="pb" style="height:6px"><i style="width:${wPct}%;background:linear-gradient(90deg,var(--bio),var(--eng))"></i></div></div>
+      <div style="height:1px;background:var(--bd);margin-bottom:8px"></div>
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--mu);margin-bottom:5px">28-day streak</div>
+      <div style="display:grid;grid-template-columns:repeat(14,1fr);gap:2px">
+        ${Array.from({length:28},(_,i)=>{const d=new Date();d.setDate(d.getDate()-(27-i));const ds=d.toISOString().slice(0,10);const s2=S.sessions.filter(s=>s.date===ds&&s.duration>0).reduce((a,s)=>a+(s.duration||0),0);const t=Math.min(1,s2/S.dailyGoalSec);return`<div style="height:8px;border-radius:2px;background:${s2>0?`rgba(168,85,247,${.15+t*.85})`:'var(--sf2)'};border:1px solid ${ds===today()?'var(--eng)':'transparent'}" title="${ds}"></div>`;}).join('')}
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM: GRAPH -->
+  <div class="card b-graph">
+    <div class="ct" style="flex-shrink:0;margin-bottom:6px">📊 Study Time — Last 14 Days<span style="margin-left:auto;font-size:10.5px">${SUBJECTS.map(s=>`<span style="color:${s.color};margin-left:5px">● ${s.short}</span>`).join('')}</span></div>
+    <div style="flex:1;min-height:0"><canvas id="sg"></canvas></div>
+  </div>
+
+</div>`;
+  document.getElementById('bkBtn').onclick=()=>{const a=document.createElement('a');a.href='data:application/json,'+encodeURIComponent(JSON.stringify(S));a.download='hsc-backup.json';a.click();};
+  requestAnimationFrame(drawGraph);tick();
+  document.querySelectorAll('.topt').forEach((el,i)=>el.classList.toggle('on',['black','white','forest','ocean','ember'][i]===S.theme));
+}
+
+/* ===== LEGACY WIDGET STUBS (keep for compatibility) ===== */
 const WM={
   hero:     {label:'📅 Countdown',   wide:true, lock:true},
   subjects: {label:'📚 Subjects',    wide:true},
@@ -450,45 +550,7 @@ function setupDrag(){
   });
 }
 
-/* ===== RENDER ===== */
-function wHTML(id){
-  switch(id){
-    case 'hero':     return rHero();
-    case 'subjects': return rSubjects();
-    case 'timer':    return rTimer();
-    case 'goals':   return rGoals();
-    case 'graph':   return rGraph();
-    case 'sessions':return rSessions();
-    case 'notes':   return rNotes();
-    case 'pomodoro':return rPomodoro();
-    case 'papers':  return rPapers();
-    case 'weekplan':return rWeekPlan();
-    case 'balance': return rBalance();
-    case 'targets': return rTargets();
-    case 'nextexam':return rNextExam();
-    default:{const s=sj(id);return s?rSubjectCard(s):'';}
-  }
-}
-function render(){
-  ensureLayout();
-  let html='<div class="wgrid">';
-  S.layout.forEach(({id,wide},i)=>{
-    const m=WM[id];if(!m)return;
-    const isWide=m.lock?true:!!wide;
-    const szCtrl=!m.lock?`<span class="eseg"><button class="${!isWide?'act':''}" onclick="setSizeW('${id}',false)">Half</button><button class="${isWide?'act':''}" onclick="setSizeW('${id}',true)">Full</button></span>`:'';
-    const ctrl=EM?`<div class="eov"><button class="erm" onclick="removeWidget('${id}')">−</button>${szCtrl}<span class="edh">⠿⠿</span></div>`:'';
-    html+=`<div class="wslot${isWide?' wide':''}" data-wid="${id}"${EM?` draggable="true" style="animation-delay:${(i%4)*0.06}s"`:''}>${ctrl}${wHTML(id)}</div>`;
-  });
-  const hidden=EM?Object.keys(WM).filter(id=>!S.layout.find(w=>w.id===id)):[];
-  if(hidden.length)html+=`<div class="add-tray"><div class="ct">＋ Add Widgets</div><div class="add-grid">${hidden.map(id=>`<div class="add-chip" onclick="addWidget('${id}')">${WM[id].label}</div>`).join('')}</div></div>`;
-  html+='</div>';
-  document.getElementById('root').innerHTML=html;
-  if(EM){document.body.classList.add('editing');setupDrag();}else document.body.classList.remove('editing');
-  document.getElementById('bkBtn').onclick=()=>{const a=document.createElement('a');a.href='data:application/json,'+encodeURIComponent(JSON.stringify(S));a.download='hsc-backup.json';a.click();};
-  const eb=document.getElementById('editBtn');if(eb){eb.textContent=EM?'✓ Done':'✏ Customise';eb.classList.toggle('hbtn-on',EM);}
-  requestAnimationFrame(drawGraph);tick();
-  document.querySelectorAll('.topt').forEach((el,i)=>el.classList.toggle('on',['black','white','forest','ocean','ember'][i]===S.theme));
-}
+/* old render stubs - no longer used */
 
 function rHero(){
   const streak=getStreak();
