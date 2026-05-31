@@ -374,9 +374,7 @@ function timerStop(){
   saveTS({running:false,elapsed:0,startedAt:null,subject:ts.subject});
   stopTick();exitFocus();render();
 }
-function setTimerSubj(id){const ts=getTS();ts.subject=id;saveTS(ts);tick();
-  SUBJECTS.forEach(s=>{const b=document.getElementById('tsb_'+s.id);if(b){b.classList.toggle('on',s.id===id);if(s.id===id){b.style.background=s.color;b.style.borderColor=s.br;b.style.color='#fff';}else{b.style.background='';b.style.borderColor='';b.style.color='';}}});
-}
+function setTimerSubj(id){const ts=getTS();ts.subject=id;saveTS(ts);render();}
 function enterFocus(){
   const ts=getTS(),s=sj(ts.subject)||SUBJECTS[0];
   const mode=S.timerMode||'timer';
