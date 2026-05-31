@@ -292,19 +292,19 @@ canvas#sg{width:100%;height:100%;display:block}
 <script>
 const KEY='hsc_dash_v2',TK='hsc_timer_v2';
 const SUBJECTS=[
-  {id:'eng',name:'English Advanced',short:'English',icon:'📚',color:'var(--eng)',bg:'var(--engb)',br:'var(--engbr)',url:'/HSC-Study-Tools/english/',lsKey:'hsceng_progress',
+  {id:'eng',name:'English Advanced',short:'English',icon:'📚',color:'var(--eng)',bg:'var(--engb)',br:'var(--engbr)',url:'english/index.html',lsKey:'hsceng_progress',
    examDate:'2026-10-13',examLabel:'Paper 1 · 13 Oct 09:50',examDate2:'2026-10-14',examLabel2:'Paper 2 · 14 Oct 09:25',
    links:[{l:'Common Module — 1984',h:'common'},{l:'Module A — Tempest/Hagseed',h:'moda'},{l:'Module B — T.S. Eliot',h:'modb'},{l:'Module C — Discursive',h:'modc'}]},
-  {id:'math',name:'Maths Standard 2',short:'Maths',icon:'📐',color:'var(--math)',bg:'var(--mathb)',br:'var(--mathbr)',url:'/HSC-Study-Tools/math/',lsKey:'hscmath_progress',
+  {id:'math',name:'Maths Standard 2',short:'Maths',icon:'📐',color:'var(--math)',bg:'var(--mathb)',br:'var(--mathbr)',url:'math/index.html',lsKey:'hscmath_progress',
    examDate:'2026-10-19',examLabel:'Written · 19 Oct 09:20',
    links:[{l:'Algebra',h:'algebra'},{l:'Measurement',h:'measurement'},{l:'Financial Maths',h:'financial'},{l:'Statistics',h:'statistics'}]},
-  {id:'bio',name:'Biology',short:'Bio',icon:'🧬',color:'var(--bio)',bg:'var(--biob)',br:'var(--biobr)',url:'/HSC-Study-Tools/biology/',lsKey:'hscbio_progress',
+  {id:'bio',name:'Biology',short:'Bio',icon:'🧬',color:'var(--bio)',bg:'var(--biob)',br:'var(--biobr)',url:'biology/index.html',lsKey:'hscbio_progress',
    examDate:'2026-10-21',examLabel:'Written · 21 Oct 09:25',
    links:[{l:'Module 5 — Heredity',h:'m5'},{l:'Module 6 — Genetic Change',h:'m6'},{l:'Module 7 — Infectious Disease',h:'m7'},{l:'Module 8 — Immune System',h:'m8'}]},
-  {id:'chem',name:'Chemistry',short:'Chem',icon:'⚗️',color:'var(--chem)',bg:'var(--chemb)',br:'var(--chembr)',url:'/HSC-Study-Tools/chemistry/',lsKey:'hscchem_progress',
+  {id:'chem',name:'Chemistry',short:'Chem',icon:'⚗️',color:'var(--chem)',bg:'var(--chemb)',br:'var(--chembr)',url:'chemistry/index.html',lsKey:'hscchem_progress',
    examDate:'2026-10-30',examLabel:'Written · 30 Oct 09:25',
    links:[{l:'Module 5 — Equilibrium',h:'m5'},{l:'Module 6 — Acid/Base',h:'m6'},{l:'Module 7 — Organic Chem',h:'m7'},{l:'Module 8 — Applying Chem',h:'m8'}]},
-  {id:'ger',name:'German Continuers',short:'German',icon:'🇩🇪',color:'var(--ger)',bg:'var(--gerb)',br:'var(--gerbr)',url:'/HSC-Study-Tools/german/',lsKey:'hscger_progress',
+  {id:'ger',name:'German Continuers',short:'German',icon:'🇩🇪',color:'var(--ger)',bg:'var(--gerb)',br:'var(--gerbr)',url:'german/index.html',lsKey:'hscger_progress',
    examDate:'2026-08-08',examLabel:'Oral · 8 Aug 10:30',examDate2:'2026-10-13',examLabel2:'Written · 13 Oct 14:00',
    links:[{l:'Text Analysis Devices',h:'lang'},{l:'Oral Exam Prep',h:'oral'},{l:'Topic Vocab Banks',h:'vocab'},{l:'Quiz Mode',h:'quiz'}]},
 ];
@@ -321,7 +321,9 @@ function daysTo(d){return Math.max(0,Math.ceil((new Date(d)-new Date())/86400000
 function fmt(s){return[Math.floor(s/3600),Math.floor((s%3600)/60),s%60].map(n=>String(n).padStart(2,'0')).join(':');}
 function markStreak(){const t=today();if(!S.streak.includes(t)){S.streak.push(t);if(S.streak.length>90)S.streak=S.streak.slice(-90);save();}}
 function getStreak(){let c=0;const d=new Date();for(;;){const s=d.toISOString().slice(0,10);if(S.streak.includes(s)){c++;d.setDate(d.getDate()-1);}else break;}return c;}
-function getProg(s){try{const d=JSON.parse(localStorage.getItem(s.lsKey));if(!d)return 0;const n=Object.values(d.check||{}).filter(Boolean).length;return Math.min(100,Math.round(n/(s.id==='bio'||s.id==='chem'?80:20)*100));}catch(e){return 0;}}
+function getProg(s){try{const d=JSON.parse(localStorage.getItem(s.lsKey));if(!d)return 0;const n=Object.values(d.check||{}).filter(Boolean).length;const tot=d.totalTopics||(s.id==='bio'||s.id==='chem'?80:20);return Math.min(100,Math.round(n/tot*100));}catch(e){return 0;}}
+function beep(){try{const ctx=new(window.AudioContext||window.webkitAudioContext)();const o=ctx.createOscillator();const g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=880;g.gain.setValueAtTime(.22,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.55);o.start(ctx.currentTime);o.stop(ctx.currentTime+.55);}catch(e){}}
+function editGoal(){const h=+(prompt('Daily goal in hours (e.g. 3):',+(S.dailyGoalSec/3600).toFixed(1))||0);if(h>0&&h<=24){S.dailyGoalSec=Math.round(h*3600);save();render();}}
 function todayStudiedSec(){return S.sessions.filter(s=>s.date===today()&&s.duration>0).reduce((a,s)=>a+(s.duration||0),0);}
 
 /* ===== TIMER (independent of render) ===== */
@@ -407,6 +409,7 @@ document.addEventListener('click',e=>{
 function go(id){if(EM)return;const s=sj(id);if(s){S.sessions.push({date:today(),time:new Date().toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit'}),subject:id,section:'General',duration:0});save();window.location=s.url;}}
 function goSec(id,h){if(EM)return;const s=sj(id);if(s){S.sessions.push({date:today(),time:new Date().toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit'}),subject:id,section:h,duration:0});save();window.location=s.url+'#'+h;}}
 
+
 /* ===== TODO ===== */
 function addTodo(){const inp=document.getElementById('tIn');const t=inp.value.trim();if(!t)return;S.todos.push({text:t,done:false,subject:S.todoSubj||''});inp.value='';save();render();}
 function toggleTodo(i){S.todos[i].done=!S.todos[i].done;save();render();}
@@ -439,15 +442,17 @@ function drawGraph(){
   const maxH=Math.max(4,Math.ceil(Math.max(...data,3)*1.3));
   ctx.clearRect(0,0,W,H);
   for(let i=0;i<=4;i++){const y=pT+cH-cH*i/4;ctx.strokeStyle=gr;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pL,y);ctx.lineTo(pL+cW,y);ctx.stroke();ctx.fillStyle=mu;ctx.font='10px IBM Plex Sans,sans-serif';ctx.textAlign='right';ctx.fillText((maxH*i/4).toFixed(1)+'h',pL-4,y+3.5);}
-  const gY=pT+cH-cH*3/maxH;
+  const goalH=S.dailyGoalSec/3600;const gY=pT+cH-cH*goalH/maxH;
   ctx.strokeStyle=goalC;ctx.lineWidth=1.5;ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(pL,gY);ctx.lineTo(pL+cW,gY);ctx.stroke();ctx.setLineDash([]);
-  ctx.fillStyle=goalC;ctx.font='bold 10px IBM Plex Sans,sans-serif';ctx.textAlign='left';ctx.fillText('3h goal',pL+4,gY-4);
+  ctx.fillStyle=goalC;ctx.font='bold 10px IBM Plex Sans,sans-serif';ctx.textAlign='left';ctx.fillText(goalH+'h goal',pL+4,gY-4);
   const bW=Math.floor(cW/days*0.55),gap=cW/days;
   data.forEach((val,i)=>{
-    const x=pL+gap*i+(gap-bW)/2,bH=Math.max(2,cH*val/maxH),y=pT+cH-bH;
-    ctx.shadowColor=colors[i];ctx.shadowBlur=val>0?6:0;ctx.fillStyle=colors[i];
-    const r=Math.min(3,bW/2);ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+bW-r,y);ctx.quadraticCurveTo(x+bW,y,x+bW,y+r);ctx.lineTo(x+bW,y+bH);ctx.lineTo(x,y+bH);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.fill();ctx.shadowBlur=0;
+    const x=pL+gap*i+(gap-bW)/2;
     ctx.fillStyle=mu;ctx.font='9px IBM Plex Sans,sans-serif';ctx.textAlign='center';ctx.fillText(labels[i],x+bW/2,H-pB+12);
+    if(val<=0)return;
+    const bH=Math.max(2,cH*val/maxH),y=pT+cH-bH;
+    ctx.shadowColor=colors[i];ctx.shadowBlur=6;ctx.fillStyle=colors[i];
+    const r=Math.min(3,bW/2);ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+bW-r,y);ctx.quadraticCurveTo(x+bW,y,x+bW,y+r);ctx.lineTo(x+bW,y+bH);ctx.lineTo(x,y+bH);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.fill();ctx.shadowBlur=0;
     if(val>0.05){ctx.fillStyle=colors[i];ctx.font='bold 9px IBM Plex Sans,sans-serif';ctx.fillText(val.toFixed(1),x+bW/2,y-3);}
   });
 }
@@ -462,7 +467,7 @@ function render(){
   const wPct=Math.min(100,Math.round(wSec/S.dailyGoalSec/7*100));
   const wByS={};SUBJECTS.forEach(s=>{wByS[s.id]=S.sessions.filter(ss=>wDays.includes(ss.date)&&ss.subject===s.id&&ss.duration>0).reduce((a,ss)=>a+(ss.duration||0),0);});
   const maxW=Math.max(...Object.values(wByS),1);
-  const allExams=[...SUBJECTS.map(s=>({short:s.short,label:s.examLabel,date:s.examDate,color:s.color})),...SUBJECTS.filter(s=>s.examDate2).map(s=>({short:s.short,label:s.examLabel2,date:s.examDate2,color:s.color})),...EXTRA.map(e=>({short:e.short,label:e.examLabel,date:e.examDate,color:e.color}))].sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const allExams=[...SUBJECTS.map(s=>({short:s.short,label:s.examLabel,date:s.examDate,color:s.color,bg:s.bg})),...SUBJECTS.filter(s=>s.examDate2).map(s=>({short:s.short,label:s.examLabel2,date:s.examDate2,color:s.color,bg:s.bg})),...EXTRA.map(e=>({short:e.short,label:e.examLabel,date:e.examDate,color:e.color,bg:'rgba(0,0,0,0)'}))].sort((a,b)=>new Date(a.date)-new Date(b.date));
   const first=allExams[0];
   const streak=getStreak();
   const pm=getPomo(),pmSec=pm.running&&pm.startedAt?Math.max(0,pm.remaining-Math.floor((Date.now()-pm.startedAt)/1000)):pm.remaining;
@@ -492,14 +497,14 @@ function render(){
 
   <!-- CENTRE: COUNTDOWN + DETAILS -->
   <div class="card b-center">
-    <div class="cd-glow"></div>
+    <div class="cd-glow" style="background:radial-gradient(ellipse 75% 55% at 50% 30%,${first.bg},transparent 70%)"></div>
     <div style="position:relative;z-index:1;width:100%;height:100%;display:flex;flex-direction:column;align-items:center">
       <!-- Top: big countdown -->
       <div style="text-align:center;flex-shrink:0">
-        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:var(--mu);margin-bottom:2px">Next exam</div>
+        <div style="font-size:14px;font-weight:700;font-family:'Bricolage Grotesque',sans-serif;color:${first.color};margin-bottom:2px">${esc(first.short)}</div>
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--mu);margin-bottom:1px">Next exam</div>
         <div class="cd-num">${daysTo(first.date)}</div>
         <div style="font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--mu);margin-bottom:4px">days</div>
-        <div style="font-size:16px;font-weight:700;font-family:'Bricolage Grotesque',sans-serif">${esc(first.short)}</div>
         <div style="font-size:11px;color:var(--mu2);margin-bottom:10px">${esc(first.label.split('·')[1]?.trim()||first.label)}</div>
         <div style="display:inline-flex;align-items:center;gap:6px;background:var(--sf2);border:1px solid var(--bd);border-radius:30px;padding:4px 12px;margin-bottom:10px">
           <span>🔥</span><span style="font-size:15px;font-weight:800;font-family:'Bricolage Grotesque',sans-serif">${streak}</span><span style="font-size:11px;color:var(--mu)">day streak</span>
@@ -516,7 +521,7 @@ function render(){
       <!-- Bottom: this week's study by subject -->
       <div style="width:100%;max-width:380px;padding-top:10px;flex-shrink:0">
         <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--mu);margin-bottom:6px;text-align:left">This week</div>
-        ${SUBJECTS.map(s=>{const w=wByS[s.id];const pct=Math.round(w/maxW*100);return`<div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;font-size:11px"><span style="width:14px;text-align:center">${s.icon}</span><div class="pb" style="flex:1;height:4px"><i style="width:${pct}%;background:${s.color}"></i></div><span style="color:${s.color};font-weight:600;min-width:28px;text-align:right;font-size:10px">${(w/3600).toFixed(1)}h</span></div>`;}).join('')}
+        ${SUBJECTS.map(s=>{const w=wByS[s.id];const pct=Math.round(w/maxW*100);return`<div style="display:flex;align-items:center;gap:7px;margin-bottom:6px;font-size:11.5px"><span style="width:16px;text-align:center">${s.icon}</span><div class="pb" style="flex:1;height:6px"><i style="width:${pct}%;background:${s.color}"></i></div><span style="color:${s.color};font-weight:700;min-width:32px;text-align:right;font-size:11px">${(w/3600).toFixed(1)}h</span></div>`;}).join('')}
       </div>
     </div>
   </div>
@@ -529,7 +534,7 @@ function render(){
           <button class="mode-tab${mode==='timer'?' on':''}" onclick="S.timerMode='timer';save();render()">⏱ Timer</button>
           <button class="mode-tab${mode==='pomodoro'?' on':''}" onclick="S.timerMode='pomodoro';save();render()">🍅 Pomodoro</button>
         </div>
-        ${mode==='timer'?`<button class="tbtn stop" onclick="enterFocus()" style="padding:5px 8px;margin-left:auto;font-size:11px" title="Focus mode">⛶</button>`:''}
+        ${mode==='timer'?`<button class="tbtn stop" onclick="enterFocus()" style="padding:5px 8px;margin-left:auto;font-size:11px" title="Focus mode">Focus</button>`:''}
       </div>
       ${mode==='timer'?`
       <div class="ts-row">${SUBJECTS.map(s=>`<button id="tsb_${s.id}" class="tsb${ts.subject===s.id?' on':''}" style="${ts.subject===s.id?`background:${s.color};border-color:${s.br}`:''}" onclick="setTimerSubj('${s.id}')">${s.short}</button>`).join('')}</div>
@@ -549,17 +554,17 @@ function render(){
       <div class="tbtns" style="flex-shrink:0;margin-top:4px">
         <button class="tbtn ${pm.running?'pause':'start'}" id="pomoStartBtn" onclick="pomoToggle()">${pm.running?'⏸ Pause':'▶ Start'}</button>
         <button class="tbtn stop" onclick="pomoReset()">↺ Reset</button>
-        <button class="tbtn stop" onclick="enterFocus()" style="padding:7px 10px" title="Focus mode">⛶</button>
+        <button class="tbtn stop" onclick="enterFocus()" style="padding:7px 10px" title="Focus mode">Focus</button>
       </div>`}
     </div>
     <div class="card b-rb" style="overflow-y:auto">
       <div class="ct" style="flex-shrink:0;margin-bottom:8px">🎯 Goals</div>
-      <div style="margin-bottom:7px"><div class="gt"><span>Today</span><b>${fmt(todayS)} / 3h</b></div><div class="pb" style="height:5px"><i style="width:${gPct}%;background:linear-gradient(90deg,var(--eng),var(--math))"></i></div><div style="font-size:10px;color:${gPct>=100?'var(--bio)':'var(--mu)'};text-align:right;margin-top:2px">${gPct>=100?'✅ Done!':gPct+'%'}</div></div>
-      <div style="margin-bottom:8px"><div class="gt"><span>This week</span><b>${(wSec/3600).toFixed(1)}h / 21h</b></div><div class="pb" style="height:5px"><i style="width:${wPct}%;background:linear-gradient(90deg,var(--bio),var(--eng))"></i></div></div>
+      <div style="margin-bottom:7px"><div class="gt"><span>Today</span><b>${fmt(todayS)} / <span onclick="editGoal()" title="Click to change goal" style="cursor:pointer;border-bottom:1px dashed var(--bd2)">${(S.dailyGoalSec/3600).toFixed(0)}h</span></b></div><div class="pb" style="height:5px"><i style="width:${gPct}%;background:linear-gradient(90deg,var(--eng),var(--math))"></i></div><div style="font-size:10px;color:${gPct>=100?'var(--bio)':'var(--mu)'};text-align:right;margin-top:2px">${gPct>=100?'✅ Done!':gPct+'%'}</div></div>
+      <div style="margin-bottom:8px"><div class="gt"><span>This week</span><b>${(wSec/3600).toFixed(1)}h / ${(S.dailyGoalSec*7/3600).toFixed(0)}h</b></div><div class="pb" style="height:5px"><i style="width:${wPct}%;background:linear-gradient(90deg,var(--bio),var(--eng))"></i></div></div>
       <div style="height:1px;background:var(--bd);margin-bottom:6px"></div>
       <div style="font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--mu);margin-bottom:4px">28-day streak</div>
       <div style="display:grid;grid-template-columns:repeat(14,1fr);gap:2px">
-        ${Array.from({length:28},(_,i)=>{const d=new Date();d.setDate(d.getDate()-(27-i));const ds=d.toISOString().slice(0,10);const s2=S.sessions.filter(s=>s.date===ds&&s.duration>0).reduce((a,s)=>a+(s.duration||0),0);const t=Math.min(1,s2/S.dailyGoalSec);return`<div style="height:8px;border-radius:2px;background:${s2>0?`var(--eng)`:'var(--sf2)'};opacity:${s2>0?(.15+t*.85):.4};border:1px solid ${ds===today()?'var(--eng)':'transparent'}" title="${ds}"></div>`;}).join('')}
+        ${Array.from({length:28},(_,i)=>{const d=new Date();d.setDate(d.getDate()-(27-i));const ds=d.toISOString().slice(0,10);const daySess=S.sessions.filter(s=>s.date===ds&&s.duration>0);const s2=daySess.reduce((a,s)=>a+(s.duration||0),0);const t=Math.min(1,s2/S.dailyGoalSec);const sc2={};daySess.forEach(s=>{sc2[s.subject]=(sc2[s.subject]||0)+(s.duration||0);});const dom2=Object.entries(sc2).sort((a,b)=>b[1]-a[1])[0];const col2=dom2?(SUBJECTS.find(s=>s.id===dom2[0])||SUBJECTS[0]).color:'var(--sf2)';return`<div style="height:8px;border-radius:2px;background:${s2>0?col2:'var(--sf2)'};opacity:${s2>0?(.18+t*.82):.4};border:1px solid ${ds===today()?'var(--bd2)':'transparent'}" title="${ds}: ${s2>0?Math.round(s2/60)+'min':'—'}"></div>`;}).join('')}
       </div>
     </div>
   </div>
@@ -639,7 +644,7 @@ function setupDrag(){
 
 function rHero(){
   const streak=getStreak();
-  const allExams=[...SUBJECTS.map(s=>({short:s.short,label:s.examLabel,date:s.examDate,color:s.color})),...SUBJECTS.filter(s=>s.examDate2).map(s=>({short:s.short,label:s.examLabel2,date:s.examDate2,color:s.color})),...EXTRA.map(e=>({short:e.short,label:e.examLabel,date:e.examDate,color:e.color}))].sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const allExams=[...SUBJECTS.map(s=>({short:s.short,label:s.examLabel,date:s.examDate,color:s.color,bg:s.bg})),...SUBJECTS.filter(s=>s.examDate2).map(s=>({short:s.short,label:s.examLabel2,date:s.examDate2,color:s.color,bg:s.bg})),...EXTRA.map(e=>({short:e.short,label:e.examLabel,date:e.examDate,color:e.color,bg:'rgba(0,0,0,0)'}))].sort((a,b)=>new Date(a.date)-new Date(b.date));
   const first=allExams[0];
   return`<div class="hero-strip anim">
   <div class="hl"><div class="hl-num">${daysTo(first.date)}</div><div class="hl-meta"><div class="hl-label">Days to first exam</div><div class="hl-exam">${esc(first.short)}</div><div class="hl-date">${esc(first.label.split('·')[1]?.trim()||first.label)}</div></div></div>
@@ -696,7 +701,7 @@ function rTimer(){
     <div class="tbtns">
       <button class="tbtn ${ts.running?'pause':'start'}" id="tStartBtn" onclick="${ts.running?'timerPause()':'timerStart()'}">${ts.running?'⏸ Pause':'▶ Start'}</button>
       <button class="tbtn stop" id="tStopBtn" style="display:${ts.running||ts.elapsed>0?'inline-block':'none'}" onclick="timerStop()">⏹ Stop</button>
-      <button class="tbtn stop" onclick="enterFocus()" title="Fullscreen focus mode" style="padding:8px 12px">⛶</button>
+      <button class="tbtn stop" onclick="enterFocus()" title="Fullscreen focus mode" style="padding:8px 12px">Focus</button>
     </div>
   </div>`;}
 
@@ -749,7 +754,8 @@ function pomoTick(){
     const nph=p.phase==='work'?'break':'work';
     savePomo({phase:nph,remaining:nph==='work'?1500:300,running:false,startedAt:null,round:p.phase==='work'?p.round:p.round+1});
     clearInterval(pomoIv);pomoIv=null;
-    toast(p.phase==='work'?'🍅 Break time! 5 min':'💪 Work time! 25 min');
+    beep();
+    toast(p.phase==='work'?'🍅 Break time! Take 5 min':'💪 Focus time! 25 min');
     render();
   }
 }

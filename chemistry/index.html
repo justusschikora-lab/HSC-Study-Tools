@@ -3,25 +3,31 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..60,400;12..60,700;12..60,800&family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <title>HSC Chemistry Y12 — Study Tool</title>
 <style>
 :root{
-  --bg:#0a0f14; --surface:#121b24; --surface2:#16222e; --accent:#2dd4bf; --accent2:#22a89a;
-  --text:#e7eef4; --muted:#8aa0b0; --line:#1e2c38;
+  --bg:#07090e; --surface:rgba(14,20,30,0.82); --surface2:rgba(20,28,40,0.68); --accent:#f59e0b; --accent2:#d97706;
+  --text:#e7eef4; --muted:#8aa0b0; --line:rgba(255,255,255,.10);
   --blue:#3b82f6; --green:#22c55e; --amber:#f59e0b; --red:#ef4444; --purple:#a855f7;
-  --blueb:#0e2336; --greenb:#0e2a1c; --amberb:#2c2210; --redb:#2c1414; --purpleb:#221331;
+  --blueb:rgba(14,35,54,.72); --greenb:rgba(14,42,28,.72); --amberb:rgba(44,34,16,.72); --redb:rgba(44,20,20,.72); --purpleb:rgba(34,19,49,.72);
+  color-scheme:dark;
 }
 html[data-theme="light"]{
-  --bg:#eef3f7; --surface:#ffffff; --surface2:#eef4f8; --accent:#0d9488; --accent2:#0f766e;
-  --text:#10212e; --muted:#51677a; --line:#d7e1ea;
+  --bg:#fdf8ef; --surface:#ffffff; --surface2:#fef9f0; --accent:#d97706; --accent2:#b45309;
+  --text:#1a1000; --muted:#6b5c3a; --line:rgba(0,0,0,.10);
   --blueb:#e6f0fb; --greenb:#e7f7ec; --amberb:#fdf3e1; --redb:#fbe9e9; --purpleb:#f4e9fc;
+  color-scheme:light;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.55}
+body{margin:0;background:var(--bg);background-attachment:fixed;background-image:radial-gradient(ellipse 65% 50% at 15% 5%,rgba(245,158,11,.11),transparent 50%),radial-gradient(ellipse 50% 45% at 85% 90%,rgba(245,158,11,.08),transparent 55%),radial-gradient(ellipse 30% 40% at 60% 45%,rgba(59,130,246,.04),transparent 60%);color:var(--text);font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.55}
+html[data-theme="light"] body{background-image:radial-gradient(ellipse 60% 45% at 15% 5%,rgba(217,119,6,.08),transparent 50%),radial-gradient(ellipse 45% 40% at 85% 85%,rgba(217,119,6,.06),transparent 55%);}
 h1,h2,h3,h4,.brand{font-family:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif;font-weight:700;letter-spacing:-.01em}
 a{color:var(--accent)}
 .app{display:flex;min-height:100vh}
-.sidebar{width:250px;background:var(--surface);border-right:1px solid var(--line);position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:14px 12px;gap:10px;overflow-y:auto;flex-shrink:0}
+.sidebar{width:250px;background:var(--surface);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-right:1px solid var(--line);position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:14px 12px;gap:10px;overflow-y:auto;flex-shrink:0}
 .brand{font-size:18px;display:flex;align-items:center;gap:8px}
 .brand .logo{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#04201c;font-weight:800;font-size:13px}
 .brand small{display:block;color:var(--muted);font-size:11px;font-weight:500;letter-spacing:0}
@@ -35,7 +41,7 @@ a{color:var(--accent)}
 .navbtn{display:flex;align-items:center;gap:9px;background:none;border:none;color:var(--muted);text-align:left;padding:9px 11px;border-radius:9px;cursor:pointer;font-size:14px;font-family:inherit;width:100%;transition:.12s}
 .navbtn .ic{width:18px;text-align:center}
 .navbtn:hover{background:var(--surface2);color:var(--text)}
-.navbtn.active{background:linear-gradient(90deg,rgba(45,212,191,.16),transparent);color:var(--accent);font-weight:600}
+.navbtn.active{background:linear-gradient(90deg,rgba(245,158,11,.18),transparent);color:var(--accent);font-weight:600}
 .navbtn .badge{margin-left:auto;font-size:10px;background:var(--surface2);color:var(--muted);padding:1px 7px;border-radius:20px}
 .exampill{margin-top:auto;background:var(--surface2);border:1px solid var(--line);border-radius:11px;padding:10px}
 .exampill label{font-size:11px;color:var(--muted);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em}
@@ -48,7 +54,7 @@ a{color:var(--accent)}
 .page-head{margin-bottom:18px;display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
 .page-head h1{font-size:27px;margin:0 0 4px} .page-head p{color:var(--muted);margin:0;font-size:14px}
 .page-head .spacer{flex:1}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+.card{background:var(--surface);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:16px}
 .grid{display:grid;gap:14px}
 .g2{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)}
 @media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
@@ -70,7 +76,7 @@ a{color:var(--accent)}
 .mini{height:7px;width:110px;background:var(--surface2);border-radius:20px;overflow:hidden}
 .mini>i{display:block;height:100%;background:var(--accent)}
 .dot{background:var(--surface);border:1px solid var(--line);border-radius:13px;margin:0 0 11px;overflow:hidden}
-.dot.flash{border-color:var(--accent);box-shadow:0 0 0 2px rgba(45,212,191,.35)}
+.dot.flash{border-color:var(--accent);box-shadow:0 0 0 2px rgba(245,158,11,.38)}
 .dot-h{display:flex;align-items:flex-start;gap:11px;padding:14px 16px;cursor:pointer}
 .dot-h:hover{background:var(--surface2)}
 .dot-h .chk{margin-top:3px;width:17px;height:17px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
@@ -163,12 +169,26 @@ svg.diagram{width:100%;max-width:540px;height:auto;display:block;margin:10px 0;b
 .modal .box2{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;max-width:560px;width:100%;max-height:85vh;overflow:auto}
 .modal textarea{width:100%;min-height:160px;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:10px;font-family:"IBM Plex Mono",monospace;font-size:12px}
 @media(max-width:820px){.app{flex-direction:column}.sidebar{position:relative;width:100%;height:auto}.main{padding:18px 16px 60px}.ring{width:120px;height:120px}}
+@keyframes fu{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.main{transition:none}
+/* practical module accent borders */
+.prac-m5{border-left:3px solid var(--blue)!important}
+.prac-m6{border-left:3px solid var(--green)!important}
+.prac-m7{border-left:3px solid var(--amber)!important}
+.prac-m8{border-left:3px solid var(--purple)!important}
+/* modal glassmorphism */
+.modal .box2{background:rgba(14,20,30,0.94);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+html[data-theme="light"] .modal .box2{background:rgba(255,255,255,0.96)}
+/* flashcard side label */
+.fc-side-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.09em;padding:2px 9px;border-radius:20px;border:1px solid var(--line)}
+.fc-side-lbl.front{background:var(--surface2);color:var(--muted)}
+.fc-side-lbl.back{background:rgba(245,158,11,.15);color:var(--amber);border-color:rgba(245,158,11,.30)}
 </style>
 </head>
 <body>
 <div class="app">
   <aside class="sidebar">
-    <div class="brand"><a href="/HSC-Study-Tools/" style="text-decoration:none"><span class="logo" style="width:38px;height:44px;font-size:18px;flex-direction:column;gap:1px">⌂<span style="font-size:8px;font-weight:700;letter-spacing:.04em;opacity:.85">HOME</span></span></a><div>HSC Chemistry<small>Year 12 · Modules 5–8</small></div></div>
+    <div class="brand"><a href="../index.html" style="text-decoration:none"><span class="logo" style="width:38px;height:44px;font-size:18px;flex-direction:column;gap:1px">⌂<span style="font-size:8px;font-weight:700;letter-spacing:.04em;opacity:.85">HOME</span></span></a><div>HSC Chemistry<small>Year 12 · Modules 5–8</small></div></div>
     <div class="search">
       <input id="globalSearch" type="text" placeholder="🔍 Search topics & terms…" autocomplete="off"/>
       <div id="searchRes" class="searchres hidden"></div>
@@ -203,7 +223,7 @@ const daysBetween=(a,b)=>Math.round((new Date(b)-new Date(a))/86400000);
 const addDays=(iso,n)=>{const d=new Date(iso);d.setDate(d.getDate()+n);return d.toISOString().slice(0,10);};
 let state=load();
 function load(){try{const s=JSON.parse(localStorage.getItem(LS_KEY));if(s)return Object.assign({},JSON.parse(JSON.stringify(DEFAULT_STATE)),s);}catch(e){}return JSON.parse(JSON.stringify(DEFAULT_STATE));}
-let saveT;function save(){clearTimeout(saveT);saveT=setTimeout(()=>localStorage.setItem(LS_KEY,JSON.stringify(state)),350);}
+let saveT;function save(){state.totalTopics=totalDots();clearTimeout(saveT);saveT=setTimeout(()=>localStorage.setItem(LS_KEY,JSON.stringify(state)),350);}
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1700);}
 function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function streakToday(){const d=new Date().toISOString().slice(0,10);if(!state.streak.includes(d)){state.streak.push(d);save();}}
@@ -633,12 +653,12 @@ const DIAGRAMS={
    <line class="ax" x1="60" y1="260" x2="510" y2="260"/><line class="ax" x1="60" y1="20" x2="60" y2="260"/>
    <text x="285" y="292" text-anchor="middle" class="muted">Reaction progress →</text>
    <text x="20" y="150" transform="rotate(-90 20 150)" text-anchor="middle" class="muted">Energy</text>
-   <path d="M90,190 C180,190 200,60 285,60 C370,60 390,150 470,150" fill="none" stroke="#2dd4bf" stroke-width="3"/>
+   <path d="M90,190 C180,190 200,60 285,60 C370,60 390,150 470,150" fill="none" stroke="#f59e0b" stroke-width="3"/>
    <path d="M90,190 C180,190 200,110 285,110 C370,110 390,150 470,150" fill="none" stroke="#a855f7" stroke-width="2.5" stroke-dasharray="6 5"/>
    <line x1="90" y1="190" x2="40" y2="190" class="gl"/><text x="100" y="205" class="muted">reactants</text>
    <line x1="470" y1="150" x2="520" y2="150" class="gl"/><text x="415" y="170" class="muted">products</text>
    <line x1="150" y1="190" x2="150" y2="60" class="gl" stroke-dasharray="3 3"/>
-   <text x="156" y="125" fill="#2dd4bf">Eₐ (no cat.)</text>
+   <text x="156" y="125" fill="#f59e0b">Eₐ (no cat.)</text>
    <text x="300" y="100" fill="#d8b4fe">catalysed (lower Eₐ)</text>
    <text x="380" y="215" fill="#86efac">ΔH (exothermic)</text>
  </svg>`,
@@ -655,13 +675,13 @@ const DIAGRAMS={
    <line class="ax" x1="60" y1="260" x2="510" y2="260"/><line class="ax" x1="60" y1="20" x2="60" y2="260"/>
    <text x="285" y="292" text-anchor="middle" class="muted">Volume of base added (mL) →</text>
    <text x="20" y="150" transform="rotate(-90 20 150)" text-anchor="middle" class="muted">pH</text>
-   <path d="M70,240 C170,232 250,222 285,150 C300,70 320,52 500,42" fill="none" stroke="#2dd4bf" stroke-width="3"/>
+   <path d="M70,240 C170,232 250,222 285,150 C300,70 320,52 500,42" fill="none" stroke="#f59e0b" stroke-width="3"/>
    <circle cx="285" cy="150" r="5" fill="#ef4444"/>
    <line x1="285" y1="150" x2="285" y2="260" class="gl" stroke-dasharray="4 4"/>
    <text x="295" y="120" fill="#fca5a5">equivalence point</text>
    <text x="430" y="60" class="muted">pH 7</text>
  </svg>`,
- micelle:()=>{let s='';const cx=270,cy=150,R=78;for(let i=0;i<16;i++){const a=i/16*2*Math.PI;const hx=cx+Math.cos(a)*(R+22),hy=cy+Math.sin(a)*(R+22);const tx=cx+Math.cos(a)*(R-30),ty=cy+Math.sin(a)*(R-30);s+=`<line x1="${cx+Math.cos(a)*(R+18)}" y1="${cy+Math.sin(a)*(R+18)}" x2="${tx}" y2="${ty}" stroke="#8aa0b0" stroke-width="2"/><circle cx="${hx}" cy="${hy}" r="9" fill="#2dd4bf"/>`;}
+ micelle:()=>{let s='';const cx=270,cy=150,R=78;for(let i=0;i<16;i++){const a=i/16*2*Math.PI;const hx=cx+Math.cos(a)*(R+22),hy=cy+Math.sin(a)*(R+22);const tx=cx+Math.cos(a)*(R-30),ty=cy+Math.sin(a)*(R-30);s+=`<line x1="${cx+Math.cos(a)*(R+18)}" y1="${cy+Math.sin(a)*(R+18)}" x2="${tx}" y2="${ty}" stroke="#8aa0b0" stroke-width="2"/><circle cx="${hx}" cy="${hy}" r="9" fill="#f59e0b"/>`;}
    return `<svg class="diagram" viewBox="0 0 540 300" role="img" aria-label="Soap micelle with hydrophilic heads out and hydrophobic tails in">
      <circle cx="${cx}" cy="${cy}" r="${R-34}" fill="rgba(245,158,11,.18)" stroke="#f59e0b" stroke-dasharray="4 4"/>
      <text x="${cx}" y="${cy+4}" text-anchor="middle" fill="#fcd34d" font-size="12">grease</text>
@@ -793,6 +813,7 @@ function render(){
   else if(CURRENT==="technique")main.innerHTML=viewTechnique();
   else if(CURRENT==="reference"){main.innerHTML=viewReference();drawPeriodic();}
   else if(CURRENT==="glossary"){main.innerHTML=viewGlossary();filterGloss();}
+  main.style.animation='none';void main.offsetWidth;main.style.animation='fu .22s ease';
   if(pendingJump){const{tid}=pendingJump;pendingJump=null;setTimeout(()=>openDot(tid),60);}
 }
 
@@ -828,7 +849,9 @@ function viewDashboard(){
   <div class="card">${weakList}${(weak.length+shaky.length)>8?`<div class="muted small" style="margin-top:8px">+${weak.length+shaky.length-8} more — see <a data-nav="revision" style="cursor:pointer">Smart Revision</a></div>`:''}</div>`;
 }
 function progressChart(){
-  const h=state.history.slice(-30);if(h.length<2)return `<div class="card muted small">📈 Progress chart will appear here once you've used the tool on 2+ days (it logs a snapshot daily).</div>`;
+  const h=state.history.slice(-30);
+  if(!h.length)return `<div class="card muted small" style="text-align:center;padding:24px">📈 Progress chart appears after your first study session.</div>`;
+  if(h.length<2){const c=h[0];return `<div class="card"><h3 style="margin:0 0 12px">Today's snapshot</h3><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center">${[['Readiness',c.readiness],['Completion',c.completion],['Quiz avg',c.quiz]].map(([l,v])=>`<div><div style="font-size:28px;font-weight:700;font-family:'Bricolage Grotesque',sans-serif;color:var(--accent)">${v}%</div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:4px">${l}</div></div>`).join('')}</div><div class="muted small" style="margin-top:12px;text-align:center">Progress chart builds after 2+ study days.</div></div>`;}
   const W=720,H=180,pad=34;const n=h.length;const xs=i=>pad+(i/(n-1))*(W-pad-10);const ys=v=>H-pad-(v/100)*(H-pad-14);
   const line=(key,col)=>{let d='';h.forEach((r,i)=>{d+=(i?'L':'M')+xs(i).toFixed(1)+','+ys(r[key]).toFixed(1)+' ';});return `<path d="${d}" fill="none" stroke="${col}" stroke-width="2.5"/>`;};
   const grid=[0,25,50,75,100].map(v=>`<line class="gl" x1="${pad}" y1="${ys(v)}" x2="${W-10}" y2="${ys(v)}"/><text x="6" y="${ys(v)+4}" font-size="10" class="muted">${v}</text>`).join('');
@@ -1065,16 +1088,16 @@ function viewDrills(){
 let pracOpen={};
 function viewPracticals(){
   const cards=PRACTICALS.map((p,i)=>{const open=pracOpen[i];
-    return `<div class="card" style="padding:0;overflow:hidden">
+    return `<div class="card prac-m${p.mod}" style="padding:0;overflow:hidden">
       <div class="collapse-h ${open?'open':''}" data-prac="${i}" style="padding:14px 16px">
         <span class="pill">Mod ${p.mod}</span><b style="flex:1">${esc(p.title)}</b><span class="chev">▶</span></div>
-      <div class="${open?'':'hidden'}" style="padding:0 16px 16px">
+      <div data-prac-body="${i}" class="${open?'':'hidden'}" style="padding:0 16px 16px">
         <div class="box def"><span class="bx-l">Aim</span>${esc(p.aim)}</div>
         <div class="box tip"><span class="bx-l">Method</span>${esc(p.method)}</div>
         <div class="box trap"><span class="bx-l">Risk assessment</span>${esc(p.risks)}</div>
         <div class="box mnem"><span class="bx-l">Sources of error</span>${esc(p.errors)}</div>
       </div></div>`;}).join('');
-  return `<div class="page-head"><div><h1>Practical Library</h1><p>12 required first-hand investigations — aim, method, risks & error analysis. Click to expand.</p></div></div>${cards}`;
+  return `<div class="page-head"><div><h1>Practical Library</h1><p>13 first-hand investigations — aim, method, risks & error analysis. Click to expand.</p></div></div>${cards}`;
 }
 
 /* ---------- FORMULA ---------- */
@@ -1161,9 +1184,12 @@ function viewFlashcards(){
   if(!fc.deck.length){body=`<div class="card" style="text-align:center;padding:40px"><div style="font-size:40px">✅</div><h3>${fc.scope==='due'?'No cards due — you are caught up!':'No cards in this selection.'}</h3><p class="muted">${fc.scope==='due'?'Spaced repetition will resurface cards on their due dates. Switch to "Whole deck" to review anything now.':''}</p></div>`;}
   else{const c=fc.deck[Math.min(fc.i,fc.deck.length-1)];const r=state.srs[c.id];
     body=`<div class="card" style="min-height:230px;cursor:pointer;display:flex;flex-direction:column;justify-content:${fc.flipped?'flex-start':'center'};text-align:center;position:relative;${fc.flipped?'padding-top:46px;':''}" data-fcflip>
-      <div class="row" style="justify-content:space-between;position:absolute;top:14px;left:16px;right:16px"><span class="tag ${c.kind==='Question'?'syl':''}">${esc(c.kind)} · Mod ${c.mod}</span><span class="muted small">${r?('seen '+r.reps+'× · next +'+r.interval+'d'):'new card'}</span></div>
+      <div class="row" style="justify-content:space-between;position:absolute;top:14px;left:16px;right:16px">
+        <span style="display:flex;align-items:center;gap:6px"><span class="tag ${c.kind==='Question'?'syl':''}">${esc(c.kind)} · Mod ${c.mod}</span><span class="fc-side-lbl ${fc.flipped?'back':'front'}">${fc.flipped?'Answer':'Question'}</span></span>
+        <span class="muted small">${r?('seen '+r.reps+'× · next +'+r.interval+'d'):'new card'}</span>
+      </div>
       ${fc.flipped?`<div style="text-align:left">${fcFormat(c)}</div>`:`<div style="font-size:18px;padding:14px 10px"><b>${esc(c.front)}</b></div>`}
-      <div class="muted small" style="margin-top:8px;text-align:center">${fc.flipped?'':'click to flip ↩'}</div></div>
+      <div class="muted small" style="margin-top:8px;text-align:center">${fc.flipped?'<span style="font-size:10.5px;opacity:.7">1 Again · 2 Hard · 3 Good · 4 Easy</span>':'Space / Enter to flip ↩'}</div></div>
     ${fc.flipped?`<div class="row" style="justify-content:center"><span class="muted small" style="align-self:center">How well did you know it?</span>
       <button class="cbtn weak" data-fcrate="again">Again</button>
       <button class="cbtn shaky" data-fcrate="hard">Hard</button>
@@ -1245,7 +1271,7 @@ function drawPeriodic(){
 }
 
 /* ============================ GLOBAL SEARCH ============================ */
-function searchIndex(){const idx=[];allDots().forEach(({t,m})=>{const blob=[t.title,t.def,t.eqn,t.tip,t.trap,t.mnem,t.calc].map(x=>field(t.id,'',x)).join(' ');idx.push({type:'Mod '+m.num,title:stripTags(field(t.id,'title',t.title)),tid:t.id,blob:(stripTags(blob)+' '+stripTags(field(t.id,'title',t.title))).toLowerCase()});});
+function searchIndex(){const idx=[];allDots().forEach(({t,m})=>{const blob=['title','def','eqn','tip','trap','mnem','calc'].map(k=>field(t.id,k,t[k])||'').join(' ');idx.push({type:'Mod '+m.num,title:stripTags(field(t.id,'title',t.title)),tid:t.id,blob:(stripTags(blob)+' '+stripTags(field(t.id,'title',t.title))).toLowerCase()});});
   GLOSSARY.forEach(([term,def])=>idx.push({type:'Term',title:term,gloss:true,blob:(term+' '+def).toLowerCase()}));return idx;}
 let SEARCH_IDX=null;
 function doSearch(q){const box=document.getElementById('searchRes');q=q.trim().toLowerCase();if(!q){box.classList.add('hidden');return;}
@@ -1302,7 +1328,7 @@ document.addEventListener('click',e=>{
   else if(el.dataset.revstat){revFilter.status=el.dataset.revstat;render();}
   else if(el.hasAttribute('data-drillnew')){drill.current=DRILLS.find(d=>d.id===drill.type).gen();drill.revealed=false;render();}
   else if(el.hasAttribute('data-drillreveal')){drill.revealed=!drill.revealed;render();}
-  else if(el.dataset.prac!=null){pracOpen[el.dataset.prac]=!pracOpen[el.dataset.prac];render();}
+  else if(el.dataset.prac!=null){const pi=el.dataset.prac;const pb=document.querySelector('[data-prac-body="'+pi+'"]');const hdr=el.closest('.collapse-h');if(pb){const opening=pb.classList.contains('hidden');pb.classList.toggle('hidden',!opening);if(hdr)hdr.classList.toggle('open',opening);pracOpen[pi]=opening;}}
   else if(el.dataset.sres){const v=el.dataset.sres;document.getElementById('searchRes').classList.add('hidden');document.getElementById('globalSearch').value='';if(v.startsWith('g:')){glossFilter=v.slice(2).toLowerCase();go('glossary');}else openDot(v);}
   // flashcards
   else if(el.hasAttribute('data-fcflip')){if(!fc.flipped){fc.flipped=true;render();}}
@@ -1348,16 +1374,29 @@ document.addEventListener('input',e=>{
 });
 document.addEventListener('change',e=>{const t=e.target;if(t.dataset.check!=null){state.check[t.dataset.check]=t.checked;save();streakToday();buildNav();}});
 // save contenteditable edits on blur
-document.addEventListener('focusout',e=>{const el=e.target;if(el.dataset&&el.dataset.ek){const key=el.dataset.ek;let val=el.innerText.trim();if(val==='(empty — click to add)'||val==='(question)'||val==='(answer)')val='';state.edits[key]=val;save();SEARCH_IDX=null;buildNav();}});
+document.addEventListener('focusout',e=>{const el=e.target;if(el.dataset&&el.dataset.ek){const key=el.dataset.ek;const name=key.split(':').slice(1).join(':');const useHTML=['def','eqn','tip','trap','mnem'].includes(name);let val=useHTML?el.innerHTML.trim():el.innerText.trim();val=val.replace(/<script[\s\S]*?<\/script>/gi,'').replace(/\son\w+="[^"]*"/gi,'');if(val==='(empty — click to add)'||val==='(question)'||val==='(answer)')val='';state.edits[key]=val;save();SEARCH_IDX=null;buildNav();}});
+/* undo: store original value on focus, restore on Escape */
+document.addEventListener('focusin',e=>{const el=e.target;if(el.isContentEditable&&el.dataset&&el.dataset.ek)el.dataset.origVal=el.innerHTML;});
+document.addEventListener('keydown',e=>{
+  /* Escape = revert contenteditable edit */
+  if(e.key==='Escape'&&e.target.isContentEditable&&e.target.dataset&&e.target.dataset.ek){e.target.innerHTML=e.target.dataset.origVal||'';e.target.blur();e.preventDefault();return;}
+  /* Flashcard keyboard shortcuts */
+  if(CURRENT!=='flashcards')return;
+  if(e.target.isContentEditable||['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName))return;
+  if((e.key===' '||e.key==='Enter')&&fc.deck&&fc.deck.length){e.preventDefault();if(!fc.flipped){fc.flipped=true;render();}return;}
+  if(fc.flipped&&fc.deck&&fc.deck.length){const grades={1:'again',2:'hard',3:'good',4:'easy'};const grade=grades[+e.key];if(grade){const c=fc.deck[Math.min(fc.i,fc.deck.length-1)];srsRate(c.id,grade);streakToday();if(grade==='again')fc.deck.push(c);fc.i++;fc.flipped=false;if(fc.i>=fc.deck.length){fc.deck=buildDeck();fc.i=0;}buildNav();render();}}
+});
 
 document.getElementById('themeBtn').onclick=()=>{state.theme=state.theme==='dark'?'light':'dark';save();applyTheme();};
 document.getElementById('ioBtn').onclick=openIO;
 document.addEventListener('click',e=>{if(!e.target.closest('.search')){document.getElementById('searchRes').classList.add('hidden');}});
 
 /* ============================ INIT ============================ */
-applyTheme();refreshCountdown();buildNav();render();streakToday();
+/* sync theme from dashboard (white→light, everything else→dark) */
+(function syncThemeDash(){try{const d=JSON.parse(localStorage.getItem('hsc_dash_v2'));if(d&&d.theme){const t=d.theme==='white'?'light':'dark';if(t!==state.theme){state.theme=t;save();}}}catch(e){}}());
+applyTheme();refreshCountdown();buildNav();render();streakToday();snapshotHistory();
 </script>
-<div id="ft" style="position:fixed;bottom:18px;right:18px;z-index:9999;background:rgba(10,10,20,.92);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:10px 14px;display:flex;align-items:center;gap:10px;backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(0,0,0,.4);cursor:pointer" onclick="window.location='/HSC-Study-Tools/'" title="Back to Dashboard">
+<div id="ft" style="position:fixed;bottom:18px;right:18px;z-index:9999;background:rgba(10,10,20,.92);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:10px 14px;display:flex;align-items:center;gap:10px;backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(0,0,0,.4);cursor:pointer" onclick="window.location='../index.html'" title="Back to Dashboard">
   <div id="ft-dot" style="width:8px;height:8px;border-radius:50%;background:#f59e0b;flex-shrink:0;transition:background .3s"></div>
   <div style="display:flex;flex-direction:column;gap:2px">
     <div id="ft-time" style="font-size:15px;font-weight:700;font-family:'Bricolage Grotesque',system-ui,sans-serif;color:#f0f0ff;letter-spacing:-.02em;line-height:1">00:00:00</div>
