@@ -348,10 +348,15 @@ function tick(){
   // Pomodoro display
   const pm=getPomo();
   const pmSec=pm.running&&pm.startedAt?Math.max(0,pm.remaining-Math.floor((Date.now()-pm.startedAt)/1000)):pm.remaining;
-  const pd=document.getElementById('pomoDisp');if(pd)pd.textContent=fmt(pmSec);
-  const pp=document.getElementById('pomoPhase');if(pp)pp.textContent=pm.phase==='work'?'🍅 Focus':'☕ Break';
-  const pr=document.getElementById('pomoRounds');if(pr)pr.textContent='Round '+(pm.round||0+1)+' · '+(pm.phase==='work'?'25 min focus':'5 min break');
-  const psb=document.getElementById('pomoStartBtn');if(psb){psb.textContent=pm.running?'⏸ Pause':'▶ Start';psb.className='tbtn '+(pm.running?'pause':'start');}
+  const pm2=getPomo();
+  const pmSec2=pm2.running&&pm2.startedAt?Math.max(0,pm2.remaining-Math.floor((Date.now()-pm2.startedAt)/1000)):pm2.remaining;
+  const pd=document.getElementById('pomoDisp');if(pd)pd.textContent=fmt(pmSec2);
+  const pp=document.getElementById('pomoPhase');if(pp)pp.textContent=pm2.phase==='work'?'🍅 Focus':'☕ Break';
+  const pr=document.getElementById('pomoRounds');if(pr)pr.textContent='Round '+((pm2.round||0)+1)+' · '+(pm2.phase==='work'?'25 min focus':'5 min break');
+  const psb=document.getElementById('pomoStartBtn');if(psb){psb.textContent=pm2.running?'⏸ Pause':'▶ Start';psb.className='tbtn '+(pm2.running?'pause':'start');}
+  // Focus overlay: show pomo time if in pomo mode
+  const foTime=document.getElementById('foTime');
+  if(foTime&&(S.timerMode||'timer')==='pomodoro')foTime.textContent=fmt(pmSec2);
 }
 function timerStart(){const ts=getTS();if(ts.running)return;ts.running=true;ts.startedAt=Date.now();saveTS(ts);startTick();tick();markStreak();}
 function timerPause(){
@@ -374,11 +379,14 @@ function setTimerSubj(id){const ts=getTS();ts.subject=id;saveTS(ts);tick();
 }
 function enterFocus(){
   const ts=getTS(),s=sj(ts.subject)||SUBJECTS[0];
-  document.getElementById('foSubj').textContent=s.name;
-  document.getElementById('foIcon').textContent=s.icon;
+  const mode=S.timerMode||'timer';
+  const pm=getPomo();
+  document.getElementById('foSubj').textContent=mode==='pomodoro'?(s.name+' · '+(pm.phase==='work'?'🍅 Focus':'☕ Break')):s.name;
+  document.getElementById('foIcon').textContent=mode==='pomodoro'?(pm.phase==='work'?'🍅':'☕'):s.icon;
   document.getElementById('foBar').style.background=s.color;
   document.getElementById('fo').classList.add('show');
-  if(!ts.running)timerStart();
+  if(mode==='pomodoro'){if(!pm.running)pomoToggle();}
+  else{if(!ts.running)timerStart();}
   tick();
 }
 function exitFocus(){document.getElementById('fo').classList.remove('show');}
@@ -534,14 +542,16 @@ function render(){
         <button class="tbtn ${ts.running?'pause':'start'}" id="tStartBtn" onclick="${ts.running?'timerPause()':'timerStart()'}">${ts.running?'⏸ Pause':'▶ Start'}</button>
         <button class="tbtn stop" id="tStopBtn" style="display:${ts.running||ts.elapsed>0?'inline-block':'none'}" onclick="timerStop()">⏹ Stop</button>
       </div>`:`
-      <div style="text-align:center;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px">
+      <div class="ts-row">${SUBJECTS.map(s=>`<button class="tsb${ts.subject===s.id?' on':''}" style="${ts.subject===s.id?`background:${s.color};border-color:${s.br}`:''}" onclick="setTimerSubj('${s.id}')">${s.short}</button>`).join('')}</div>
+      <div style="text-align:center;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px">
         <div class="pomo-phase" style="background:${pm.phase==='work'?'rgba(239,68,68,.2)':'rgba(34,197,94,.2)'};color:${pm.phase==='work'?'#f87171':'#86efac'}" id="pomoPhase">${pm.phase==='work'?'🍅 Focus':'☕ Break'}</div>
-        <div style="font-size:46px;font-weight:800;font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;color:${pm.phase==='work'?'var(--eng)':'var(--bio)'}" id="pomoDisp">${fmt(pmSec)}</div>
+        <div style="font-size:44px;font-weight:800;font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;color:${pm.phase==='work'?tS.color:'var(--bio)'}" id="pomoDisp">${fmt(pmSec)}</div>
         <div style="font-size:10px;color:var(--mu)" id="pomoRounds">Round ${(pm.round||0)+1} · ${pm.phase==='work'?'25 min focus':'5 min break'}</div>
       </div>
       <div class="tbtns" style="flex-shrink:0;margin-top:4px">
         <button class="tbtn ${pm.running?'pause':'start'}" id="pomoStartBtn" onclick="pomoToggle()">${pm.running?'⏸ Pause':'▶ Start'}</button>
         <button class="tbtn stop" onclick="pomoReset()">↺ Reset</button>
+        <button class="tbtn stop" onclick="enterFocus()" style="padding:7px 10px" title="Focus mode">⛶</button>
       </div>`}
     </div>
     <div class="card b-rb" style="overflow-y:auto">
