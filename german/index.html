@@ -4,26 +4,31 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>HSC German Continuers — Study Tool</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..60,400;12..60,700;12..60,800&family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#09080a;--surface:#130d09;--surface2:#1c1508;--accent:#e8a020;--accent2:#c47c10;
+  --bg:#0c0800;--surface:rgba(22,12,0,0.84);--surface2:rgba(32,18,4,0.68);--accent:#b45309;--accent2:#92400e;
   --text:#f5e8d0;--muted:#9a8060;--line:#2e1f0a;
   --blue:#3b82f6;--green:#22c55e;--amber:#f59e0b;--red:#ef4444;--purple:#a855f7;
   --blueb:#0e1836;--greenb:#0e2a14;--amberb:#261800;--redb:#2c1414;--purpleb:#1e1131;
 }
 html[data-theme="light"]{
-  --bg:#fffbf0;--surface:#ffffff;--surface2:#fdf6e3;--accent:#b87010;--accent2:#8a5500;
+  color-scheme:light;
+  --bg:#fdf6ec;--surface:#ffffff;--surface2:#fef3e2;--accent:#92400e;--accent2:#78350f;
   --text:#2c1800;--muted:#7a5c2a;--line:#e8d8b0;
   --blueb:#e6f0fb;--greenb:#e7f7ec;--amberb:#fdf3e1;--redb:#fbe9e9;--purpleb:#f0e8fb;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.55}
+body{margin:0;background:var(--bg);background-image:radial-gradient(ellipse 120% 80% at 15% -10%,rgba(180,83,9,.18),transparent 55%),radial-gradient(ellipse 80% 70% at 85% 105%,rgba(146,64,14,.12),transparent 55%);background-attachment:fixed;color:var(--text);font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.55}
 h1,h2,h3,h4,.brand{font-family:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif;font-weight:700;letter-spacing:-.01em}
 a{color:var(--accent)}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .app{display:flex;min-height:100vh}
-.sidebar{width:252px;background:var(--surface);border-right:1px solid var(--line);position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:14px 12px;gap:10px;overflow-y:auto;flex-shrink:0}
+.sidebar{width:252px;background:var(--surface);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-right:1px solid var(--line);position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:14px 12px;gap:10px;overflow-y:auto;flex-shrink:0}
 .brand{font-size:18px;display:flex;align-items:center;gap:8px}
-.brand .logo{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#1a0800;font-weight:800;font-size:13px}
+.brand .logo{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px}
 .brand small{display:block;color:var(--muted);font-size:11px;font-weight:500;letter-spacing:0}
 .search input{width:100%;background:var(--surface2);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:8px 10px;font-size:13px}
 .search input:focus{outline:none;border-color:var(--accent)}
@@ -31,7 +36,7 @@ a{color:var(--accent)}
 .navbtn{display:flex;align-items:center;gap:9px;background:none;border:none;color:var(--muted);text-align:left;padding:8px 11px;border-radius:9px;cursor:pointer;font-size:13px;font-family:inherit;width:100%;transition:.12s}
 .navbtn .ic{width:18px;text-align:center;font-size:12px;flex-shrink:0}
 .navbtn:hover{background:var(--surface2);color:var(--text)}
-.navbtn.active{background:linear-gradient(90deg,rgba(232,160,32,.15),transparent);color:var(--accent);font-weight:600}
+.navbtn.active{background:linear-gradient(90deg,rgba(180,83,9,.18),transparent);color:var(--accent);font-weight:600}
 .nav-sep{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:8px 11px 2px;opacity:.6}
 .exampill{margin-top:auto;background:var(--surface2);border:1px solid var(--line);border-radius:11px;padding:10px}
 .exampill label{font-size:11px;color:var(--muted);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em}
@@ -43,14 +48,14 @@ a{color:var(--accent)}
 .main{flex:1;min-width:0;padding:26px 32px 90px;max-width:1100px}
 .page-head{margin-bottom:18px;display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
 .page-head h1{font-size:27px;margin:0 0 4px}.page-head p{color:var(--muted);margin:0;font-size:14px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+.card{background:var(--surface);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:16px}
 .card h3{margin:0 0 12px;font-size:16px}
 .grid{display:grid;gap:14px}
 .g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}
 @media(max-width:900px){.g2,.g3{grid-template-columns:1fr}}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
 .tab{font-size:13px;padding:7px 14px;border-radius:20px;border:1px solid var(--line);background:var(--surface2);color:var(--muted);cursor:pointer;font-family:inherit}
-.tab.on{background:rgba(232,160,32,.15);color:var(--accent);border-color:var(--accent)}
+.tab.on{background:rgba(180,83,9,.15);color:var(--accent);border-color:var(--accent)}
 .block{border-radius:10px;padding:12px 14px;margin:10px 0;font-size:13.5px;border-left:3px solid}
 .block .bl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;font-weight:700;display:block;margin-bottom:5px;opacity:.9}
 .block.amber{background:var(--amberb);border-color:var(--accent)}.block.amber .bl{color:#fcd34d}
@@ -130,6 +135,13 @@ textarea.notes:focus{outline:none;border-color:var(--accent)}
 </style>
 </head>
 <body>
+<script>
+(function syncThemeDash(){
+  try{const d=JSON.parse(localStorage.getItem('hsc_dash_v2')||'{}');if(d.theme){document.documentElement.setAttribute('data-theme',d.theme);}}
+  catch(e){}
+}());
+</script>
+
 <div class="app">
   <aside class="sidebar">
     <div class="brand">
@@ -151,7 +163,7 @@ textarea.notes:focus{outline:none;border-color:var(--accent)}
   <main class="main" id="main"></main>
 </div>
 <div class="toast" id="toast"></div>
-<div id="ftimer" style="display:none;position:fixed;bottom:20px;right:20px;background:rgba(10,8,2,.92);border:1px solid rgba(232,160,32,.4);border-radius:14px;padding:10px 15px;backdrop-filter:blur(20px);z-index:500;align-items:center;gap:10px;box-shadow:0 8px 30px rgba(0,0,0,.5);cursor:pointer;font-family:'IBM Plex Sans',system-ui,sans-serif" onclick="window.location='../index.html'">
+<div id="ftimer" style="display:none;position:fixed;bottom:20px;right:20px;background:rgba(10,8,2,.92);border:1px solid rgba(180,83,9,.4);border-radius:14px;padding:10px 15px;backdrop-filter:blur(20px);z-index:500;align-items:center;gap:10px;box-shadow:0 8px 30px rgba(0,0,0,.5);cursor:pointer;font-family:'IBM Plex Sans',system-ui,sans-serif" onclick="window.location='../index.html'">
   <div id="ft-icon" style="font-size:16px">🇩🇪</div>
   <div><div id="ft-subj" style="font-size:10px;color:rgba(245,232,208,.4);text-transform:uppercase;letter-spacing:.08em;margin-bottom:1px"></div><div id="ft-time" style="font-size:18px;font-weight:800;color:#e8a020;font-family:'Bricolage Grotesque',system-ui,sans-serif;letter-spacing:-.01em">00:00:00</div></div>
   <div style="font-size:10px;color:rgba(245,232,208,.3);padding-left:6px;border-left:1px solid rgba(245,232,208,.1)">↗ dash</div>

@@ -4,26 +4,32 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>HSC Math Standard 2 Y12 — Study Tool</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..60,400;12..60,700;12..60,800&family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0d0f14;--surface:#141720;--surface2:#1a1e28;--accent:#6366f1;--accent2:#4f46e5;
+  --bg:#0f0a06;--surface:rgba(22,14,8,0.84);--surface2:rgba(32,20,10,0.68);--accent:#f97316;--accent2:#ea580c;
   --text:#e8eaf0;--muted:#7b82a0;--line:#222636;
+  color-scheme:dark;
   --blue:#3b82f6;--green:#22c55e;--amber:#f59e0b;--red:#ef4444;--purple:#a855f7;--teal:#14b8a6;
   --blueb:#0e1a2e;--greenb:#0e2014;--amberb:#261e08;--redb:#2a1010;--purpleb:#1e1028;--tealb:#0a1e1c;
 }
 html[data-theme="light"]{
-  --bg:#f0f1f7;--surface:#ffffff;--surface2:#eef0f8;--accent:#4f46e5;--accent2:#4338ca;
+  color-scheme:light;
+  --bg:#fff7f0;--surface:#ffffff;--surface2:#fff0e6;--accent:#ea580c;--accent2:#c2410c;
   --text:#0f1020;--muted:#5a6080;--line:#d8daea;
   --blueb:#e6f0fb;--greenb:#e7f7ec;--amberb:#fdf3e1;--redb:#fbe9e9;--purpleb:#f4e9fc;--tealb:#e0f7f5;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;line-height:1.55}
+body{margin:0;background:var(--bg);background-image:radial-gradient(ellipse 120% 80% at 15% -10%,rgba(249,115,22,.18),transparent 55%),radial-gradient(ellipse 80% 70% at 85% 105%,rgba(234,88,12,.12),transparent 55%);background-attachment:fixed;color:var(--text);font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;line-height:1.55}
 h1,h2,h3,h4,.brand{font-family:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif;font-weight:700;letter-spacing:-.01em}
 a{color:var(--accent)}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .app{display:flex;min-height:100vh}
 
 /* ── Sidebar ── */
-.sidebar{width:256px;background:var(--surface);border-right:1px solid var(--line);position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:14px 12px;gap:8px;overflow-y:auto;flex-shrink:0}
+.sidebar{width:256px;background:var(--surface);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-right:1px solid var(--line);position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:14px 12px;gap:8px;overflow-y:auto;flex-shrink:0}
 .brand{font-size:17px;display:flex;align-items:center;gap:8px}
 .brand .logo{width:38px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:18px;gap:1px}
 .brand .logo span{font-size:8px;font-weight:700;letter-spacing:.04em;opacity:.85}
@@ -39,7 +45,7 @@ a{color:var(--accent)}
 .navbtn{display:flex;align-items:center;gap:9px;background:none;border:none;color:var(--muted);text-align:left;padding:8px 11px;border-radius:9px;cursor:pointer;font-size:13px;font-family:inherit;width:100%;transition:.12s}
 .navbtn .ic{width:18px;text-align:center;font-size:12px;flex-shrink:0}
 .navbtn:hover{background:var(--surface2);color:var(--text)}
-.navbtn.active{background:linear-gradient(90deg,rgba(99,102,241,.18),transparent);color:var(--accent);font-weight:600}
+.navbtn.active{background:linear-gradient(90deg,rgba(249,115,22,.18),transparent);color:var(--accent);font-weight:600}
 .navbtn .badge{margin-left:auto;font-size:10px;background:var(--surface2);color:var(--muted);padding:1px 7px;border-radius:20px}
 .navbtn .weak-badge{margin-left:auto;font-size:10px;background:rgba(239,68,68,.2);color:#fca5a5;padding:1px 7px;border-radius:20px}
 .streak-chip{display:flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:13px}
@@ -54,13 +60,13 @@ a{color:var(--accent)}
 .sb-foot button:hover{color:var(--text);border-color:var(--accent)}
 
 /* ── Main ── */
-.main{flex:1;min-width:0;padding:26px 32px 100px;max-width:1120px}
+.main{flex:1;min-width:0;padding:26px 32px 100px;max-width:1120px;animation:fu .22s ease}
 .page-head{margin-bottom:18px;display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
 .page-head h1{font-size:27px;margin:0 0 4px}.page-head p{color:var(--muted);margin:0;font-size:14px}
 .page-head .spacer{flex:1}
 
 /* ── Cards / Grid ── */
-.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+.card{background:var(--surface);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:16px}
 .grid{display:grid;gap:14px}
 .g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
 @media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
@@ -212,6 +218,13 @@ select:focus,input:focus{outline:none;border-color:var(--accent)}
 </style>
 </head>
 <body>
+<script>
+(function syncThemeDash(){
+  try{const d=JSON.parse(localStorage.getItem('hsc_dash_v2')||'{}');if(d.theme){document.documentElement.setAttribute('data-theme',d.theme);}}
+  catch(e){}
+}());
+</script>
+
 <div class="app">
   <aside class="sidebar">
     <div class="brand">

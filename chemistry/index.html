@@ -9,27 +9,27 @@
 <title>HSC Chemistry Y12 — Study Tool</title>
 <style>
 :root{
-  --bg:#07090e; --surface:rgba(14,20,30,0.82); --surface2:rgba(20,28,40,0.68); --accent:#f59e0b; --accent2:#d97706;
+  --bg:#07090e; --surface:rgba(14,20,30,0.82); --surface2:rgba(20,28,40,0.68); --accent:#38bdf8; --accent2:#0ea5e9;
   --text:#e7eef4; --muted:#8aa0b0; --line:rgba(255,255,255,.10);
   --blue:#3b82f6; --green:#22c55e; --amber:#f59e0b; --red:#ef4444; --purple:#a855f7;
   --blueb:rgba(14,35,54,.72); --greenb:rgba(14,42,28,.72); --amberb:rgba(44,34,16,.72); --redb:rgba(44,20,20,.72); --purpleb:rgba(34,19,49,.72);
   color-scheme:dark;
 }
 html[data-theme="light"]{
-  --bg:#fdf8ef; --surface:#ffffff; --surface2:#fef9f0; --accent:#d97706; --accent2:#b45309;
+  --bg:#fdf8ef; --surface:#ffffff; --surface2:#fef9f0; --accent:#0ea5e9; --accent2:#0284c7;
   --text:#1a1000; --muted:#6b5c3a; --line:rgba(0,0,0,.10);
   --blueb:#e6f0fb; --greenb:#e7f7ec; --amberb:#fdf3e1; --redb:#fbe9e9; --purpleb:#f4e9fc;
   color-scheme:light;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);background-attachment:fixed;background-image:radial-gradient(ellipse 65% 50% at 15% 5%,rgba(245,158,11,.11),transparent 50%),radial-gradient(ellipse 50% 45% at 85% 90%,rgba(245,158,11,.08),transparent 55%),radial-gradient(ellipse 30% 40% at 60% 45%,rgba(59,130,246,.04),transparent 60%);color:var(--text);font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.55}
+body{margin:0;background:var(--bg);background-attachment:fixed;background-image:radial-gradient(ellipse 65% 50% at 15% 5%,rgba(56,189,248,.11),transparent 50%),radial-gradient(ellipse 50% 45% at 85% 90%,rgba(14,165,233,.08),transparent 55%),radial-gradient(ellipse 30% 40% at 60% 45%,rgba(56,189,248,.04),transparent 60%);color:var(--text);font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.55}
 html[data-theme="light"] body{background-image:radial-gradient(ellipse 60% 45% at 15% 5%,rgba(217,119,6,.08),transparent 50%),radial-gradient(ellipse 45% 40% at 85% 85%,rgba(217,119,6,.06),transparent 55%);}
 h1,h2,h3,h4,.brand{font-family:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif;font-weight:700;letter-spacing:-.01em}
 a{color:var(--accent)}
 .app{display:flex;min-height:100vh}
 .sidebar{width:250px;background:var(--surface);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-right:1px solid var(--line);position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:14px 12px;gap:10px;overflow-y:auto;flex-shrink:0}
 .brand{font-size:18px;display:flex;align-items:center;gap:8px}
-.brand .logo{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#04201c;font-weight:800;font-size:13px}
+.brand .logo{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px}
 .brand small{display:block;color:var(--muted);font-size:11px;font-weight:500;letter-spacing:0}
 .search{display:flex;flex-direction:column;gap:4px;position:relative}
 .search input{width:100%;background:var(--surface2);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:8px 10px;font-size:13px}
@@ -41,7 +41,7 @@ a{color:var(--accent)}
 .navbtn{display:flex;align-items:center;gap:9px;background:none;border:none;color:var(--muted);text-align:left;padding:9px 11px;border-radius:9px;cursor:pointer;font-size:14px;font-family:inherit;width:100%;transition:.12s}
 .navbtn .ic{width:18px;text-align:center}
 .navbtn:hover{background:var(--surface2);color:var(--text)}
-.navbtn.active{background:linear-gradient(90deg,rgba(245,158,11,.18),transparent);color:var(--accent);font-weight:600}
+.navbtn.active{background:linear-gradient(90deg,rgba(56,189,248,.18),transparent);color:var(--accent);font-weight:600}
 .navbtn .badge{margin-left:auto;font-size:10px;background:var(--surface2);color:var(--muted);padding:1px 7px;border-radius:20px}
 .exampill{margin-top:auto;background:var(--surface2);border:1px solid var(--line);border-radius:11px;padding:10px}
 .exampill label{font-size:11px;color:var(--muted);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em}
@@ -76,7 +76,7 @@ a{color:var(--accent)}
 .mini{height:7px;width:110px;background:var(--surface2);border-radius:20px;overflow:hidden}
 .mini>i{display:block;height:100%;background:var(--accent)}
 .dot{background:var(--surface);border:1px solid var(--line);border-radius:13px;margin:0 0 11px;overflow:hidden}
-.dot.flash{border-color:var(--accent);box-shadow:0 0 0 2px rgba(245,158,11,.38)}
+.dot.flash{border-color:var(--accent);box-shadow:0 0 0 2px rgba(56,189,248,.38)}
 .dot-h{display:flex;align-items:flex-start;gap:11px;padding:14px 16px;cursor:pointer}
 .dot-h:hover{background:var(--surface2)}
 .dot-h .chk{margin-top:3px;width:17px;height:17px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
@@ -620,7 +620,7 @@ const PTABLE=[
 ];
 const PT_CATEGORY=z=>{ // simple colour grouping
   if([1].includes(z))return'#22c55e';
-  if([2,4,12,20,38,56,88].includes(z))return'#f59e0b';
+  if([2,4,12,20,38,56,88].includes(z))return'#38bdf8';
   if([3,11,19,37,55,87].includes(z))return'#ef4444';
   if(z>=57&&z<=71)return'#a855f7';if(z>=89&&z<=103)return'#c084fc';
   if((z>=21&&z<=30)||(z>=39&&z<=48)||(z>=72&&z<=80)||(z>=104&&z<=112))return'#3b82f6';
@@ -634,7 +634,7 @@ const IE_DATA={1:1312,2:2372,3:520,4:900,5:800,6:1086,7:1402,8:1314,9:1681,10:20
 const ieColor=ie=>{if(ie==null)return'#64748b';const norm=(ie-376)/(2372-376);const clamped=Math.max(0,Math.min(1,norm));if(clamped<0.5){const t=clamped*2;return`rgb(${Math.floor(t*100)},${Math.floor(50+t*130)},${Math.floor(255-t*155)})`;}else{const t=(clamped-0.5)*2;return`rgb(${Math.floor(100+t*155)},${Math.floor(180-t*160)},${Math.floor(100-t*100)})`;}}; /* IE: blue(low metals)→red(high noble gases) */
 const COND_DATA={1:0,2:0,3:4,4:4,5:2,6:2,7:0,8:0,9:0,10:0,11:4,12:4,13:5,14:2,15:1,16:1,17:0,18:0,19:4,20:4,21:4,22:4,23:4,24:4,25:4,26:4,27:4,28:4,29:5,30:4,31:4,32:2,33:2,34:1,35:1,36:0,37:4,38:4,39:4,40:4,41:4,42:4,43:4,44:4,45:4,46:4,47:5,48:4,49:4,50:4,51:2,52:2,53:1,54:0,55:4,56:4,57:4,72:4,73:4,74:4,75:4,76:4,77:4,78:4,79:5,80:3,81:4,82:4,83:3,84:3,85:1,86:0,87:4,88:4,89:4,58:4,59:4,60:4,61:4,62:4,63:4,64:4,65:4,66:4,67:4,68:4,69:4,70:4,71:4,90:4,91:4,92:4,93:4,94:4,95:4,96:4,97:4,98:4,99:4,100:4,101:4,102:4,103:4};
 const COND_LABEL={5:'Excellent conductor',4:'Metal (conductor)',3:'Poor conductor',2:'Semiconductor',1:'Insulator',0:'Non-conductive'};
-const condColor=l=>{if(l==null)return'#64748b';return['#1e293b','#1e3a8a','#0d9488','#f59e0b','#fb923c','#fbbf24'][Math.max(0,Math.min(5,l))];};
+const condColor=l=>{if(l==null)return'#64748b';return['#1e293b','#1e3a8a','#0d9488','#38bdf8','#fb923c','#fbbf24'][Math.max(0,Math.min(5,l))];};
 
 /* ============================ SVG DIAGRAMS ============================ */
 const DIAGRAMS={
@@ -653,12 +653,12 @@ const DIAGRAMS={
    <line class="ax" x1="60" y1="260" x2="510" y2="260"/><line class="ax" x1="60" y1="20" x2="60" y2="260"/>
    <text x="285" y="292" text-anchor="middle" class="muted">Reaction progress →</text>
    <text x="20" y="150" transform="rotate(-90 20 150)" text-anchor="middle" class="muted">Energy</text>
-   <path d="M90,190 C180,190 200,60 285,60 C370,60 390,150 470,150" fill="none" stroke="#f59e0b" stroke-width="3"/>
+   <path d="M90,190 C180,190 200,60 285,60 C370,60 390,150 470,150" fill="none" stroke="#38bdf8" stroke-width="3"/>
    <path d="M90,190 C180,190 200,110 285,110 C370,110 390,150 470,150" fill="none" stroke="#a855f7" stroke-width="2.5" stroke-dasharray="6 5"/>
    <line x1="90" y1="190" x2="40" y2="190" class="gl"/><text x="100" y="205" class="muted">reactants</text>
    <line x1="470" y1="150" x2="520" y2="150" class="gl"/><text x="415" y="170" class="muted">products</text>
    <line x1="150" y1="190" x2="150" y2="60" class="gl" stroke-dasharray="3 3"/>
-   <text x="156" y="125" fill="#f59e0b">Eₐ (no cat.)</text>
+   <text x="156" y="125" fill="#38bdf8">Eₐ (no cat.)</text>
    <text x="300" y="100" fill="#d8b4fe">catalysed (lower Eₐ)</text>
    <text x="380" y="215" fill="#86efac">ΔH (exothermic)</text>
  </svg>`,
@@ -675,15 +675,15 @@ const DIAGRAMS={
    <line class="ax" x1="60" y1="260" x2="510" y2="260"/><line class="ax" x1="60" y1="20" x2="60" y2="260"/>
    <text x="285" y="292" text-anchor="middle" class="muted">Volume of base added (mL) →</text>
    <text x="20" y="150" transform="rotate(-90 20 150)" text-anchor="middle" class="muted">pH</text>
-   <path d="M70,240 C170,232 250,222 285,150 C300,70 320,52 500,42" fill="none" stroke="#f59e0b" stroke-width="3"/>
+   <path d="M70,240 C170,232 250,222 285,150 C300,70 320,52 500,42" fill="none" stroke="#38bdf8" stroke-width="3"/>
    <circle cx="285" cy="150" r="5" fill="#ef4444"/>
    <line x1="285" y1="150" x2="285" y2="260" class="gl" stroke-dasharray="4 4"/>
    <text x="295" y="120" fill="#fca5a5">equivalence point</text>
    <text x="430" y="60" class="muted">pH 7</text>
  </svg>`,
- micelle:()=>{let s='';const cx=270,cy=150,R=78;for(let i=0;i<16;i++){const a=i/16*2*Math.PI;const hx=cx+Math.cos(a)*(R+22),hy=cy+Math.sin(a)*(R+22);const tx=cx+Math.cos(a)*(R-30),ty=cy+Math.sin(a)*(R-30);s+=`<line x1="${cx+Math.cos(a)*(R+18)}" y1="${cy+Math.sin(a)*(R+18)}" x2="${tx}" y2="${ty}" stroke="#8aa0b0" stroke-width="2"/><circle cx="${hx}" cy="${hy}" r="9" fill="#f59e0b"/>`;}
+ micelle:()=>{let s='';const cx=270,cy=150,R=78;for(let i=0;i<16;i++){const a=i/16*2*Math.PI;const hx=cx+Math.cos(a)*(R+22),hy=cy+Math.sin(a)*(R+22);const tx=cx+Math.cos(a)*(R-30),ty=cy+Math.sin(a)*(R-30);s+=`<line x1="${cx+Math.cos(a)*(R+18)}" y1="${cy+Math.sin(a)*(R+18)}" x2="${tx}" y2="${ty}" stroke="#8aa0b0" stroke-width="2"/><circle cx="${hx}" cy="${hy}" r="9" fill="#38bdf8"/>`;}
    return `<svg class="diagram" viewBox="0 0 540 300" role="img" aria-label="Soap micelle with hydrophilic heads out and hydrophobic tails in">
-     <circle cx="${cx}" cy="${cy}" r="${R-34}" fill="rgba(245,158,11,.18)" stroke="#f59e0b" stroke-dasharray="4 4"/>
+     <circle cx="${cx}" cy="${cy}" r="${R-34}" fill="rgba(245,158,11,.18)" stroke="#38bdf8" stroke-dasharray="4 4"/>
      <text x="${cx}" y="${cy+4}" text-anchor="middle" fill="#fcd34d" font-size="12">grease</text>
      ${s}
      <text x="${cx}" y="285" text-anchor="middle" class="muted">heads (●) face water · tails face grease</text>
@@ -769,21 +769,21 @@ function dueCount(){return srsCards().filter(srsDue).length;}
 
 /* ============================ NAV / ROUTER ============================ */
 const NAV=[
- {id:"dashboard",ic:"▢",label:"Dashboard"},
+ {id:"dashboard",ic:"🏠",label:"Dashboard"},
  {id:"m5",ic:"5",label:"Mod 5 · Equilibrium"},
  {id:"m6",ic:"6",label:"Mod 6 · Acids/Bases"},
  {id:"m7",ic:"7",label:"Mod 7 · Organic"},
  {id:"m8",ic:"8",label:"Mod 8 · Applied"},
- {id:"flashcards",ic:"🂠",label:"Flashcards"},
- {id:"quiz",ic:"?",label:"Quiz Mode"},
- {id:"revision",ic:"★",label:"Smart Revision"},
- {id:"drills",ic:"∑",label:"Calculation Drills"},
- {id:"hscbank",ic:"§",label:"HSC Questions"},
- {id:"technique",ic:"✎",label:"Exam Technique"},
- {id:"practicals",ic:"⚗",label:"Practical Library"},
- {id:"formula",ic:"ƒ",label:"Formula Sheet"},
- {id:"reference",ic:"⊞",label:"Data & Periodic"},
- {id:"glossary",ic:"A",label:"Glossary"}
+ {id:"flashcards",ic:"🃏",label:"Flashcards"},
+ {id:"quiz",ic:"⚡",label:"Quiz Mode"},
+ {id:"revision",ic:"⭐",label:"Smart Revision"},
+ {id:"drills",ic:"🧮",label:"Calculation Drills"},
+ {id:"hscbank",ic:"📝",label:"HSC Questions"},
+ {id:"technique",ic:"✏️",label:"Exam Technique"},
+ {id:"practicals",ic:"🧪",label:"Practical Library"},
+ {id:"formula",ic:"📐",label:"Formula Sheet"},
+ {id:"reference",ic:"🔬",label:"Data & Periodic"},
+ {id:"glossary",ic:"📖",label:"Glossary"}
 ];
 let CURRENT="dashboard";let pendingJump=null;
 function buildNav(){const nav=document.getElementById('nav');nav.innerHTML=NAV.map(n=>{
@@ -857,7 +857,7 @@ function progressChart(){
   const grid=[0,25,50,75,100].map(v=>`<line class="gl" x1="${pad}" y1="${ys(v)}" x2="${W-10}" y2="${ys(v)}"/><text x="6" y="${ys(v)+4}" font-size="10" class="muted">${v}</text>`).join('');
   return `<div class="card"><div class="row" style="justify-content:space-between"><h3 style="margin:0">Progress over time</h3>
     <div class="small"><span style="color:var(--accent)">● readiness</span> &nbsp; <span style="color:#3b82f6">● completion</span> &nbsp; <span style="color:#f59e0b">● quiz avg</span></div></div>
-    <svg class="diagram" viewBox="0 0 ${W} ${H}" style="max-width:100%">${grid}${line('completion','#3b82f6')}${line('quiz','#f59e0b')}${line('readiness','var(--accent)')}
+    <svg class="diagram" viewBox="0 0 ${W} ${H}" style="max-width:100%">${grid}${line('completion','#3b82f6')}${line('quiz','#38bdf8')}${line('readiness','var(--accent)')}
     <text x="${pad}" y="${H-8}" font-size="10" class="muted">${esc(h[0].date.slice(5))}</text><text x="${W-50}" y="${H-8}" font-size="10" class="muted">${esc(h[h.length-1].date.slice(5))}</text></svg></div>`;
 }
 function stripTags(s){return String(s).replace(/<[^>]+>/g,'');}
@@ -1406,7 +1406,7 @@ applyTheme();refreshCountdown();buildNav();render();streakToday();snapshotHistor
 <script>
 (function(){
   const TK='hsc_timer_v2';
-  const COLORS={eng:'#a855f7',math:'#3b82f6',bio:'#22c55e',chem:'#f59e0b',ger:'#e8a020'};
+  const COLORS={eng:'#a855f7',math:'#3b82f6',bio:'#22c55e',chem:'#38bdf8',ger:'#e8a020'};
   const NAMES={eng:'English',math:'Maths',bio:'Biology',chem:'Chemistry',ger:'German'};
   function fmt(s){return[Math.floor(s/3600),Math.floor((s%3600)/60),s%60].map(n=>String(n).padStart(2,'0')).join(':');}
   function tick(){
@@ -1416,7 +1416,7 @@ applyTheme();refreshCountdown();buildNav();render();streakToday();snapshotHistor
     const timeEl=document.getElementById('ft-time');
     const subEl=document.getElementById('ft-sub');
     if(!timeEl)return;
-    const c=COLORS[ts.subject]||'#f59e0b';
+    const c=COLORS[ts.subject]||'#38bdf8';
     dot.style.background=c;
     if(ts.running){
       dot.style.boxShadow='0 0 7px '+c;

@@ -4,24 +4,30 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>HSC English Advanced Y12 — Study Tool</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..60,400;12..60,700;12..60,800&family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#09080f;--surface:#120f1a;--surface2:#1a1626;--accent:#a855f7;--accent2:#9333ea;
-  --text:#ede8f5;--muted:#8a7a9e;--line:#251d35;
+  --bg:#080f0a;--surface:rgba(10,18,12,0.84);--surface2:rgba(16,26,18,0.68);--accent:#22c55e;--accent2:#16a34a;
+  --text:#e8f5ea;--muted:#6a9e74;--line:rgba(34,197,94,.13);
+  color-scheme:dark;
   --blue:#3b82f6;--green:#22c55e;--amber:#f59e0b;--red:#ef4444;--purple:#a855f7;
   --blueb:#0e1836;--greenb:#0e2a14;--amberb:#2c2210;--redb:#2c1414;--purpleb:#1e1131;
 }
 html[data-theme="light"]{
-  --bg:#f5f0ff;--surface:#ffffff;--surface2:#ede8f7;--accent:#9333ea;--accent2:#7c3aed;
-  --text:#1a0f2e;--muted:#5a4a7a;--line:#d8cef0;
+  --bg:#f0fff4;--surface:#ffffff;--surface2:#ebf7ee;--accent:#16a34a;--accent2:#15803d;
+  --text:#0e2010;--muted:#4a7a52;--line:rgba(0,0,0,.10);
+  color-scheme:light;
   --blueb:#e6f0fb;--greenb:#e7f7ec;--amberb:#fdf3e1;--redb:#fbe9e9;--purpleb:#f0e8fb;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.55}
+body{margin:0;background:var(--bg);background-image:radial-gradient(ellipse 120% 80% at 15% -10%,rgba(34,197,94,.18),transparent 55%),radial-gradient(ellipse 80% 70% at 85% 105%,rgba(22,163,74,.12),transparent 55%);background-attachment:fixed;color:var(--text);font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.55}
 h1,h2,h3,h4,.brand{font-family:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif;font-weight:700;letter-spacing:-.01em}
 a{color:var(--accent)}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .app{display:flex;min-height:100vh}
-.sidebar{width:252px;background:var(--surface);border-right:1px solid var(--line);position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:14px 12px;gap:10px;overflow-y:auto;flex-shrink:0}
+.sidebar{width:252px;background:var(--surface);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-right:1px solid var(--line);position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:14px 12px;gap:10px;overflow-y:auto;flex-shrink:0}
 .brand{font-size:18px;display:flex;align-items:center;gap:8px}
 .brand .logo{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px}
 .brand small{display:block;color:var(--muted);font-size:11px;font-weight:500;letter-spacing:0}
@@ -31,7 +37,7 @@ a{color:var(--accent)}
 .navbtn{display:flex;align-items:center;gap:9px;background:none;border:none;color:var(--muted);text-align:left;padding:8px 11px;border-radius:9px;cursor:pointer;font-size:13px;font-family:inherit;width:100%;transition:.12s}
 .navbtn .ic{width:18px;text-align:center;font-size:12px;flex-shrink:0}
 .navbtn:hover{background:var(--surface2);color:var(--text)}
-.navbtn.active{background:linear-gradient(90deg,rgba(168,85,247,.15),transparent);color:var(--accent);font-weight:600}
+.navbtn.active{background:linear-gradient(90deg,rgba(34,197,94,.18),transparent);color:var(--accent);font-weight:600}
 .navbtn.sub{padding-left:28px;font-size:12px}
 .nav-sep{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:8px 11px 2px;opacity:.6}
 .exampill{margin-top:auto;background:var(--surface2);border:1px solid var(--line);border-radius:11px;padding:10px}
@@ -44,7 +50,7 @@ a{color:var(--accent)}
 .main{flex:1;min-width:0;padding:26px 32px 90px;max-width:1100px}
 .page-head{margin-bottom:18px;display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
 .page-head h1{font-size:27px;margin:0 0 4px}.page-head p{color:var(--muted);margin:0;font-size:14px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+.card{background:var(--surface);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:16px}
 .card h3{margin:0 0 12px;font-size:16px}
 .grid{display:grid;gap:14px}
 .g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}
@@ -57,7 +63,7 @@ a{color:var(--accent)}
 /* tabs */
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
 .tab{font-size:13px;padding:7px 14px;border-radius:20px;border:1px solid var(--line);background:var(--surface2);color:var(--muted);cursor:pointer;font-family:inherit}
-.tab.on{background:rgba(168,85,247,.15);color:var(--accent);border-color:var(--accent)}
+.tab.on{background:rgba(34,197,94,.15);color:var(--accent);border-color:var(--accent)}
 /* note blocks */
 .block{border-radius:10px;padding:12px 14px;margin:10px 0;font-size:13.5px;border-left:3px solid}
 .block .bl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;font-weight:700;display:block;margin-bottom:5px;opacity:.9}
@@ -112,6 +118,13 @@ textarea.notes:focus{outline:none;border-color:var(--accent)}
 </style>
 </head>
 <body>
+<script>
+(function syncThemeDash(){
+  try{const d=JSON.parse(localStorage.getItem('hsc_dash_v2')||'{}');if(d.theme){document.documentElement.setAttribute('data-theme',d.theme);}}
+  catch(e){}
+}());
+</script>
+
 <div class="app">
   <aside class="sidebar">
     <div class="brand">
@@ -134,7 +147,7 @@ textarea.notes:focus{outline:none;border-color:var(--accent)}
 </div>
 <div class="toast" id="toast"></div>
 <!-- FLOATING TIMER WIDGET -->
-<div id="ftimer" style="display:none;position:fixed;bottom:20px;right:20px;background:rgba(10,10,20,.92);border:1px solid rgba(168,85,247,.4);border-radius:14px;padding:10px 15px;backdrop-filter:blur(20px);z-index:500;align-items:center;gap:10px;box-shadow:0 8px 30px rgba(0,0,0,.5);cursor:pointer;font-family:'IBM Plex Sans',system-ui,sans-serif" onclick="window.location='../index.html'">
+<div id="ftimer" style="display:none;position:fixed;bottom:20px;right:20px;background:rgba(10,10,20,.92);border:1px solid rgba(34,197,94,.4);border-radius:14px;padding:10px 15px;backdrop-filter:blur(20px);z-index:500;align-items:center;gap:10px;box-shadow:0 8px 30px rgba(0,0,0,.5);cursor:pointer;font-family:'IBM Plex Sans',system-ui,sans-serif" onclick="window.location='../index.html'">
   <div id="ft-icon" style="font-size:16px">📚</div>
   <div><div id="ft-subj" style="font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.08em;margin-bottom:1px"></div><div id="ft-time" style="font-size:18px;font-weight:800;color:#fff;font-family:'Bricolage Grotesque',system-ui,sans-serif;letter-spacing:-.01em">00:00:00</div></div>
   <div style="font-size:10px;color:rgba(255,255,255,.3);padding-left:6px;border-left:1px solid rgba(255,255,255,.1)">↗ dash</div>
@@ -176,7 +189,7 @@ function wcpill(s){return `<span style="font-size:10px;padding:1px 7px;border-ra
 
 /* ==================== NAV DATA ==================== */
 const NAV=[
-  {id:"dash",label:"Dashboard",ic:"⊞"},
+  {id:"dash",label:"Dashboard",ic:"🏠"},
   {sep:"ESSAYS"},
   {id:"common",label:"Common Module — 1984",ic:"📖"},
   {id:"moda",label:"Module A — Textual Conversations",ic:"🎭"},
