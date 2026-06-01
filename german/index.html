@@ -132,6 +132,24 @@ textarea.notes:focus{outline:none;border-color:var(--accent)}
 .error-item .efix{font-size:13px;color:#86efac}
 .error-item .efix::before{content:"✓ ";font-weight:700}
 .template-box{background:var(--amberb);border:1px solid var(--line);border-radius:10px;padding:14px;font-family:"IBM Plex Mono",monospace;font-size:12.5px;white-space:pre-wrap;margin:10px 0;line-height:1.65}
+.ep-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:4px}
+.ep-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;transition:.15s}
+.ep-card:hover{border-color:rgba(251,191,36,.4);transform:translateY(-1px)}
+.ep-year{font-size:22px;font-weight:800;font-family:"Bricolage Grotesque",sans-serif;color:var(--accent)}
+.ep-meta{font-size:11.5px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
+.ep-meta span{background:var(--surface2);padding:2px 8px;border-radius:20px;border:1px solid var(--line)}
+.ep-btns{display:flex;gap:6px;margin-top:2px;flex-wrap:wrap}
+.ep-pill{font-size:11px;padding:3px 9px;border-radius:20px;border:1px solid rgba(34,197,94,.35);background:rgba(34,197,94,.1);color:#22c55e;white-space:nowrap}
+.ep-pill.att{border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.1);color:var(--accent)}
+.etimer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(8px);z-index:200;align-items:center;justify-content:center}
+.etimer-overlay.open{display:flex}
+.etimer-box{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:32px 36px;text-align:center;min-width:320px;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.etimer-title{font-size:14px;color:var(--muted);margin-bottom:4px}
+.etimer-paper{font-size:16px;font-weight:700;margin-bottom:20px}
+.etimer-display{font-size:58px;font-weight:800;font-family:"Bricolage Grotesque",sans-serif;letter-spacing:-.02em;line-height:1;margin-bottom:6px;transition:color .3s}
+.etimer-display.warn{color:#f59e0b}.etimer-display.danger{color:#ef4444}
+.etimer-sub{font-size:12px;color:var(--muted);margin-bottom:24px}
+.etimer-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -163,6 +181,20 @@ textarea.notes:focus{outline:none;border-color:var(--accent)}
   <main class="main" id="main"></main>
 </div>
 <div class="toast" id="toast"></div>
+<div class="etimer-overlay" id="etimerOverlay" onclick="if(event.target===this)etimerClose()">
+  <div class="etimer-box">
+    <div class="etimer-title" id="etimerTitle"></div>
+    <div class="etimer-paper" id="etimerSubs"></div>
+    <div class="etimer-display" id="etimerDisplay">00:00</div>
+    <div class="bar" style="margin-bottom:20px"><div id="etimerPct" style="height:100%;width:0%;background:var(--accent);border-radius:20px;transition:width 1s linear"></div></div>
+    <div class="etimer-sub">Press Start when you open the PDF</div>
+    <div class="etimer-btns">
+      <button class="btn" id="etimerStartBtn" onclick="etimerToggle()">▶ Start</button>
+      <button class="btn ghost" onclick="etimerReset()">↺ Reset</button>
+      <button class="btn ghost" onclick="etimerClose()">✕ Close</button>
+    </div>
+  </div>
+</div>
 <div id="ftimer" style="display:none;position:fixed;bottom:20px;right:20px;background:rgba(10,8,2,.92);border:1px solid rgba(180,83,9,.4);border-radius:14px;padding:10px 15px;backdrop-filter:blur(20px);z-index:500;align-items:center;gap:10px;box-shadow:0 8px 30px rgba(0,0,0,.5);cursor:pointer;font-family:'IBM Plex Sans',system-ui,sans-serif" onclick="window.location='../index.html'">
   <div id="ft-icon" style="font-size:16px">🇩🇪</div>
   <div><div id="ft-subj" style="font-size:10px;color:rgba(245,232,208,.4);text-transform:uppercase;letter-spacing:.08em;margin-bottom:1px"></div><div id="ft-time" style="font-size:18px;font-weight:800;color:#e8a020;font-family:'Bricolage Grotesque',system-ui,sans-serif;letter-spacing:-.01em">00:00:00</div></div>
@@ -191,7 +223,7 @@ textarea.notes:focus{outline:none;border-color:var(--accent)}
 </script>
 <script>
 const LS_KEY="hscger_v1";
-const DEFAULT_STATE={notes:{},examDate:"2026-10-14",theme:"dark"};
+const DEFAULT_STATE={notes:{},examDate:"2026-10-14",theme:"dark",paperAttempts:{}};
 let state=load();
 function load(){try{const s=JSON.parse(localStorage.getItem(LS_KEY));if(s)return Object.assign({},JSON.parse(JSON.stringify(DEFAULT_STATE)),s);}catch(e){}return JSON.parse(JSON.stringify(DEFAULT_STATE));}
 let saveT;function save(){clearTimeout(saveT);saveT=setTimeout(()=>localStorage.setItem(LS_KEY,JSON.stringify(state)),350);}
@@ -1449,9 +1481,75 @@ function renderVerbs(m){
   </div>`;
 }
 
+const EXAM_PAPERS=[
+  {id:'2025',year:'2025',hsc:'papers/2025-hsc.pdf',mg:'papers/2025-mg.pdf',tr:'papers/2025-transcript.pdf'},
+  {id:'2024',year:'2024',hsc:'papers/2024-hsc.pdf',mg:'papers/2024-mg.pdf',tr:'papers/2024-transcript.pdf'},
+  {id:'2023',year:'2023',hsc:'papers/2023-hsc.pdf',mg:'papers/2023-mg.pdf',tr:'papers/2023-transcript.pdf'},
+  {id:'2022',year:'2022',hsc:'papers/2022-hsc.pdf',mg:'papers/2022-mg.pdf',tr:'papers/2022-transcript.pdf'},
+  {id:'2021',year:'2021',hsc:'papers/2021-hsc.pdf',mg:'papers/2021-mg.pdf',tr:'papers/2021-transcript.pdf'},
+  {id:'2020',year:'2020',hsc:'papers/2020-hsc.pdf',mg:'papers/2020-mg.pdf',tr:'papers/2020-transcript.pdf'},
+  {id:'2019',year:'2019',hsc:'papers/2019-hsc.pdf',mg:'papers/2019-mg.pdf',tr:'papers/2019-transcript.pdf'},
+  {id:'2018',year:'2018',hsc:'papers/2018-hsc.pdf',mg:null,tr:null},
+];
+function ppLog(id){
+  if(!state.paperAttempts)state.paperAttempts={};
+  if(!state.paperAttempts[id])state.paperAttempts[id]=[];
+  state.paperAttempts[id].push({date:new Date().toISOString().slice(0,10)});
+  save();toast('Attempt logged');render();
+}
+let _et={id:null,total:0,remaining:0,running:false,_iv:null};
+function deTimer(id,mins){
+  if(_et._iv)clearInterval(_et._iv);
+  _et={id,total:mins*60,remaining:mins*60,running:false,_iv:null};
+  document.getElementById('etimerTitle').textContent=`${id} Hörverständnis`;
+  document.getElementById('etimerSubs').textContent=`${mins} Minuten`;
+  updateTimerDisplay();
+  document.getElementById('etimerOverlay').classList.add('open');
+}
+function updateTimerDisplay(){
+  const r=_et.remaining,m=Math.floor(r/60),s=r%60;
+  const disp=document.getElementById('etimerDisplay');if(!disp)return;
+  disp.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  disp.className='etimer-display'+(r<600?' danger':r<1200?' warn':'');
+  document.getElementById('etimerPct').style.width=((_et.total-r)/_et.total*100)+'%';
+  document.getElementById('etimerStartBtn').textContent=_et.running?'⏸ Pause':'▶ Start';
+}
+function etimerToggle(){
+  if(_et.remaining<=0)return;_et.running=!_et.running;
+  if(_et.running){_et._iv=setInterval(()=>{if(_et.remaining>0){_et.remaining--;updateTimerDisplay();}else{clearInterval(_et._iv);_et.running=false;updateTimerDisplay();toast('⏰ Zeit ist um!');}},1000);}
+  else clearInterval(_et._iv);
+  updateTimerDisplay();
+}
+function etimerReset(){clearInterval(_et._iv);_et.running=false;_et.remaining=_et.total;updateTimerDisplay();}
+function etimerClose(){clearInterval(_et._iv);_et.running=false;document.getElementById('etimerOverlay').classList.remove('open');}
 function renderPastPapers(m){
+  const atts=state.paperAttempts||{};
+  const attempted=Object.keys(atts).filter(k=>(atts[k]||[]).length>0);
   m.innerHTML=`
-  <div class="page-head"><div><h1>📋 Past Paper Questions</h1><p>2018 · 2022 · 2025 — texts, questions, sample answers</p></div></div>
+  <div class="page-head"><div><h1>📋 Past Papers</h1><p>German Continuers — 2018–2025 · Exam + MG + Listening Transcript</p></div></div>
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+    <span class="small muted">${EXAM_PAPERS.length} papers · ${attempted.length} attempted</span>
+  </div>
+  <div class="ep-grid" style="margin-bottom:28px">
+    ${EXAM_PAPERS.map(p=>{
+      const a=(atts[p.id]||[]);
+      return`<div class="ep-card">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px">
+          <div class="ep-year">${esc(p.year)}</div>
+          ${a.length?`<span class="ep-pill att">✓ ${a.length}× done</span>`:'<span class="ep-pill">Not started</span>'}
+        </div>
+        <div class="ep-meta"><span>⏱ 2h</span><span>HSC Exam</span></div>
+        <div class="ep-btns">
+          <button class="btn sm" onclick="window.open('${p.hsc}','_blank')">📄 Exam</button>
+          ${p.mg?`<button class="btn ghost sm" onclick="window.open('${p.mg}','_blank')">📋 MG</button>`:''}
+          ${p.tr?`<button class="btn ghost sm" onclick="window.open('${p.tr}','_blank')">🎧 Transcript</button>`:''}
+          <button class="btn ghost sm" onclick="deTimer('${p.year}',120)">⏱ Timer</button>
+          <button class="btn ghost sm" onclick="ppLog('${p.id}')">✓ Log</button>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>
+  <h3 style="margin:0 0 14px">Q&amp;A Practice</h3>
   <div class="tabs">
     ${PAST_PAPERS.map((p,i)=>`<button class="tab${i===0?' on':''}" onclick="showPPTab('${p.id}',this)">${p.year}</button>`).join('')}
   </div>

@@ -626,34 +626,44 @@ const FORMULAS = [
            sections (array of {label, marks}), notes (optional string)
    ───────────────────────────────────────────────────────────────────── */
 const EXAM_PAPERS = [
+  // ── 2025 ──
+  {id:'2025-hsc',    year:'2025', label:'HSC Examination',
+   file:'papers/2025-hsc.pdf',    mg:'papers/2025-mg.pdf', type:'HSC Exam',  duration:150,
+   sections:[{label:'Section I (MC)',marks:15},{label:'Section II',marks:85}],
+   notes:''},
   // ── 2024 ──
   {id:'2024-hsc',    year:'2024', label:'HSC Examination',
-   file:'papers/2024-hsc.pdf',    type:'HSC Exam',  duration:150,
+   file:'papers/2024-hsc.pdf',    mg:'papers/2024-mg.pdf', type:'HSC Exam',  duration:150,
    sections:[{label:'Section I (MC)',marks:15},{label:'Section II',marks:85}],
    notes:''},
   // ── 2023 ──
   {id:'2023-hsc',    year:'2023', label:'HSC Examination',
-   file:'papers/2023-hsc.pdf',    type:'HSC Exam',  duration:150,
+   file:'papers/2023-hsc.pdf',    mg:'papers/2023-mg.pdf', type:'HSC Exam',  duration:150,
    sections:[{label:'Section I (MC)',marks:15},{label:'Section II',marks:85}],
    notes:''},
   // ── 2022 ──
   {id:'2022-hsc',    year:'2022', label:'HSC Examination',
-   file:'papers/2022-hsc.pdf',    type:'HSC Exam',  duration:150,
+   file:'papers/2022-hsc.pdf',    mg:'papers/2022-mg.pdf', type:'HSC Exam',  duration:150,
    sections:[{label:'Section I (MC)',marks:15},{label:'Section II',marks:85}],
    notes:''},
   // ── 2021 ──
   {id:'2021-hsc',    year:'2021', label:'HSC Examination',
-   file:'papers/2021-hsc.pdf',    type:'HSC Exam',  duration:150,
+   file:'papers/2021-hsc.pdf',    mg:'papers/2021-mg.pdf', type:'HSC Exam',  duration:150,
    sections:[{label:'Section I (MC)',marks:15},{label:'Section II',marks:85}],
    notes:''},
   // ── 2020 ──
   {id:'2020-hsc',    year:'2020', label:'HSC Examination',
-   file:'papers/2020-hsc.pdf',    type:'HSC Exam',  duration:150,
+   file:'papers/2020-hsc.pdf',    mg:'papers/2020-mg.pdf', type:'HSC Exam',  duration:150,
+   sections:[{label:'Section I (MC)',marks:15},{label:'Section II',marks:85}],
+   notes:''},
+  // ── 2019 ──
+  {id:'2019-hsc',    year:'2019', label:'HSC Examination',
+   file:'papers/2019-hsc.pdf',    mg:'papers/2019-mg.pdf', type:'HSC Exam',  duration:150,
    sections:[{label:'Section I (MC)',marks:15},{label:'Section II',marks:85}],
    notes:''},
   // ── Sample Paper ──
   {id:'sample-nesa', year:'Sample', label:'NESA Sample Paper',
-   file:'papers/sample-nesa.pdf', type:'Sample',    duration:150,
+   file:'papers/sample-nesa.pdf', mg:null, type:'Sample',    duration:150,
    sections:[{label:'Section I (MC)',marks:15},{label:'Section II',marks:85}],
    notes:'Official NESA sample — good first attempt'},
 ];
@@ -1066,7 +1076,8 @@ function renderExamPapers(el){
         ${p.notes?`<div style="font-size:11.5px;color:var(--muted);font-style:italic">${esc(p.notes)}</div>`:''}
         ${last?`<div style="font-size:11px;color:var(--muted)">Last: ${last.date}${last.score!=null?' · Score: '+last.score+'/'+totalMarks:''}</div>`:''}
         <div class="ep-btns">
-          <button class="btn sm" onclick="openExamPaper('${p.id}')">📄 Open PDF</button>
+          <button class="btn sm" onclick="openExamPaper('${p.id}')">📄 Paper</button>
+          ${p.mg?`<button class="btn ghost sm" onclick="window.open('${p.mg}','_blank')">📋 MG</button>`:''}
           <button class="btn ghost sm" onclick="startExamTimer('${p.id}')">⏱ Timer</button>
           <button class="btn ghost sm" onclick="logAttempt('${p.id}')">✓ Log</button>
         </div>

@@ -219,6 +219,25 @@ svg.diagram{width:100%;max-width:540px;height:auto;display:block;margin:10px 0;b
 .fc-side-lbl.front{color:var(--accent)}
 .fc-side-lbl.back{color:var(--accent2)}
 @media(max-width:820px){.app{flex-direction:column}.sidebar{position:relative;width:100%;height:auto}.main{padding:18px 16px 60px;animation:none}.ring{width:120px;height:120px}}
+.ep-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:4px}
+.ep-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;transition:.15s}
+.ep-card:hover{border-color:rgba(34,197,94,.4);transform:translateY(-1px)}
+.ep-year{font-size:22px;font-weight:800;font-family:"Bricolage Grotesque",sans-serif;color:var(--accent)}
+.ep-label{font-size:13px;color:var(--text);font-weight:600}
+.ep-meta{font-size:11.5px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
+.ep-meta span{background:var(--surface2);padding:2px 8px;border-radius:20px;border:1px solid var(--line)}
+.ep-btns{display:flex;gap:6px;margin-top:2px;flex-wrap:wrap}
+.ep-pill{font-size:11px;padding:3px 9px;border-radius:20px;border:1px solid rgba(34,197,94,.35);background:rgba(34,197,94,.1);color:#22c55e;white-space:nowrap}
+.ep-pill.att{border-color:rgba(34,197,94,.6);background:rgba(34,197,94,.18);color:var(--accent)}
+.etimer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(8px);z-index:200;align-items:center;justify-content:center}
+.etimer-overlay.open{display:flex}
+.etimer-box{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:32px 36px;text-align:center;min-width:320px;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.etimer-title{font-size:14px;color:var(--muted);margin-bottom:4px}
+.etimer-paper{font-size:16px;font-weight:700;margin-bottom:20px}
+.etimer-display{font-size:58px;font-weight:800;font-family:"Bricolage Grotesque",sans-serif;letter-spacing:-.02em;line-height:1;margin-bottom:6px;transition:color .3s}
+.etimer-display.warn{color:#f59e0b}.etimer-display.danger{color:#ef4444}
+.etimer-sub{font-size:12px;color:var(--muted);margin-bottom:24px}
+.etimer-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -243,6 +262,20 @@ svg.diagram{width:100%;max-width:540px;height:auto;display:block;margin:10px 0;b
   <main class="main" id="main"></main>
 </div>
 <div class="toast" id="toast"></div>
+<div class="etimer-overlay" id="etimerOverlay" onclick="if(event.target===this)etimerClose()">
+  <div class="etimer-box">
+    <div class="etimer-title" id="etimerTitle"></div>
+    <div class="etimer-paper" id="etimerSubs"></div>
+    <div class="etimer-display" id="etimerDisplay">00:00</div>
+    <div class="bar" style="margin-bottom:20px"><div id="etimerPct" style="height:100%;width:0%;background:var(--accent);border-radius:20px;transition:width 1s linear"></div></div>
+    <div class="etimer-sub">Press Start when you open the PDF</div>
+    <div class="etimer-btns">
+      <button class="btn" id="etimerStartBtn" onclick="etimerToggle()">▶ Start</button>
+      <button class="btn ghost" onclick="etimerReset()">↺ Reset</button>
+      <button class="btn ghost" onclick="etimerClose()">✕ Close</button>
+    </div>
+  </div>
+</div>
 <div id="ftimer" style="display:none;position:fixed;bottom:20px;right:20px;background:rgba(10,8,20,.92);border:1px solid rgba(168,85,247,.4);border-radius:14px;padding:10px 15px;backdrop-filter:blur(20px);z-index:500;align-items:center;gap:10px;box-shadow:0 8px 30px rgba(0,0,0,.5);cursor:pointer;font-family:'IBM Plex Sans',system-ui,sans-serif" onclick="window.location='../index.html'">
   <div id="ft-icon" style="font-size:16px">🧬</div>
   <div><div id="ft-subj" style="font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.08em;margin-bottom:1px"></div><div id="ft-time" style="font-size:18px;font-weight:800;color:#22c55e;font-family:'Bricolage Grotesque',system-ui,sans-serif;letter-spacing:-.01em">00:00:00</div></div>
@@ -280,7 +313,7 @@ svg.diagram{width:100%;max-width:540px;height:auto;display:block;margin:10px 0;b
 </script>
 <script>
 const LS_KEY="hscbio_progress";
-const DEFAULT_STATE={check:{},conf:{},notes:{},examDate:"2026-10-21",quizLog:[],theme:"dark",streak:[],edits:{},addedDots:{},addedQ:{},editMode:false,quizStats:{},srs:{},history:[],bookmarks:{}};
+const DEFAULT_STATE={check:{},conf:{},notes:{},examDate:"2026-10-21",quizLog:[],theme:"dark",streak:[],edits:{},addedDots:{},addedQ:{},editMode:false,quizStats:{},srs:{},history:[],bookmarks:{},paperAttempts:{}};
 const TODAY=()=>new Date().toISOString().slice(0,10);
 const daysBetween=(a,b)=>Math.round((new Date(b)-new Date(a))/86400000);
 const addDays=(iso,n)=>{const d=new Date(iso);d.setDate(d.getDate()+n);return d.toISOString().slice(0,10);};
@@ -989,7 +1022,8 @@ const NAV=[
  {id:"practicals",ic:"🧪",label:"Practical Library"},
  {id:"formula",ic:"📐",label:"Formula Sheet"},
  {id:"taxonomy",ic:"🌿",label:"Taxonomy Reference"},
- {id:"glossary",ic:"📖",label:"Glossary"}
+ {id:"glossary",ic:"📖",label:"Glossary"},
+ {id:"papers",ic:"📋",label:"Past Papers"}
 ];
 let CURRENT="dashboard";let pendingJump=null;
 function buildNav(){const nav=document.getElementById('nav');nav.innerHTML=NAV.map(n=>{
@@ -1021,6 +1055,7 @@ function render(){
   else if(CURRENT==="technique")main.innerHTML=viewTechnique();
   else if(CURRENT==="taxonomy")main.innerHTML=viewTaxonomy();
   else if(CURRENT==="glossary"){main.innerHTML=viewGlossary();filterGloss();}
+  else if(CURRENT==="papers")main.innerHTML=viewPapers();
   if(pendingJump){const{tid}=pendingJump;pendingJump=null;setTimeout(()=>openDot(tid),60);}
 }
 
@@ -1513,6 +1548,86 @@ document.getElementById('ioBtn').onclick=openIO;
 /* ========================= INIT ========================= */
 // always pin bio exam date regardless of localStorage
 if(!state.examDate||state.examDate==='2026-10-30'){state.examDate='2026-10-21';save();}
+/* =====================================================================
+   PAST PAPERS
+   ===================================================================== */
+const EXAM_PAPERS=[
+  {id:'2025-hsc',year:'2025',label:'HSC Examination',file:'papers/2025-hsc.pdf',mg:'papers/2025-mg.pdf',type:'HSC Exam',duration:180,sections:[{label:'Section I (MC)',marks:20},{label:'Section II',marks:80}],notes:''},
+  {id:'2024-hsc',year:'2024',label:'HSC Examination',file:'papers/2024-hsc.pdf',mg:'papers/2024-mg.pdf',type:'HSC Exam',duration:180,sections:[{label:'Section I (MC)',marks:20},{label:'Section II',marks:80}],notes:''},
+  {id:'2023-hsc',year:'2023',label:'HSC Examination',file:'papers/2023-hsc.pdf',mg:'papers/2023-mg.pdf',type:'HSC Exam',duration:180,sections:[{label:'Section I (MC)',marks:20},{label:'Section II',marks:80}],notes:''},
+  {id:'2022-hsc',year:'2022',label:'HSC Examination',file:'papers/2022-hsc.pdf',mg:'papers/2022-mg.pdf',type:'HSC Exam',duration:180,sections:[{label:'Section I (MC)',marks:20},{label:'Section II',marks:80}],notes:''},
+  {id:'2021-hsc',year:'2021',label:'HSC Examination',file:'papers/2021-hsc.pdf',mg:'papers/2021-mg.pdf',type:'HSC Exam',duration:180,sections:[{label:'Section I (MC)',marks:20},{label:'Section II',marks:80}],notes:''},
+  {id:'2020-hsc',year:'2020',label:'HSC Examination',file:'papers/2020-hsc.pdf',mg:'papers/2020-mg.pdf',type:'HSC Exam',duration:180,sections:[{label:'Section I (MC)',marks:20},{label:'Section II',marks:80}],notes:''},
+  {id:'2019-hsc',year:'2019',label:'HSC Examination',file:'papers/2019-hsc.pdf',mg:'papers/2019-mg.pdf',type:'HSC Exam',duration:180,sections:[{label:'Section I (MC)',marks:20},{label:'Section II',marks:80}],notes:''},
+];
+function viewPapers(){
+  const atts=state.paperAttempts||{};
+  const attempted=Object.keys(atts).filter(k=>(atts[k]||[]).length>0);
+  return`<div class="page-head"><div><h1>📋 Past Papers</h1><p>HSC Biology — 2019–2025 · Paper + Marking Guidelines</p></div></div>
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+    <span class="small muted">${EXAM_PAPERS.length} papers · ${attempted.length} attempted</span>
+    <span class="small muted" style="flex:1;text-align:right;font-style:italic">Click 📄 Paper or 📋 MG to open PDF</span>
+  </div>
+  <div class="ep-grid">
+    ${EXAM_PAPERS.map(p=>{
+      const a=(atts[p.id]||[]);const last=a.length?a[a.length-1]:null;
+      const tot=p.sections.reduce((s,x)=>s+x.marks,0);
+      return`<div class="ep-card">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px">
+          <div class="ep-year">${esc(p.year)}</div>
+          ${a.length?`<span class="ep-pill att">✓ ${a.length}× done</span>`:'<span class="ep-pill">Not started</span>'}
+        </div>
+        <div class="ep-label">${esc(p.label)}</div>
+        <div class="ep-meta"><span>⏱ ${p.duration} min</span><span>${tot} marks</span><span>${esc(p.type)}</span></div>
+        ${p.sections.map(s=>`<div style="font-size:11px;color:var(--muted)">${esc(s.label)} — ${s.marks} marks</div>`).join('')}
+        ${last?`<div style="font-size:11px;color:var(--muted)">Last: ${last.date}${last.score!=null?' · Score: '+last.score+'/'+tot:''}</div>`:''}
+        <div class="ep-btns">
+          <button class="btn sm" onclick="window.open('${p.file}','_blank')">📄 Paper</button>
+          <button class="btn ghost sm" onclick="window.open('${p.mg}','_blank')">📋 MG</button>
+          <button class="btn ghost sm" onclick="startExamTimer('${p.id}')">⏱ Timer</button>
+          <button class="btn ghost sm" onclick="ppLog('${p.id}')">✓ Log</button>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+function ppLog(id){
+  const p=EXAM_PAPERS.find(x=>x.id===id);if(!p)return;
+  const tot=p.sections.reduce((s,x)=>s+x.marks,0);
+  const scoreStr=prompt(`Log attempt for ${p.year} ${p.label}\nScore out of ${tot} (leave blank to just mark done):`);
+  if(scoreStr===null)return;
+  if(!state.paperAttempts)state.paperAttempts={};
+  if(!state.paperAttempts[id])state.paperAttempts[id]=[];
+  const score=scoreStr.trim()===''?null:parseInt(scoreStr,10);
+  state.paperAttempts[id].push({date:TODAY(),score:isNaN(score)?null:score});
+  save();toast(score!=null?`Logged: ${score}/${tot}`:'Attempt logged');render();
+}
+let _et={paperId:null,total:0,remaining:0,running:false,_iv:null};
+function startExamTimer(id){
+  const p=EXAM_PAPERS.find(x=>x.id===id);if(!p)return;
+  if(_et._iv)clearInterval(_et._iv);
+  _et={paperId:id,total:p.duration*60,remaining:p.duration*60,running:false,_iv:null};
+  document.getElementById('etimerTitle').textContent=`${p.year} ${p.label}`;
+  document.getElementById('etimerSubs').textContent=`${p.duration} min · ${p.sections.map(s=>s.label).join(' + ')}`;
+  updateTimerDisplay();
+  document.getElementById('etimerOverlay').classList.add('open');
+}
+function updateTimerDisplay(){
+  const r=_et.remaining,m=Math.floor(r/60),s=r%60;
+  const disp=document.getElementById('etimerDisplay');if(!disp)return;
+  disp.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  disp.className='etimer-display'+(r<600?' danger':r<1200?' warn':'');
+  document.getElementById('etimerPct').style.width=((_et.total-r)/_et.total*100)+'%';
+  document.getElementById('etimerStartBtn').textContent=_et.running?'⏸ Pause':'▶ Start';
+}
+function etimerToggle(){
+  if(_et.remaining<=0)return;_et.running=!_et.running;
+  if(_et.running){_et._iv=setInterval(()=>{if(_et.remaining>0){_et.remaining--;updateTimerDisplay();}else{clearInterval(_et._iv);_et.running=false;updateTimerDisplay();toast('⏰ Time is up!');}},1000);}
+  else clearInterval(_et._iv);
+  updateTimerDisplay();
+}
+function etimerReset(){clearInterval(_et._iv);_et.running=false;_et.remaining=_et.total;updateTimerDisplay();}
+function etimerClose(){clearInterval(_et._iv);_et.running=false;document.getElementById('etimerOverlay').classList.remove('open');}
 applyTheme();refreshCountdown();buildNav();render();streakToday();snapshotHistory();
 </script>
 <div id="ft" style="position:fixed;bottom:18px;right:18px;z-index:9999;background:rgba(10,10,20,.92);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:10px 14px;display:flex;align-items:center;gap:10px;backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(0,0,0,.4);cursor:pointer" onclick="window.location='../index.html'" title="Back to Dashboard">

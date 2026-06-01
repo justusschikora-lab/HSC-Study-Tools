@@ -119,6 +119,24 @@ textarea.notes:focus{outline:none;border-color:var(--accent)}
 /* ── Memoriser ── */
 .mem-sent{transition:filter .12s}.mem-sent:hover{filter:brightness(1.08)}
 .mem-stack{height:8px;border-radius:20px;overflow:hidden;background:var(--surface2);display:flex}
+.ep-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:4px}
+.ep-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;transition:.15s}
+.ep-card:hover{border-color:rgba(168,85,247,.4);transform:translateY(-1px)}
+.ep-year{font-size:22px;font-weight:800;font-family:"Bricolage Grotesque",sans-serif;color:var(--accent)}
+.ep-meta{font-size:11.5px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
+.ep-meta span{background:var(--surface2);padding:2px 8px;border-radius:20px;border:1px solid var(--line)}
+.ep-btns{display:flex;gap:6px;margin-top:2px;flex-wrap:wrap}
+.ep-pill{font-size:11px;padding:3px 9px;border-radius:20px;border:1px solid rgba(34,197,94,.35);background:rgba(34,197,94,.1);color:#22c55e;white-space:nowrap}
+.ep-pill.att{border-color:rgba(168,85,247,.4);background:rgba(168,85,247,.12);color:var(--accent)}
+.etimer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(8px);z-index:200;align-items:center;justify-content:center}
+.etimer-overlay.open{display:flex}
+.etimer-box{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:32px 36px;text-align:center;min-width:320px;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.etimer-title{font-size:14px;color:var(--muted);margin-bottom:4px}
+.etimer-paper{font-size:16px;font-weight:700;margin-bottom:20px}
+.etimer-display{font-size:58px;font-weight:800;font-family:"Bricolage Grotesque",sans-serif;letter-spacing:-.02em;line-height:1;margin-bottom:6px;transition:color .3s}
+.etimer-display.warn{color:#f59e0b}.etimer-display.danger{color:#ef4444}
+.etimer-sub{font-size:12px;color:var(--muted);margin-bottom:24px}
+.etimer-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -150,6 +168,20 @@ textarea.notes:focus{outline:none;border-color:var(--accent)}
   <main class="main" id="main"></main>
 </div>
 <div class="toast" id="toast"></div>
+<div class="etimer-overlay" id="etimerOverlay" onclick="if(event.target===this)etimerClose()">
+  <div class="etimer-box">
+    <div class="etimer-title" id="etimerTitle"></div>
+    <div class="etimer-paper" id="etimerSubs"></div>
+    <div class="etimer-display" id="etimerDisplay">00:00</div>
+    <div class="bar" style="margin-bottom:20px"><div id="etimerPct" style="height:100%;width:0%;background:var(--accent);border-radius:20px;transition:width 1s linear"></div></div>
+    <div class="etimer-sub">Press Start when you open the PDF</div>
+    <div class="etimer-btns">
+      <button class="btn" id="etimerStartBtn" onclick="etimerToggle()">▶ Start</button>
+      <button class="btn ghost" onclick="etimerReset()">↺ Reset</button>
+      <button class="btn ghost" onclick="etimerClose()">✕ Close</button>
+    </div>
+  </div>
+</div>
 <!-- FLOATING TIMER WIDGET -->
 <div id="ftimer" style="display:none;position:fixed;bottom:20px;right:20px;background:rgba(10,10,20,.92);border:1px solid rgba(34,197,94,.4);border-radius:14px;padding:10px 15px;backdrop-filter:blur(20px);z-index:500;align-items:center;gap:10px;box-shadow:0 8px 30px rgba(0,0,0,.5);cursor:pointer;font-family:'IBM Plex Sans',system-ui,sans-serif" onclick="window.location='../index.html'">
   <div id="ft-icon" style="font-size:16px">📚</div>
@@ -182,7 +214,7 @@ textarea.notes:focus{outline:none;border-color:var(--accent)}
 </script>
 <script>
 const LS_KEY="hsceng_progress";
-const DEFAULT_STATE={notes:{},examDate:"2026-10-13",theme:"dark",quizStats:{},history:[],memProgress:{}};
+const DEFAULT_STATE={notes:{},examDate:"2026-10-13",theme:"dark",quizStats:{},history:[],memProgress:{},paperAttempts:{}};
 let state=load();
 function load(){try{const s=JSON.parse(localStorage.getItem(LS_KEY));if(s)return Object.assign({},JSON.parse(JSON.stringify(DEFAULT_STATE)),s);}catch(e){}return JSON.parse(JSON.stringify(DEFAULT_STATE));}
 let saveT;function save(){clearTimeout(saveT);saveT=setTimeout(()=>localStorage.setItem(LS_KEY,JSON.stringify(state)),350);}
@@ -206,6 +238,7 @@ const NAV=[
   {id:"homework",label:"In-Class / Homework",ic:"📝"},
   {sep:"PRACTICE"},
   {id:"memorise",label:"Essay Memoriser",ic:"🧠"},
+  {id:"papers",label:"Past Papers",ic:"📋"},
   {id:"quiz",label:"Quiz Mode",ic:"⚡"},
 ];
 
@@ -548,6 +581,7 @@ function render(){
   if(currentPage==='reflections') return renderReflections(m);
   if(currentPage==='homework') return renderHomework(m);
   if(currentPage==='quiz') return renderQuiz(m);
+  if(currentPage==='papers') return renderPapers(m);
   if(currentPage==='memorise') return renderMemoriser(m);
   if(currentPage==='mem_view') return renderMemView(m);
   if(currentPage==='mem_session') return renderMemSession(m);
@@ -1295,6 +1329,80 @@ document.getElementById('globalSearch').addEventListener('input',function(){
   if(match){goto(match.id);this.value='';}
 });
 
+/* ==================== PAST PAPERS ==================== */
+const EXAM_PAPERS=[
+  {id:'2025',year:'2025',p1:'papers/2025-p1.pdf',p1mg:'papers/2025-p1-mg.pdf',p2:'papers/2025-p2.pdf',p2mg:'papers/2025-p2-mg.pdf'},
+  {id:'2024',year:'2024',p1:'papers/2024-p1.pdf',p1mg:'papers/2024-p1-mg.pdf',p2:'papers/2024-p2.pdf',p2mg:'papers/2024-p2-mg.pdf'},
+  {id:'2023',year:'2023',p1:'papers/2023-p1.pdf',p1mg:'papers/2023-p1-mg.pdf',p2:'papers/2023-p2.pdf',p2mg:'papers/2023-p2-mg.pdf'},
+  {id:'2022',year:'2022',p1:'papers/2022-p1.pdf',p1mg:'papers/2022-p1-mg.pdf',p2:'papers/2022-p2.pdf',p2mg:'papers/2022-p2-mg.pdf'},
+  {id:'2021',year:'2021',p1:'papers/2021-p1.pdf',p1mg:'papers/2021-p1-mg.pdf',p2:'papers/2021-p2.pdf',p2mg:'papers/2021-p2-mg.pdf'},
+  {id:'2020',year:'2020',p1:'papers/2020-p1.pdf',p1mg:'papers/2020-p1-mg.pdf',p2:'papers/2020-p2.pdf',p2mg:'papers/2020-p2-mg.pdf'},
+  {id:'2019',year:'2019',p1:'papers/2019-p1.pdf',p1mg:'papers/2019-p1-mg.pdf',p2:'papers/2019-p2.pdf',p2mg:'papers/2019-p2-mg.pdf'},
+];
+function renderPapers(m){
+  const atts=state.paperAttempts||{};
+  const attempted=Object.keys(atts).filter(k=>(atts[k]||[]).length>0);
+  m.innerHTML=`<div class="page-head"><div><h1>📋 Past Papers</h1><p>English Advanced — 2019–2025 · Paper 1 &amp; Paper 2 + Marking Guidelines</p></div></div>
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+    <span class="small muted">${EXAM_PAPERS.length} years · ${attempted.length} attempted</span>
+    <span class="small muted" style="flex:1;text-align:right;font-style:italic">P1 = Area of Study · P2 = Modules</span>
+  </div>
+  <div class="ep-grid">
+    ${EXAM_PAPERS.map(p=>{
+      const a=(atts[p.id]||[]);const last=a.length?a[a.length-1]:null;
+      return`<div class="ep-card">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px">
+          <div class="ep-year">${esc(p.year)}</div>
+          ${a.length?`<span class="ep-pill att">✓ ${a.length}× done</span>`:'<span class="ep-pill">Not started</span>'}
+        </div>
+        <div class="ep-meta"><span>⏱ P1: 2h15m</span><span>⏱ P2: 2h15m</span></div>
+        ${last?`<div style="font-size:11px;color:var(--muted)">Last: ${last.date}</div>`:''}
+        <div class="ep-btns">
+          <button class="btn sm" onclick="window.open('${p.p1}','_blank')">📄 P1</button>
+          <button class="btn ghost sm" onclick="window.open('${p.p1mg}','_blank')">📋 P1 MG</button>
+          <button class="btn sm" onclick="window.open('${p.p2}','_blank')">📄 P2</button>
+          <button class="btn ghost sm" onclick="window.open('${p.p2mg}','_blank')">📋 P2 MG</button>
+          <button class="btn ghost sm" onclick="engTimer('${p.id}','P1',135)">⏱ P1 Timer</button>
+          <button class="btn ghost sm" onclick="engTimer('${p.id}','P2',135)">⏱ P2 Timer</button>
+          <button class="btn ghost sm" onclick="ppLog('${p.id}')">✓ Log</button>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+function ppLog(id){
+  const scoreStr=prompt(`Log attempt for ${id}\nNotes or leave blank:`);
+  if(scoreStr===null)return;
+  if(!state.paperAttempts)state.paperAttempts={};
+  if(!state.paperAttempts[id])state.paperAttempts[id]=[];
+  state.paperAttempts[id].push({date:new Date().toISOString().slice(0,10),note:scoreStr.trim()});
+  save();toast('Attempt logged');render();
+}
+let _et={id:null,label:'',total:0,remaining:0,running:false,_iv:null};
+function engTimer(id,label,mins){
+  if(_et._iv)clearInterval(_et._iv);
+  _et={id,label,total:mins*60,remaining:mins*60,running:false,_iv:null};
+  document.getElementById('etimerTitle').textContent=`${id} — ${label}`;
+  document.getElementById('etimerSubs').textContent=`${mins} minutes`;
+  updateTimerDisplay();
+  document.getElementById('etimerOverlay').classList.add('open');
+}
+function updateTimerDisplay(){
+  const r=_et.remaining,mi=Math.floor(r/60),s=r%60;
+  const disp=document.getElementById('etimerDisplay');if(!disp)return;
+  disp.textContent=`${String(mi).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  disp.className='etimer-display'+(r<600?' danger':r<1200?' warn':'');
+  document.getElementById('etimerPct').style.width=((_et.total-r)/_et.total*100)+'%';
+  document.getElementById('etimerStartBtn').textContent=_et.running?'⏸ Pause':'▶ Start';
+}
+function etimerToggle(){
+  if(_et.remaining<=0)return;_et.running=!_et.running;
+  if(_et.running){_et._iv=setInterval(()=>{if(_et.remaining>0){_et.remaining--;updateTimerDisplay();}else{clearInterval(_et._iv);_et.running=false;updateTimerDisplay();toast('⏰ Time is up!');}},1000);}
+  else clearInterval(_et._iv);
+  updateTimerDisplay();
+}
+function etimerReset(){clearInterval(_et._iv);_et.running=false;_et.remaining=_et.total;updateTimerDisplay();}
+function etimerClose(){clearInterval(_et._iv);_et.running=false;document.getElementById('etimerOverlay').classList.remove('open');}
 /* ==================== INIT ==================== */
 buildNav();
 render();
