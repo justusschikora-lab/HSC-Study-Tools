@@ -249,13 +249,13 @@ input{font-family:inherit}
 .scv2-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
 .scv2-num{
   font-family:'Bricolage Grotesque',sans-serif;font-weight:800;
-  font-size:clamp(40px,5vw,64px);line-height:1;letter-spacing:-.03em;color:var(--tx);
-  display:flex;align-items:baseline;gap:4px;margin:4px 0 8px;
+  font-size:clamp(48px,5.5vw,80px);line-height:1;letter-spacing:-.04em;
+  display:block;margin:10px 0 0;
 }
-.scv2-pct-label{font-size:12px;font-weight:400;color:var(--mu);margin-bottom:6px}
+.scv2-pct-label{font-size:12px;font-weight:400;color:var(--mu);margin:4px 0 14px;display:block}
 .scv2-bar{height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;margin-bottom:auto}
 .scv2-bar i{display:block;height:100%;border-radius:2px}
-.scv2-foot{margin-top:12px;display:flex;flex-direction:column;gap:5px;border-top:1px solid rgba(255,255,255,.06);padding-top:10px}
+.scv2-foot{margin-top:14px;display:flex;flex-direction:column;gap:8px;border-top:1px solid rgba(255,255,255,.06);padding-top:12px}
 .scv2-row{display:flex;align-items:center;justify-content:space-between;font-size:11px}
 .scv2-row span{color:var(--mu)}
 .scv2-row b{color:var(--tx);font-weight:600;text-align:right;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}

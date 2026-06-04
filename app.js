@@ -201,22 +201,17 @@ function renderDashboard() {
             <div class="scv2-name">${s.name}</div>
             <div class="scv2-dot" style="background:${s.color}"></div>
           </div>
-          <div class="scv2-num">
-            <span style="color:${s.color}">${p}</span><span class="scv2-pct-label">% course</span>
-          </div>
+          <div class="scv2-num" style="color:${s.color}">${p}</div>
+          <div class="scv2-pct-label">% course</div>
           <div class="scv2-bar"><i style="width:${p}%;background:${s.color}"></i></div>
           <div class="scv2-foot">
             <div class="scv2-row">
               <span>Next exam</span>
               <span class="scv2-badge" style="background:${s.bg};color:${s.color};border:1px solid ${s.br}">${daysTo(s.examDate)}d</span>
             </div>
-            <div class="scv2-row">
+            <div class="scv2-row" style="margin-top:6px">
               <span>Papers done</span>
               <b style="color:${done===yrs.length&&done>0?'var(--bio)':'var(--tx)'}">${done}/${yrs.length}</b>
-            </div>
-            <div class="scv2-row">
-              <span>Focus on</span>
-              <b style="color:${s.color}">${esc(topic?.l||'—')}</b>
             </div>
           </div>
         </div>`;
@@ -305,9 +300,6 @@ function renderDashboard() {
               <span>${getProg(tS)}%</span>
             </div>
             <div class="focus-v2-bar"><i style="width:${getProg(tS)}%;background:${tS.color}"></i></div>
-            <button class="focus-start-btn" style="background:${tS.color};color:${tS.id==='ger'||tS.id==='math'?'#000':'#fff'}" onclick="enterFocus()">
-              ▶ Start ${S.allocatedMin||50}-min focus session
-            </button>
           </div>
         </div>
       </div>
