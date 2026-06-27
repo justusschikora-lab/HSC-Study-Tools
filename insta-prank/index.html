@@ -38,7 +38,7 @@
   }
 
   #scroller {
-    height: calc(100% - 54px);
+    height: calc(100% - 54px - env(safe-area-inset-bottom));
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     position: relative;
