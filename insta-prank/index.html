@@ -16,13 +16,22 @@
   html, body {
     margin: 0;
     padding: 0;
-    background: var(--bg);
+    background: #1a1a1a;
     color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     height: 100%;
     overflow: hidden;
     -webkit-user-select: none;
     user-select: none;
+  }
+
+  #phone-frame {
+    max-width: 430px;
+    height: 100%;
+    margin: 0 auto;
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
   }
 
   #scroller {
@@ -58,7 +67,7 @@
   }
 
   .bottom-nav {
-    position: fixed;
+    position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
@@ -245,6 +254,7 @@
 </head>
 <body>
 
+<div id="phone-frame">
 <div id="scroller">
   <div id="pull-indicator">
     <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-dasharray="40 100"/></svg>
@@ -282,7 +292,7 @@
   </div>
 
   <div class="action-row">
-    <button class="btn">Edit profile <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style="margin-left:2px"><path d="M6 9l6 6 6-6" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button class="btn">Edit profile</button>
     <button class="btn">Share profile</button>
     <button class="btn icon-only"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="7" r="4" stroke="white" stroke-width="2"/><path d="M20 8v6M17 11h6" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></button>
   </div>
@@ -317,6 +327,7 @@
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M21 3L11 13M21 3l-7 18-4-8-8-4 19-6z" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="white" stroke-width="1.8"/><path d="M21 21l-4.3-4.3" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
   <div class="nav-avatar" style="background-image:url('avatar.jpg')"></div>
+</div>
 </div>
 
 <script>
