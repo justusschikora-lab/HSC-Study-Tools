@@ -6,7 +6,7 @@
 <title>Instagram</title>
 <link rel="apple-touch-icon" href="icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <style>
   :root {
     --bg: #000000;
@@ -114,6 +114,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 10px 14px 14px;
+    padding-top: max(10px, env(safe-area-inset-top));
   }
   header.topbar .left {
     display: flex;
