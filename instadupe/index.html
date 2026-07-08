@@ -442,6 +442,24 @@
   .instructions p { font-size: 14px; line-height: 1.45; color: #d8d8d8; margin: 0 0 13px; }
   .instructions p:last-child { margin-bottom: 0; }
   .instructions b { color: #fff; font-weight: 600; }
+  .preset-save-row { display: flex; gap: 8px; }
+  .preset-save-row input { flex: 1; min-width: 0; }
+  #preset-list { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+  .preset-empty { color: var(--subtext); font-size: 14px; padding: 6px 2px; }
+  .preset-item {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--bg); border: 1px solid #363636;
+    border-radius: 10px; padding: 9px 11px;
+  }
+  .preset-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+  .preset-title { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .preset-sub { font-size: 12px; color: var(--subtext); }
+  .preset-item button {
+    border: none; border-radius: 7px; padding: 7px 11px;
+    font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; flex-shrink: 0;
+  }
+  .preset-load { background: #0095f6; color: #fff; }
+  .preset-del { background: var(--btn); color: var(--text); }
   .remove-link {
     display: block;
     width: 100%;
@@ -634,11 +652,29 @@
       <p><b>Add posts</b> — Tap the <b>+</b> at the top-left (or <b>Create</b> on the empty state). You can pick several photos at once; the grid grows on its own and the post count updates.</p>
       <p><b>Add highlights</b> — Tap the <b>New</b> circle to choose a cover photo, crop it, and give it an emoji or title.</p>
       <p><b>Remove things</b> — Tap a post to open it and hit <b>Remove</b>; tap a highlight to edit or remove it.</p>
-      <p><b>Saving</b> — Everything saves automatically on this device. The lock icon by your name is a manual quick-save.</p>
+      <p><b>Saving</b> — Everything saves automatically on this device.</p>
+      <p><b>Presets</b> — Tap the lock icon by your name to save the whole profile (details, posts and highlights) as a named preset, and switch between saved profiles instantly.</p>
       <p><b>Start over</b> — In Edit profile, use <b>Reset profile</b> or <b>Start from scratch</b>.</p>
     </div>
     <div class="form-buttons">
       <button class="btn-primary" onclick="closeInstructions()">Got it</button>
+    </div>
+  </div>
+</div>
+
+<div id="presets-modal" class="modal-overlay hidden">
+  <div class="modal-content">
+    <h2>Presets</h2>
+    <div class="form-group">
+      <label>Save the current profile as a preset</label>
+      <div class="preset-save-row">
+        <input type="text" id="preset-name" maxlength="40" placeholder="e.g. Main, Prank #1">
+        <button type="button" class="choose-photo-btn" onclick="saveCurrentAsPreset()">Save</button>
+      </div>
+    </div>
+    <div id="preset-list"></div>
+    <div class="form-buttons">
+      <button class="btn-primary" onclick="closePresets()">Done</button>
     </div>
   </div>
 </div>
@@ -685,7 +721,7 @@
   <header class="topbar">
     <svg class="plus" onclick="openPostPicker()" width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="1.9" stroke-linecap="round"/></svg>
     <div class="userblock">
-      <button class="lock-btn" title="Save profile" onclick="quickSaveProfile()">
+      <button class="lock-btn" title="Presets" onclick="openPresets()">
         <svg width="15" height="17" viewBox="0 0 24 24" fill="none"><rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5" stroke="white" stroke-width="1.9"/><path d="M8 10.5V7.5a4 4 0 017.5-2" stroke="white" stroke-width="1.9" stroke-linecap="round"/></svg>
       </button>
       <span class="username"></span>
@@ -783,11 +819,102 @@
     localStorage.setItem('instadupe_profile', JSON.stringify(profile));
   }
 
-  function quickSaveProfile() {
+  // ---------- Presets (full-profile snapshots) ----------
+  let presets = [];
+
+  function loadPresetsFromStorage() {
+    const saved = localStorage.getItem('instadupe_presets');
+    if (saved) {
+      try { presets = JSON.parse(saved) || []; }
+      catch (e) { presets = []; }
+    }
+  }
+
+  function savePresetsToStorage() {
+    try { localStorage.setItem('instadupe_presets', JSON.stringify(presets)); }
+    catch (e) { alert('Storage full — could not save the preset. Try fewer/smaller posts.'); }
+  }
+
+  function openPresets() {
+    renderPresetList();
+    document.getElementById('preset-name').value = '';
+    document.getElementById('presets-modal').classList.remove('hidden');
+  }
+  function closePresets() {
+    document.getElementById('presets-modal').classList.add('hidden');
+  }
+
+  function renderPresetList() {
+    const list = document.getElementById('preset-list');
+    list.innerHTML = '';
+    if (presets.length === 0) {
+      list.innerHTML = '<div class="preset-empty">No saved presets yet.</div>';
+      return;
+    }
+    presets.forEach((p, i) => {
+      const row = document.createElement('div');
+      row.className = 'preset-item';
+      const info = document.createElement('div');
+      info.className = 'preset-info';
+      const sub = `${p.posts.length} posts · ${p.highlights.length} highlights`;
+      info.innerHTML = `<span class="preset-title"></span><span class="preset-sub">${sub}</span>`;
+      info.querySelector('.preset-title').textContent = p.name;
+      const load = document.createElement('button');
+      load.className = 'preset-load';
+      load.textContent = 'Load';
+      load.onclick = () => loadPreset(i);
+      const del = document.createElement('button');
+      del.className = 'preset-del';
+      del.textContent = 'Delete';
+      del.onclick = () => deletePreset(i);
+      row.append(info, load, del);
+      list.appendChild(row);
+    });
+  }
+
+  function saveCurrentAsPreset() {
+    const name = document.getElementById('preset-name').value.trim().slice(0, 40);
+    if (!name) { alert('Give the preset a name first.'); return; }
+    const snapshot = {
+      name,
+      profile: JSON.parse(JSON.stringify(profile)),
+      highlights: JSON.parse(JSON.stringify(highlights)),
+      posts: JSON.parse(JSON.stringify(posts))
+    };
+    const existing = presets.findIndex(p => p.name.toLowerCase() === name.toLowerCase());
+    if (existing >= 0) {
+      if (!confirm(`A preset called "${name}" exists. Overwrite it?`)) return;
+      presets[existing] = snapshot;
+    } else {
+      presets.push(snapshot);
+    }
+    savePresetsToStorage();
+    renderPresetList();
+    document.getElementById('preset-name').value = '';
+  }
+
+  function loadPreset(i) {
+    const p = presets[i];
+    if (!p) return;
+    Object.assign(profile, JSON.parse(JSON.stringify(p.profile)));
+    pendingAvatarUrl = profile.avatarUrl;
+    highlights = JSON.parse(JSON.stringify(p.highlights));
+    posts = JSON.parse(JSON.stringify(p.posts));
+
+    applyProfileToDOM();
+    renderHighlights();
+    renderPosts();
     saveProfileToStorage();
-    const btn = document.querySelector('.lock-btn');
-    btn.style.opacity = '0.5';
-    setTimeout(() => { btn.style.opacity = '1'; }, 200);
+    saveHighlightsToStorage();
+    savePostsToStorage();
+    closePresets();
+  }
+
+  function deletePreset(i) {
+    if (!confirm(`Delete preset "${presets[i].name}"?`)) return;
+    presets.splice(i, 1);
+    savePresetsToStorage();
+    renderPresetList();
   }
 
   function loadProfile() {
@@ -1226,6 +1353,7 @@
   renderHighlights();
   loadPostsFromStorage();
   renderPosts();
+  loadPresetsFromStorage();
 
   scroller.addEventListener('touchstart', (e) => {
     if (scroller.scrollTop <= 0) { startY = e.touches[0].clientY; pulling = true; }
