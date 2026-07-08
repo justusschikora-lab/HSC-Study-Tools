@@ -107,20 +107,6 @@
     flex-shrink: 0;
     margin-left: 8px;
   }
-  header.topbar .icons .threads-wrap { position: relative; display: flex; }
-  .top-badge {
-    position: absolute;
-    top: -6px; right: -8px;
-    background: var(--red);
-    color: #fff;
-    font-size: 11px;
-    font-weight: 700;
-    min-width: 16px; height: 16px;
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    padding: 0 4px;
-    border: 1.5px solid var(--bg);
-  }
 
   /* ---------- Profile ---------- */
   .profile-top {
@@ -195,7 +181,6 @@
     font-size: 14.5px;
     line-height: 1.35;
   }
-  .bio .flag { font-size: 15px; }
   .bio .link { color: var(--link); }
 
   .banners-btn {
@@ -250,6 +235,7 @@
     gap: 7px;
     flex-shrink: 0;
     position: relative;
+    cursor: pointer;
   }
   .highlight .circle {
     width: 66px; height: 66px;
@@ -264,16 +250,7 @@
     padding: 3px;
     background-clip: content-box;
   }
-  .highlight .reuse-badge {
-    position: absolute;
-    left: 3px; bottom: 24px;
-    width: 20px; height: 20px;
-    border-radius: 6px;
-    background: #3897f0;
-    border: 2px solid var(--bg);
-    display: flex; align-items: center; justify-content: center;
-  }
-  .highlight .name { font-size: 12.5px; color: var(--text); }
+  .highlight .name { font-size: 12.5px; color: var(--text); max-width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
   /* ---------- Tabs ---------- */
   .tab-row {
@@ -393,7 +370,7 @@
   #modal h2 { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
   .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
   .form-group label { font-size: 13px; color: var(--subtext); font-weight: 500; }
-  .form-group input {
+  .form-group input, .form-group textarea {
     background: var(--bg);
     border: 1px solid #363636;
     border-radius: 8px;
@@ -402,15 +379,37 @@
     font-size: 15px;
     font-family: inherit;
   }
-  .form-group input:focus { outline: none; border-color: #0095f6; }
+  .form-group textarea { resize: vertical; min-height: 66px; line-height: 1.4; }
+  .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #0095f6; }
   .form-buttons { display: flex; gap: 10px; margin-top: 20px; }
   .form-buttons button {
     flex: 1; padding: 11px; border: none; border-radius: 8px;
     font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit;
   }
   .form-buttons .btn-primary { background: #0095f6; color: #fff; }
+  .form-buttons .btn-secondary { background: var(--btn); color: var(--text); }
 
-  /* ---------- Importer / cropper ---------- */
+  .avatar-picker-row { display: flex; align-items: center; gap: 12px; }
+  .avatar-preview-circle {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: #333 center/cover no-repeat;
+    border: 1px solid #363636;
+    flex-shrink: 0;
+  }
+  .choose-photo-btn {
+    background: var(--btn);
+    color: var(--text);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  /* ---------- Cropper (shared: avatar + highlights) ---------- */
   #cropper {
     position: fixed;
     inset: 0;
@@ -459,159 +458,68 @@
   #cropper .crop-controls { margin-top: 16px; }
   #cropper .crop-controls label { font-size: 13px; color: var(--subtext); display: block; margin-bottom: 8px; }
   #crop-size { width: 100%; accent-color: #0095f6; }
-  #ocr-status {
-    text-align: center;
-    font-size: 13.5px;
-    color: var(--subtext);
-    margin-top: 14px;
-    min-height: 18px;
-  }
-  #ocr-status.busy::before {
-    content: "";
-    display: inline-block;
-    width: 13px; height: 13px;
-    border: 2px solid #555;
-    border-top-color: #fff;
-    border-radius: 50%;
-    margin-right: 7px;
-    vertical-align: -2px;
-    animation: spin 0.7s linear infinite;
-  }
-
-  /* ---------- Import instructions ---------- */
-  #import-intro {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.6);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 11000;
-    padding: 16px;
-  }
-  #import-intro.hidden { display: none; }
-  .intro-card {
-    background: var(--panel);
-    border-radius: 16px;
-    padding: 24px 20px;
-    max-width: 340px; width: 100%;
-    text-align: center;
-    max-height: 88vh;
-    overflow-y: auto;
-  }
-  .intro-icon { font-size: 34px; margin-bottom: 6px; }
-  .intro-card h2 { font-size: 19px; font-weight: 700; margin-bottom: 4px; }
-  .intro-sub { font-size: 14px; color: var(--subtext); margin-bottom: 20px; }
-  .intro-steps {
-    text-align: left;
-    margin: 0 0 22px;
-    padding: 0;
-    list-style: none;
-    counter-reset: step;
-    display: flex; flex-direction: column; gap: 14px;
-  }
-  .intro-steps li {
-    font-size: 14px; line-height: 1.4; color: #cfcfcf;
-    position: relative; padding-left: 34px;
-    counter-increment: step;
-  }
-  .intro-steps li::before {
-    content: counter(step);
-    position: absolute; left: 0; top: -1px;
-    width: 24px; height: 24px;
-    background: #0095f6; color: #fff;
-    border-radius: 50%;
-    font-size: 13px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .intro-steps li b { color: var(--text); font-weight: 600; }
-  .intro-primary {
-    width: 100%; background: #0095f6; color: #fff; border: none;
-    border-radius: 10px; padding: 12px; font-size: 15px; font-weight: 700;
-    font-family: inherit; cursor: pointer;
-  }
-  .intro-secondary {
-    width: 100%; background: none; border: none; color: var(--subtext);
-    font-size: 14px; font-weight: 600; font-family: inherit;
-    margin-top: 10px; padding: 6px; cursor: pointer;
-  }
 </style>
 </head>
 <body>
 
-<div id="modal">
+<div id="modal" class="hidden">
   <div id="modal-content">
-    <h2>Create Profile</h2>
+    <h2>Edit Profile</h2>
     <div class="form-group">
       <label>Username</label>
-      <input type="text" id="username" placeholder="e.g. jane.doe" value="">
+      <input type="text" id="username" placeholder="e.g. jane.doe">
     </div>
     <div class="form-group">
-      <label>Full Name</label>
-      <input type="text" id="fullname" placeholder="e.g. Jane Doe" value="">
+      <label>Display Name</label>
+      <input type="text" id="displayname" placeholder="e.g. Jane Doe">
     </div>
     <div class="form-group">
       <label>Note bubble (leave blank to hide)</label>
-      <input type="text" id="note" placeholder="e.g. Inspo needed..." value="">
+      <input type="text" id="note" placeholder="e.g. Inspo needed...">
     </div>
     <div class="form-group">
-      <label>Bio — flag emoji</label>
-      <input type="text" id="bio-flag" placeholder="🇩🇪" value="" style="max-width:80px;">
-    </div>
-    <div class="form-group">
-      <label>Bio — link text</label>
-      <input type="text" id="bio-link" placeholder="e.g. @yourlink" value="">
+      <label>Bio</label>
+      <textarea id="bio" rows="3" placeholder="e.g.&#10;living my best life&#10;@somelink"></textarea>
     </div>
     <div class="form-group">
       <label>Posts</label>
-      <input type="number" id="posts" value="0" min="0">
+      <input type="number" id="posts" min="0">
     </div>
     <div class="form-group">
       <label>Followers</label>
-      <input type="number" id="followers" value="0" min="0">
+      <input type="number" id="followers" min="0">
     </div>
     <div class="form-group">
       <label>Following</label>
-      <input type="number" id="following" value="0" min="0">
+      <input type="number" id="following" min="0">
     </div>
     <div class="form-group">
       <label>Avatar</label>
-      <input type="file" id="avatar-file" accept="image/*" style="background: var(--bg); border: 1px solid #363636; border-radius: 8px; padding: 10px 12px; color: var(--text); font-size: 15px; font-family: inherit; cursor: pointer;">
-      <input type="text" id="avatar-url" placeholder="Or paste image URL" value="">
+      <div class="avatar-picker-row">
+        <div id="avatar-preview" class="avatar-preview-circle"></div>
+        <button type="button" class="choose-photo-btn" onclick="openAvatarPicker()">Choose photo</button>
+      </div>
     </div>
     <div class="form-group">
       <label>DM badge</label>
-      <input type="number" id="dm-badge" value="0" min="0">
+      <input type="number" id="dm-badge" min="0">
     </div>
     <div class="form-buttons">
-      <button class="btn-primary" onclick="applyProfile()">Create</button>
+      <button class="btn-secondary" onclick="cancelModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveProfile()">Save</button>
     </div>
   </div>
 </div>
 
-<input type="file" id="screenshot-input" accept="image/*" style="display:none">
-
-<div id="import-intro" class="hidden">
-  <div class="intro-card">
-    <div class="intro-icon">📷</div>
-    <h2>Import a profile</h2>
-    <p class="intro-sub">Recreate any account from a screenshot.</p>
-    <ol class="intro-steps">
-      <li><b>Screenshot their profile.</b> Open the Instagram account you want and grab a screenshot showing the profile picture, username, name and the posts / followers / following row.</li>
-      <li><b>Choose it here.</b> It reads the details automatically and fills them in.</li>
-      <li><b>Crop their photo.</b> Drag the circle over their profile picture.</li>
-      <li><b>Review & create.</b> Fix anything it misread, then tap Create.</li>
-    </ol>
-    <button class="intro-primary" onclick="pickScreenshot()">Choose screenshot</button>
-    <button class="intro-secondary" onclick="closeImportIntro()">Cancel</button>
-  </div>
-</div>
+<input type="file" id="photo-picker" accept="image/*" style="display:none">
 
 <div id="cropper" class="hidden">
   <div class="crop-head">
     <button onclick="cancelCrop()">Cancel</button>
-    <span class="title">Crop profile picture</span>
+    <span class="title" id="crop-title">Crop photo</span>
     <button class="use" onclick="confirmCrop()">Use</button>
   </div>
-  <div class="crop-hint">Drag the circle over their profile picture</div>
+  <div class="crop-hint" id="crop-hint-text">Drag the circle over the photo</div>
   <div id="crop-stage">
     <div id="crop-wrap">
       <img id="crop-img" src="" alt="">
@@ -622,7 +530,6 @@
     <label>Size</label>
     <input type="range" id="crop-size" min="20" max="100" value="55">
   </div>
-  <div id="ocr-status"></div>
 </div>
 
 <div id="phone-frame">
@@ -660,28 +567,20 @@
     </div>
   </div>
 
-  <div class="bio" style="display:none">
-    <span class="flag" id="bio-flag-display"></span><br>
-    <span class="link" id="bio-link-display"></span>
-  </div>
+  <div class="bio" style="display:none"></div>
 
   <button class="banners-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#a8a8a8" stroke-width="2.4" stroke-linecap="round"/></svg> Add banners</button>
 
   <div class="action-row">
     <button class="btn" onclick="showModal()">Edit profile</button>
-    <button class="btn" onclick="startImport()">Share profile</button>
+    <button class="btn">Share profile</button>
     <button class="btn icon-only"><svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M15 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" stroke="white" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8.5" cy="7" r="4" stroke="white" stroke-width="1.9"/><path d="M19 8v6M22 11h-6" stroke="white" stroke-width="1.9" stroke-linecap="round"/></svg></button>
   </div>
 
-  <div class="highlights-row">
-    <div class="highlight">
+  <div class="highlights-row" id="highlights-row">
+    <div class="highlight" onclick="openHighlightPicker()">
       <div class="circle"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg></div>
       <div class="name">New</div>
-    </div>
-    <div class="highlight">
-      <div class="circle filled" id="highlight-thumb"></div>
-      <div class="reuse-badge"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M17 2l4 3.5-4 3.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 11.5V9a4 4 0 014-4h14" stroke="white" stroke-width="2.2" stroke-linecap="round"/><path d="M7 22l-4-3.5 4-3.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12.5V15a4 4 0 01-4 4H3" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg></div>
-      <div class="name">Memories</div>
     </div>
   </div>
 
@@ -722,15 +621,20 @@
   const THRESHOLD = 70;
   let startY = null;
   let pulling = false;
-  let importedAvatar = null;
 
   const DEFAULT_AVATAR = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23303030'/%3E%3Ccircle cx='50' cy='40' r='16' fill='%236e6e6e'/%3E%3Cpath d='M24 84c0-15 12-25 26-25s26 10 26 25z' fill='%236e6e6e'/%3E%3C/svg%3E";
 
-  function setAvatar(url) {
-    document.querySelectorAll('.avatar, .nav-avatar').forEach(el => el.style.backgroundImage = `url("${url}")`);
-    document.getElementById('highlight-thumb').style.backgroundImage = `url("${url}")`;
+  // ---------- Profile state ----------
+  const profile = {
+    username: '', displayName: '', note: '', bio: '',
+    posts: 0, followers: 0, following: 0,
+    avatarUrl: DEFAULT_AVATAR, dmBadge: 0
+  };
+  let pendingAvatarUrl = DEFAULT_AVATAR;
+
+  function escapeHtml(s) {
+    return (s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
-  setAvatar(DEFAULT_AVATAR);
 
   function formatNumber(num) {
     if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
@@ -738,76 +642,125 @@
     return num.toString();
   }
 
-  function showModal() { modal.classList.remove('hidden'); }
+  function setAvatar(url) {
+    document.querySelectorAll('.avatar, .nav-avatar').forEach(el => el.style.backgroundImage = `url("${url}")`);
+  }
 
   function setBadge(el, val) {
     el.textContent = val;
     el.style.display = val > 0 ? 'flex' : 'none';
   }
 
-  function applyProfile() {
-    const username = document.getElementById('username').value.trim();
-    const fullname = document.getElementById('fullname').value.trim();
-    const note = document.getElementById('note').value.trim();
-    const bioFlag = document.getElementById('bio-flag').value.trim();
-    const bioLink = document.getElementById('bio-link').value.trim();
-    const posts = parseInt(document.getElementById('posts').value) || 0;
-    const followers = parseInt(document.getElementById('followers').value) || 0;
-    const following = parseInt(document.getElementById('following').value) || 0;
-    const avatarFile = document.getElementById('avatar-file').files[0];
-    const urlField = document.getElementById('avatar-url').value.trim();
-    let avatarUrl;
-    if (avatarFile) avatarUrl = URL.createObjectURL(avatarFile);
-    else if (importedAvatar && urlField === '(imported photo)') avatarUrl = importedAvatar;
-    else avatarUrl = urlField || DEFAULT_AVATAR;
-    const dmBadge = parseInt(document.getElementById('dm-badge').value) || 0;
+  function renderBio(text) {
+    const bioEl = document.querySelector('.bio');
+    const trimmed = (text || '').trim();
+    if (!trimmed) { bioEl.style.display = 'none'; bioEl.innerHTML = ''; return; }
+    bioEl.style.display = '';
+    bioEl.innerHTML = trimmed.split('\n').map(line => {
+      const t = line.trim();
+      if (!t) return '';
+      const isLink = /^https?:\/\//i.test(t) || /^@/.test(t);
+      const esc = escapeHtml(t);
+      return isLink ? `<span class="link">${esc}</span>` : esc;
+    }).join('<br>');
+  }
 
-    document.querySelector('.username').textContent = username;
-    document.querySelector('.name').textContent = fullname;
+  function applyProfileToDOM() {
+    document.querySelector('.username').textContent = profile.username;
+    document.querySelector('.name').textContent = profile.displayName;
 
     const noteEl = document.getElementById('note-bubble');
-    noteEl.textContent = note;
-    noteEl.style.display = note ? 'block' : 'none';
+    noteEl.textContent = profile.note;
+    noteEl.style.display = profile.note ? 'block' : 'none';
 
-    const bioEl = document.querySelector('.bio');
-    if (bioFlag || bioLink) {
-      bioEl.style.display = '';
-      bioEl.innerHTML = (bioFlag ? `<span class="flag">${bioFlag}</span><br>` : '') +
-                        (bioLink ? `<span class="link">${bioLink}</span>` : '');
-    } else {
-      bioEl.style.display = 'none';
-    }
-
-    setAvatar(avatarUrl);
+    renderBio(profile.bio);
+    setAvatar(profile.avatarUrl);
 
     const statDivs = document.querySelectorAll('.stat');
-    statDivs[0].querySelector('.num').textContent = formatNumber(posts);
-    statDivs[1].querySelector('.num').textContent = followers.toLocaleString('en-US');
-    statDivs[2].querySelector('.num').textContent = following.toLocaleString('en-US');
+    statDivs[0].querySelector('.num').textContent = formatNumber(profile.posts);
+    statDivs[1].querySelector('.num').textContent = profile.followers.toLocaleString('en-US');
+    statDivs[2].querySelector('.num').textContent = profile.following.toLocaleString('en-US');
 
-    setBadge(document.getElementById('dm-badge-display'), dmBadge);
+    setBadge(document.getElementById('dm-badge-display'), profile.dmBadge);
+  }
 
+  function updateAvatarPreview() {
+    document.getElementById('avatar-preview').style.backgroundImage = `url("${pendingAvatarUrl}")`;
+  }
+
+  function showModal() {
+    document.getElementById('username').value = profile.username;
+    document.getElementById('displayname').value = profile.displayName;
+    document.getElementById('note').value = profile.note;
+    document.getElementById('bio').value = profile.bio;
+    document.getElementById('posts').value = profile.posts;
+    document.getElementById('followers').value = profile.followers;
+    document.getElementById('following').value = profile.following;
+    document.getElementById('dm-badge').value = profile.dmBadge;
+    pendingAvatarUrl = profile.avatarUrl;
+    updateAvatarPreview();
+    modal.classList.remove('hidden');
+  }
+
+  function cancelModal() {
+    pendingAvatarUrl = profile.avatarUrl;
     modal.classList.add('hidden');
   }
 
-  /* ---------- Import from screenshot (OCR + crop) ---------- */
+  function reopenModal() { modal.classList.remove('hidden'); }
+
+  function saveProfile() {
+    profile.username = document.getElementById('username').value.trim();
+    profile.displayName = document.getElementById('displayname').value.trim();
+    profile.note = document.getElementById('note').value.trim();
+    profile.bio = document.getElementById('bio').value;
+    profile.posts = parseInt(document.getElementById('posts').value) || 0;
+    profile.followers = parseInt(document.getElementById('followers').value) || 0;
+    profile.following = parseInt(document.getElementById('following').value) || 0;
+    profile.dmBadge = parseInt(document.getElementById('dm-badge').value) || 0;
+    profile.avatarUrl = pendingAvatarUrl;
+
+    applyProfileToDOM();
+    modal.classList.add('hidden');
+  }
+
+  applyProfileToDOM();
+
+  // ---------- Shared cropper (avatar photo + highlight photo) ----------
   const cropperEl = document.getElementById('cropper');
   const cropImg = document.getElementById('crop-img');
   const cropCircle = document.getElementById('crop-circle');
   const cropSizeInput = document.getElementById('crop-size');
-  const shotInput = document.getElementById('screenshot-input');
+  const photoPicker = document.getElementById('photo-picker');
+  const cropTitleEl = document.getElementById('crop-title');
+  const cropHintEl = document.getElementById('crop-hint-text');
   let ccx = 0, ccy = 0, cd = 0;
+  let cropMode = 'avatar';
 
-  function startImport() { document.getElementById('import-intro').classList.remove('hidden'); }
-  function closeImportIntro() { document.getElementById('import-intro').classList.add('hidden'); }
-  function pickScreenshot() { closeImportIntro(); shotInput.value = ''; shotInput.click(); }
+  function openAvatarPicker() {
+    cropMode = 'avatar';
+    photoPicker.value = '';
+    photoPicker.click();
+  }
+  function openHighlightPicker() {
+    cropMode = 'highlight';
+    photoPicker.value = '';
+    photoPicker.click();
+  }
 
-  shotInput.addEventListener('change', (e) => {
+  photoPicker.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
     cropImg.src = URL.createObjectURL(file);
+    if (cropMode === 'avatar') {
+      cropTitleEl.textContent = 'Crop profile picture';
+      cropHintEl.textContent = 'Drag the circle over the profile picture';
+      modal.classList.add('hidden');
+    } else {
+      cropTitleEl.textContent = 'Crop highlight picture';
+      cropHintEl.textContent = 'Drag the circle over the highlight picture';
+    }
     cropperEl.classList.remove('hidden');
-    runOCR(file);
   });
 
   function clampCircle() {
@@ -850,103 +803,44 @@
   cropCircle.addEventListener('pointerup', () => { dragging = false; });
   cropCircle.addEventListener('pointercancel', () => { dragging = false; });
 
-  function confirmCrop() {
+  function cropToDataUrl() {
     const scale = cropImg.naturalWidth / cropImg.clientWidth;
     const sx = (ccx - cd / 2) * scale, sy = (ccy - cd / 2) * scale, sd = cd * scale;
     const out = Math.max(1, Math.round(sd));
     const canvas = document.createElement('canvas');
     canvas.width = out; canvas.height = out;
     canvas.getContext('2d').drawImage(cropImg, sx, sy, sd, sd, 0, 0, out, out);
-    importedAvatar = canvas.toDataURL('image/jpeg', 0.92);
-    setAvatar(importedAvatar);
-    document.getElementById('avatar-url').value = '(imported photo)';
-    cropperEl.classList.add('hidden');
-    showModal();
+    return canvas.toDataURL('image/jpeg', 0.92);
   }
-  function cancelCrop() { cropperEl.classList.add('hidden'); }
-  window.startImport = startImport;
-  window.closeImportIntro = closeImportIntro;
-  window.pickScreenshot = pickScreenshot;
-  window.confirmCrop = confirmCrop;
-  window.cancelCrop = cancelCrop;
 
-  function loadTesseract() {
-    return new Promise((resolve, reject) => {
-      if (window.Tesseract) return resolve();
-      const s = document.createElement('script');
-      s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
-      s.onload = () => resolve();
-      s.onerror = () => reject(new Error('load failed'));
-      document.head.appendChild(s);
+  function addHighlightTile(imgUrl, name) {
+    const row = document.getElementById('highlights-row');
+    const el = document.createElement('div');
+    el.className = 'highlight';
+    el.innerHTML = `<div class="circle filled" style="background-image:url('${imgUrl}')"></div><div class="name"></div>`;
+    el.querySelector('.name').textContent = name;
+    el.addEventListener('click', () => {
+      if (confirm('Remove this highlight?')) el.remove();
     });
+    row.appendChild(el);
   }
 
-  function parseCount(s) {
-    if (!s) return null;
-    s = s.toString().trim().toLowerCase().replace(/,/g, '').replace(/\s/g, '');
-    let mult = 1;
-    if (s.endsWith('k')) { mult = 1000; s = s.slice(0, -1); }
-    else if (s.endsWith('m')) { mult = 1000000; s = s.slice(0, -1); }
-    const n = parseFloat(s);
-    return isNaN(n) ? null : Math.round(n * mult);
-  }
-
-  function parseProfile(text) {
-    const raw = (text || '').replace(/\r/g, '');
-    const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
-    const stop = /^(posts?|followers?|following|edit|profile|share|message|follow|new|memories|create|your|first|post|add|banners)$/i;
-    const res = {};
-    const num = (label) => {
-      let m = raw.match(new RegExp('([0-9][0-9.,]*\\s*[km]?)\\s*' + label, 'i'));
-      if (!m) {
-        const idx = lines.findIndex(l => new RegExp('^' + label + '$', 'i').test(l));
-        if (idx > 0) m = [null, lines[idx - 1]];
-      }
-      return m ? parseCount(m[1]) : null;
-    };
-    res.posts = num('posts');
-    res.followers = num('followers');
-    res.following = num('following');
-    let handle = null, name = null;
-    for (const l of lines) {
-      const t = l.replace(/^@/, '');
-      if (!handle && /^[a-z0-9._]{2,30}$/i.test(t) && /[a-z]/i.test(t) && !stop.test(t)) handle = t;
+  function confirmCrop() {
+    const dataUrl = cropToDataUrl();
+    cropperEl.classList.add('hidden');
+    if (cropMode === 'avatar') {
+      pendingAvatarUrl = dataUrl;
+      updateAvatarPreview();
+      reopenModal();
+    } else {
+      const name = (prompt('Highlight name', 'Highlight') || '').trim().slice(0, 20) || 'Highlight';
+      addHighlightTile(dataUrl, name);
     }
-    for (const l of lines) {
-      if (/[a-zA-Z]/.test(l) && /\s/.test(l) && !/\d/.test(l) && !stop.test(l) && l.length <= 30) { name = l; break; }
-    }
-    res.username = handle;
-    res.fullname = name;
-    return res;
   }
 
-  function prefill(res) {
-    const set = (id, v) => { if (v !== null && v !== undefined && v !== '') document.getElementById(id).value = v; };
-    set('username', res.username);
-    set('fullname', res.fullname);
-    set('posts', res.posts);
-    set('followers', res.followers);
-    set('following', res.following);
-  }
-
-  async function runOCR(file) {
-    const status = document.getElementById('ocr-status');
-    status.className = 'busy';
-    status.textContent = 'Reading profile…';
-    try {
-      await loadTesseract();
-      const { data } = await Tesseract.recognize(file, 'eng');
-      const res = parseProfile(data.text || '');
-      prefill(res);
-      const got = res.username || res.followers != null;
-      status.className = '';
-      status.textContent = got
-        ? 'Got it — crop the photo, then review the details.'
-        : 'Couldn’t read much — crop the photo, then type the details.';
-    } catch (err) {
-      status.className = '';
-      status.textContent = 'Couldn’t auto-read text — crop the photo, then type the details.';
-    }
+  function cancelCrop() {
+    cropperEl.classList.add('hidden');
+    if (cropMode === 'avatar') reopenModal();
   }
 
   scroller.addEventListener('touchstart', (e) => {
