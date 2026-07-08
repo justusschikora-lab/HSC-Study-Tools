@@ -2,10 +2,28 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "void-website",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": ["run", "--allow-net", "--allow-read", "jsr:@std/http/file-server", "cool-website", "--port", "8124"],
+      "port": 8124
+    },
+    {
+      "name": "unfollow-tracker",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": ["run", "--allow-net", "--allow-read", "jsr:@std/http/file-server", "unfollow-tracker", "--port", "8125"],
+      "port": 8125
+    },
+    {
       "name": "hscchem",
       "runtimeExecutable": "deno",
       "runtimeArgs": ["run", "--allow-net", "--allow-read", "jsr:@std/http/file-server", "--port", "8123"],
       "port": 8123
+    },
+    {
+      "name": "instadupe",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": ["run", "--allow-net", "--allow-read", "jsr:@std/http/file-server", "instadupe", "--port", "8126"],
+      "port": 8126
     }
   ]
 }
