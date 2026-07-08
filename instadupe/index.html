@@ -1434,18 +1434,18 @@
     positionUnderline(true);
   }
 
-  // Sliding active-tab underline: uniform width, centered under each tab;
+  // Sliding active-tab underline: per-tab width, centered under the icon glyph;
   // velocity grows with distance travelled.
   const tabRow = document.querySelector('.tab-row');
   const tabUnderline = document.getElementById('tab-underline');
-  const UNDERLINE_W = 64;
+  const UNDERLINE_W = { posts: 40, videos: 80, reposts: 64, mentions: 64 };
   function positionUnderline(animate) {
     const active = document.querySelector('.tab.active');
     if (!active) return;
     const rowRect = tabRow.getBoundingClientRect();
     const tabRect = active.getBoundingClientRect();
     if (!tabRect.width) return;
-    const w = UNDERLINE_W;
+    const w = UNDERLINE_W[active.dataset.tab] || 64;
     // Center under the main glyph (first svg of the active icon) so the videos
     // dropdown chevron doesn't shift the bar off-centre.
     const glyph = active.querySelector('.ic-filled svg');
