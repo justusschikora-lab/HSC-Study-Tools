@@ -564,6 +564,7 @@
       <button class="btn-primary" onclick="saveProfileFromModal()">Save</button>
     </div>
     <button class="remove-link" onclick="resetProfile()">Reset profile</button>
+    <button class="remove-link" onclick="resetEverything()">Start from scratch (clear everything)</button>
   </div>
 </div>
 
@@ -856,6 +857,14 @@
     applyProfileToDOM();
     saveProfileToStorage();
     showModal();
+  }
+
+  function resetEverything() {
+    if (!confirm('Start from scratch? This permanently clears your profile, all posts and all highlights.')) return;
+    localStorage.removeItem('instadupe_profile');
+    localStorage.removeItem('instadupe_posts');
+    localStorage.removeItem('instadupe_highlights');
+    location.reload();
   }
 
   applyProfileToDOM();
