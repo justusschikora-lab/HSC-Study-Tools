@@ -280,6 +280,16 @@
   .tab-row {
     display: flex;
     border-top: 0.5px solid #262626;
+    position: relative;
+  }
+  #tab-underline {
+    position: absolute;
+    left: 0; bottom: 0;
+    width: 30px; height: 1.5px;
+    background: #fff;
+    border-radius: 2px;
+    transform: translateX(0);
+    will-change: transform;
   }
   .tab {
     flex: 1;
@@ -297,15 +307,6 @@
   .tab.active .ic-outline { display: none; }
   .tab.active .ic-filled { display: inline-flex; align-items: center; gap: 2px; }
   .tab .knock { fill: var(--bg); }
-  .tab.active::after {
-    content: "";
-    position: absolute;
-    left: 50%; bottom: 0;
-    transform: translateX(-50%);
-    width: 30px; height: 1.5px;
-    background: #fff;
-    border-radius: 2px;
-  }
 
   /* ---------- Empty state ---------- */
   .empty-state {
@@ -393,6 +394,33 @@
   }
   .reposts-toggle-row input:checked + .slider { background: #0095f6; }
   .reposts-toggle-row input:checked + .slider::before { transform: translateX(18px); }
+
+  /* ---------- Create menu (bottom sheet) ---------- */
+  .sheet-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: flex; align-items: flex-end; justify-content: center;
+    z-index: 10500;
+  }
+  .sheet-overlay.hidden { display: none; }
+  .sheet {
+    width: 100%; max-width: 430px;
+    background: #262626;
+    border-radius: 14px 14px 0 0;
+    padding: 0 0 max(12px, env(safe-area-inset-bottom));
+    animation: sheet-up 0.24s cubic-bezier(0.2,0.8,0.2,1);
+  }
+  @keyframes sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .sheet-handle { width: 38px; height: 4px; background: #5a5a5a; border-radius: 2px; margin: 9px auto 4px; }
+  .sheet-title { text-align: center; font-size: 16px; font-weight: 700; padding: 6px 0 8px; }
+  .sheet-row {
+    display: flex; align-items: center; gap: 18px;
+    width: 100%; background: none; border: none; color: var(--text);
+    font-size: 16px; font-family: inherit; font-weight: 500;
+    padding: 15px 24px; cursor: pointer; text-align: left;
+  }
+  .sheet-row:active { background: #333; }
+  .sheet-row svg { flex-shrink: 0; }
 
   /* ---------- Post viewer ---------- */
   #post-viewer {
@@ -708,6 +736,17 @@
   <div class="pv-stage"><img id="pv-img" src="" alt=""></div>
 </div>
 
+<div id="create-sheet" class="sheet-overlay hidden" onclick="closeCreateSheet(event)">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Create</div>
+    <button class="sheet-row" onclick="createFromMenu('posts')"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="9" cy="9" r="2"/><path d="M4 17l5-4 4 3 3-2 4 3" stroke-linecap="round" stroke-linejoin="round"/></svg> Post</button>
+    <button class="sheet-row" onclick="createFromMenu('videos')"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="6"/><path d="M10 8.3 L16.2 12 L10 15.7 Z" stroke-linejoin="round"/></svg> Reel</button>
+    <button class="sheet-row" onclick="createFromMenu('highlight')"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7" stroke-linecap="round"/></svg> Highlight</button>
+    <button class="sheet-row" onclick="createFromMenu('mentions')"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="6.5"/><circle cx="12" cy="9.7" r="3"/><path d="M6.3 19 a5.7 5.7 0 0 1 11.4 0"/></svg> Mention</button>
+  </div>
+</div>
+
 <div id="instructions-modal" class="modal-overlay hidden">
   <div class="modal-content">
     <h2>How to use this</h2>
@@ -785,7 +824,7 @@
   </div>
 
   <header class="topbar">
-    <svg class="plus" onclick="openImport()" width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="1.9" stroke-linecap="round"/></svg>
+    <svg class="plus" onclick="openCreateSheet()" width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="1.9" stroke-linecap="round"/></svg>
     <div class="userblock">
       <button class="lock-btn" title="Presets" onclick="openPresets()">
         <svg width="15" height="17" viewBox="0 0 24 24" fill="none"><rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5" stroke="white" stroke-width="1.9"/><path d="M8 10.5V7.5a4 4 0 017.5-2" stroke="white" stroke-width="1.9" stroke-linecap="round"/></svg>
@@ -847,6 +886,7 @@
       <span class="ic-outline"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="6.5"/><circle cx="12" cy="9.7" r="3"/><path d="M6.3 19 a5.7 5.7 0 0 1 11.4 0"/></svg></span>
       <span class="ic-filled"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="6.5"/><circle class="knock" cx="12" cy="9.7" r="3"/><path class="knock" d="M6.3 19 a5.7 5.7 0 0 1 11.4 0 Z"/></svg></span>
     </div>
+    <div id="tab-underline"></div>
   </div>
 
   <div class="content-grid" id="content-grid" style="display:none"></div>
@@ -855,27 +895,23 @@
     <img id="empty-illustration" src="illustration.png" alt="">
     <div class="label">Create your first post</div>
     <div class="sublabel">Make this space your own.</div>
-    <button class="create-btn" onclick="openImport()">Create</button>
   </div>
 
   <div class="empty-state" id="empty-videos" style="display:none">
     <div class="empty-circle"></div>
     <div class="label">Share a moment with the world</div>
-    <button class="import-link" onclick="openImport()">Add videos</button>
   </div>
 
   <div class="empty-state" id="empty-reposts" style="display:none">
     <div class="empty-circle"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#8e8e8e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 13.5 V9.5 A3 3 0 0 1 9 6.5 H15.5"/><path d="M12.7 3.8 L16 6.6 L12.7 9.4"/><path d="M18 10.5 V14.5 A3 3 0 0 1 15 17.5 H8.5"/><path d="M11.3 14.6 L8 17.4 L11.3 20.2"/></svg></div>
     <div class="label">Reposts</div>
     <div class="sublabel">Photos and videos you repost will appear here.</div>
-    <button class="import-link" onclick="openImport()">Add reposts</button>
   </div>
 
   <div class="empty-state" id="empty-mentions" style="display:none">
     <div class="empty-circle"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#8e8e8e" stroke-width="1.6" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="6.5"/><circle cx="12" cy="9.7" r="3"/><path d="M6.3 19 a5.7 5.7 0 0 1 11.4 0"/></svg></div>
     <div class="label">Photos and videos of you</div>
     <div class="sublabel">When people tag you in photos and videos, they'll appear here.</div>
-    <button class="import-link" onclick="openImport()">Add mentions</button>
   </div>
 </div>
 
@@ -1004,6 +1040,7 @@
     applyProfileToDOM();
     renderHighlights();
     renderContent();
+    positionUnderline(false);
     saveProfileToStorage();
     saveHighlightsToStorage();
     ['posts', 'videos', 'reposts', 'mentions'].forEach(saveCollection);
@@ -1123,6 +1160,7 @@
 
     applyProfileToDOM();
     renderContent();
+    positionUnderline(false);
     saveProfileToStorage();
     modal.classList.add('hidden');
   }
@@ -1406,6 +1444,42 @@
     activeTab = tab;
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
     renderContent();
+    positionUnderline(true);
+  }
+
+  // Sliding active-tab underline: velocity grows with distance travelled
+  const tabRow = document.querySelector('.tab-row');
+  const tabUnderline = document.getElementById('tab-underline');
+  function positionUnderline(animate) {
+    const active = document.querySelector('.tab.active');
+    if (!active) return;
+    const rowRect = tabRow.getBoundingClientRect();
+    const r = active.getBoundingClientRect();
+    if (!r.width) return;
+    const w = 30;
+    const targetX = (r.left - rowRect.left) + r.width / 2 - w / 2;
+    const prevX = parseFloat(tabUnderline.dataset.x);
+    let dur = 0;
+    if (animate && !isNaN(prevX)) {
+      const steps = Math.max(1, Math.round(Math.abs(targetX - prevX) / r.width));
+      dur = Math.min(0.5, 0.22 * Math.sqrt(steps));
+    }
+    tabUnderline.style.transition = dur ? `transform ${dur}s cubic-bezier(0.4,0,0.2,1)` : 'none';
+    tabUnderline.style.width = w + 'px';
+    tabUnderline.style.transform = `translateX(${targetX}px)`;
+    tabUnderline.dataset.x = targetX;
+  }
+
+  // Create menu (bottom sheet)
+  function openCreateSheet() { document.getElementById('create-sheet').classList.remove('hidden'); }
+  function closeCreateSheet(e) {
+    if (e && e.target !== e.currentTarget) return;
+    document.getElementById('create-sheet').classList.add('hidden');
+  }
+  function createFromMenu(type) {
+    document.getElementById('create-sheet').classList.add('hidden');
+    if (type === 'highlight') openNewHighlightModal();
+    else openImport(type);
   }
 
   function renderContent() {
@@ -1461,8 +1535,15 @@
 
   function finishImport() {
     saveCollection(importTab);
-    renderContent();
-    if (importReturnModal) { importReturnModal = false; modal.classList.remove('hidden'); }
+    if (importReturnModal) {
+      importReturnModal = false;
+      renderContent();
+      positionUnderline(false);
+      modal.classList.remove('hidden');
+    } else {
+      // show the tab we just imported into
+      switchTab(importTab === 'reposts' && !profile.reposts ? activeTab : importTab);
+    }
   }
 
   function openContentViewer(tab, i) {
@@ -1575,6 +1656,7 @@
   renderHighlights();
   loadCollections();
   renderContent();
+  positionUnderline(false);
   loadPresetsFromStorage();
 
   scroller.addEventListener('touchstart', (e) => {
