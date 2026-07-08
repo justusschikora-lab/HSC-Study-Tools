@@ -690,13 +690,6 @@
       <label>DM badge</label>
       <input type="number" id="dm-badge" min="0">
     </div>
-    <div class="form-group">
-      <div class="reposts-toggle-row">
-        <label style="margin:0">Show reposts tab</label>
-        <label class="switch"><input type="checkbox" id="reposts-toggle" onchange="onRepostsToggle()"><span class="slider"></span></label>
-      </div>
-      <button type="button" class="choose-photo-btn" id="import-reposts-btn" style="display:none;margin-top:8px" onclick="openImport('reposts')">Import repost photos</button>
-    </div>
     <div class="form-buttons">
       <button class="btn-secondary" onclick="cancelModal()">Cancel</button>
       <button class="btn-primary" onclick="saveProfileFromModal()">Save</button>
@@ -742,6 +735,7 @@
     <div class="sheet-title">Create</div>
     <button class="sheet-row" onclick="createFromMenu('posts')"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="9" cy="9" r="2"/><path d="M4 17l5-4 4 3 3-2 4 3" stroke-linecap="round" stroke-linejoin="round"/></svg> Post</button>
     <button class="sheet-row" onclick="createFromMenu('videos')"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="6"/><path d="M10 8.3 L16.2 12 L10 15.7 Z" stroke-linejoin="round"/></svg> Reel</button>
+    <button class="sheet-row" onclick="createFromMenu('reposts')"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 13.5 V9.5 A3 3 0 0 1 9 6.5 H15.5"/><path d="M12.7 3.8 L16 6.6 L12.7 9.4"/><path d="M18 10.5 V14.5 A3 3 0 0 1 15 17.5 H8.5"/><path d="M11.3 14.6 L8 17.4 L11.3 20.2"/></svg> Repost</button>
     <button class="sheet-row" onclick="createFromMenu('highlight')"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7" stroke-linecap="round"/></svg> Highlight</button>
     <button class="sheet-row" onclick="createFromMenu('mentions')"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="6.5"/><circle cx="12" cy="9.7" r="3"/><path d="M6.3 19 a5.7 5.7 0 0 1 11.4 0"/></svg> Mention</button>
   </div>
@@ -752,11 +746,11 @@
     <h2>How to use this</h2>
     <div class="instructions">
       <p><b>Edit profile</b> — Tap <b>Edit profile</b> to set your name, username, bio, the note bubble above your photo, follower &amp; following counts, profile picture and the DM badge number.</p>
-      <p><b>Add posts</b> — Tap the <b>+</b> at the top-left (or <b>Create</b> on the empty state). You can pick several photos at once; the grid grows on its own and the post count updates.</p>
+      <p><b>Add content</b> — Tap the <b>+</b> at the top-left to add a Post, Reel, Highlight, Mention or Repost. You can pick several photos at once and frame each one. Reposts get their own tab once you add one.</p>
       <p><b>Add highlights</b> — Tap the <b>New</b> circle to choose a cover photo, crop it, and give it an emoji or title.</p>
       <p><b>Remove things</b> — Tap a post to open it and hit <b>Remove</b>; tap a highlight to edit or remove it.</p>
       <p><b>Reorder</b> — Press and hold a post or highlight for a moment, then drag it to a new spot.</p>
-      <p><b>Tabs</b> — Switch between Posts, Videos and Mentions. Turn on the Reposts tab in Edit profile.</p>
+      <p><b>Tabs</b> — Switch between Posts, Videos and Mentions. Add a repost from the <b>+</b> menu and the Reposts tab appears.</p>
       <p><b>Saving</b> — Everything saves automatically on this device.</p>
       <p><b>Presets</b> — Tap the lock icon by your name to save the whole profile (details, posts and highlights) as a named preset, and switch between saved profiles instantly.</p>
       <p><b>Start over</b> — In Edit profile, use <b>Reset profile</b> or <b>Start from scratch</b>.</p>
@@ -1129,16 +1123,9 @@
     document.getElementById('followers').value = profile.followers;
     document.getElementById('following').value = profile.following;
     document.getElementById('dm-badge').value = profile.dmBadge;
-    document.getElementById('reposts-toggle').checked = !!profile.reposts;
-    document.getElementById('import-reposts-btn').style.display = profile.reposts ? 'block' : 'none';
     pendingAvatarUrl = profile.avatarUrl;
     updateAvatarPreview();
     modal.classList.remove('hidden');
-  }
-
-  function onRepostsToggle() {
-    document.getElementById('import-reposts-btn').style.display =
-      document.getElementById('reposts-toggle').checked ? 'block' : 'none';
   }
 
   function cancelModal() {
@@ -1156,7 +1143,6 @@
     profile.followers = parseInt(document.getElementById('followers').value) || 0;
     profile.following = parseInt(document.getElementById('following').value) || 0;
     profile.dmBadge = parseInt(document.getElementById('dm-badge').value) || 0;
-    profile.reposts = document.getElementById('reposts-toggle').checked;
     profile.avatarUrl = pendingAvatarUrl;
 
     applyProfileToDOM();
@@ -1441,7 +1427,7 @@
   }
 
   function switchTab(tab) {
-    if (tab === 'reposts' && !profile.reposts) return;
+    if (tab === 'reposts' && collections.reposts.length === 0) return;
     activeTab = tab;
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
     renderContent();
@@ -1484,8 +1470,9 @@
   }
 
   function renderContent() {
-    document.querySelector('.tab[data-tab="reposts"]').style.display = profile.reposts ? 'flex' : 'none';
-    if (activeTab === 'reposts' && !profile.reposts) { switchTab('posts'); return; }
+    const hasReposts = collections.reposts.length > 0;
+    document.querySelector('.tab[data-tab="reposts"]').style.display = hasReposts ? 'flex' : 'none';
+    if (activeTab === 'reposts' && !hasReposts) { switchTab('posts'); return; }
 
     const grid = document.getElementById('content-grid');
     grid.innerHTML = '';
@@ -1543,7 +1530,7 @@
       modal.classList.remove('hidden');
     } else {
       // show the tab we just imported into
-      switchTab(importTab === 'reposts' && !profile.reposts ? activeTab : importTab);
+      switchTab(importTab);
     }
   }
 
