@@ -266,7 +266,7 @@
     display: flex; align-items: center; justify-content: center;
   }
   .highlight .circle.filled {
-    border: 1px solid #4a4a4a;
+    border: 3px solid #4d4d4d;
     background-size: cover;
     background-position: center;
     padding: 3px;
@@ -394,6 +394,14 @@
     border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
     padding: 0 4px;
+    border: 1.5px solid var(--bg);
+  }
+  .bottom-nav .nav-item .dm-dot {
+    position: absolute;
+    bottom: 2px; right: -2px;
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--red);
     border: 1.5px solid var(--bg);
   }
   .bottom-nav .nav-avatar-wrap { position: relative; }
@@ -722,7 +730,7 @@
 
   <div class="tab-row">
     <div class="tab active"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="2.5" y="2.5" width="5.4" height="5.4" rx="1.2" fill="white"/><rect x="9.3" y="2.5" width="5.4" height="5.4" rx="1.2" fill="white"/><rect x="16.1" y="2.5" width="5.4" height="5.4" rx="1.2" fill="white"/><rect x="2.5" y="9.3" width="5.4" height="5.4" rx="1.2" fill="white"/><rect x="9.3" y="9.3" width="5.4" height="5.4" rx="1.2" fill="white"/><rect x="16.1" y="9.3" width="5.4" height="5.4" rx="1.2" fill="white"/><rect x="2.5" y="16.1" width="5.4" height="5.4" rx="1.2" fill="white"/><rect x="9.3" y="16.1" width="5.4" height="5.4" rx="1.2" fill="white"/><rect x="16.1" y="16.1" width="5.4" height="5.4" rx="1.2" fill="white"/></svg></div>
-    <div class="tab"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="2.2" y="2.2" width="19.6" height="19.6" rx="4.5" stroke="white" stroke-width="1.6"/><path d="M2.5 8h19M9 2.5L12 8M15 2.5L18 8" stroke="white" stroke-width="1.6"/><path d="M10 12l5 3-5 3v-6z" fill="white"/></svg></div>
+    <div class="tab"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="2.5" y="2.5" width="19" height="19" rx="5" stroke="white" stroke-width="1.6"/><path d="M10 8.4l6.2 3.6-6.2 3.6z" fill="white"/></svg></div>
     <div class="tab"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M17 2.5l4 3.5-4 3.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 11V9a4 4 0 014-4h14" stroke="white" stroke-width="1.6" stroke-linecap="round"/><path d="M7 21.5l-4-3.5 4-3.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 13v2a4 4 0 01-4 4H3" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg></div>
     <div class="tab"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M4 20c0-3.3 3.6-5.5 8-5.5s8 2.2 8 5.5" stroke="white" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="8" r="4" stroke="white" stroke-width="1.6"/><rect x="1.5" y="1.5" width="21" height="21" rx="5" stroke="white" stroke-width="1.6"/></svg></div>
   </div>
@@ -730,7 +738,7 @@
   <div class="posts-grid" id="posts-grid" style="display:none"></div>
 
   <div class="empty-state">
-    <img src="illustration.png" alt="">
+    <img id="empty-illustration" src="illustration.png" alt="">
     <div class="label">Create your first post</div>
     <div class="sublabel">Make this space your own.</div>
     <button class="create-btn" onclick="openPostPicker()">Create</button>
@@ -741,8 +749,8 @@
   <div class="nav-item"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M3 10.5L12 3l9 7.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 9.5V20a1 1 0 001 1h4v-6h3v6h4a1 1 0 001-1V9.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
   <div class="nav-item"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5" stroke="white" stroke-width="1.8"/><path d="M9.5 8.5l6 3.5-6 3.5v-7z" fill="white"/></svg></div>
   <div class="nav-item">
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M21.5 3.5L2.8 10.2a.6.6 0 000 1.13l6.6 2.35a1 1 0 01.6.6l2.35 6.6a.6.6 0 001.13 0L21.5 3.5z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/><path d="M21.5 3.5L10 14" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
-    <span class="badge" id="dm-badge-display" style="display:none">0</span>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 3.7L20 19.2q.4.9-.6.45L12 16.1l-7.4 3.55q-1 .45-.6-.45z" stroke="white" stroke-width="1.7" stroke-linejoin="round"/></svg>
+    <span class="dm-dot" id="dm-badge-display" style="display:none"></span>
   </div>
   <div class="nav-item"><svg width="25" height="25" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7.5" stroke="white" stroke-width="1.8"/><path d="M21 21l-4.5-4.5" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg></div>
   <div class="nav-item nav-avatar-wrap">
@@ -808,8 +816,7 @@
   }
 
   function setBadge(el, val) {
-    el.textContent = val;
-    el.style.display = val > 0 ? 'flex' : 'none';
+    el.style.display = val > 0 ? 'block' : 'none';
   }
 
   function renderBio(text) {
@@ -1212,6 +1219,9 @@
   }
 
   // ---------- Init highlights + posts ----------
+  const ILLUSTRATIONS = ['illustration.png', 'illustration2.png'];
+  document.getElementById('empty-illustration').src = ILLUSTRATIONS[Math.floor(Math.random() * ILLUSTRATIONS.length)];
+
   loadHighlightsFromStorage();
   renderHighlights();
   loadPostsFromStorage();
