@@ -506,7 +506,7 @@
     </div>
     <div class="form-buttons">
       <button class="btn-secondary" onclick="cancelModal()">Cancel</button>
-      <button class="btn-primary" onclick="saveProfile()">Save</button>
+      <button class="btn-primary" onclick="saveProfileFromModal()">Save</button>
     </div>
   </div>
 </div>
@@ -624,13 +624,28 @@
 
   const DEFAULT_AVATAR = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23303030'/%3E%3Ccircle cx='50' cy='40' r='16' fill='%236e6e6e'/%3E%3Cpath d='M24 84c0-15 12-25 26-25s26 10 26 25z' fill='%236e6e6e'/%3E%3C/svg%3E";
 
-  // ---------- Profile state ----------
+  // ---------- Profile state & persistence ----------
   const profile = {
     username: '', displayName: '', note: '', bio: '',
     posts: 0, followers: 0, following: 0,
     avatarUrl: DEFAULT_AVATAR, dmBadge: 0
   };
   let pendingAvatarUrl = DEFAULT_AVATAR;
+
+  function saveProfileToStorage() {
+    localStorage.setItem('instadupe_profile', JSON.stringify(profile));
+  }
+
+  function loadProfile() {
+    const saved = localStorage.getItem('instadupe_profile');
+    if (saved) {
+      const data = JSON.parse(saved);
+      Object.assign(profile, data);
+      pendingAvatarUrl = profile.avatarUrl;
+    }
+  }
+
+  loadProfile();
 
   function escapeHtml(s) {
     return (s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -709,7 +724,7 @@
 
   function reopenModal() { modal.classList.remove('hidden'); }
 
-  function saveProfile() {
+  function saveProfileFromModal() {
     profile.username = document.getElementById('username').value.trim();
     profile.displayName = document.getElementById('displayname').value.trim();
     profile.note = document.getElementById('note').value.trim();
@@ -721,10 +736,12 @@
     profile.avatarUrl = pendingAvatarUrl;
 
     applyProfileToDOM();
+    saveProfileToStorage();
     modal.classList.add('hidden');
   }
 
   applyProfileToDOM();
+  loadHighlightsFromStorage();
 
   // ---------- Shared cropper (avatar photo + highlight photo) ----------
   const cropperEl = document.getElementById('cropper');
@@ -813,6 +830,29 @@
     return canvas.toDataURL('image/jpeg', 0.92);
   }
 
+  const highlights = [];
+
+  function saveHighlightsToStorage() {
+    const tiles = document.querySelectorAll('#highlights-row .highlight:not(:first-child)');
+    const data = Array.from(tiles).map(el => ({
+      imgUrl: el.querySelector('.circle').style.backgroundImage.match(/url\(["']?(.+?)["']?\)/)?.[1] || '',
+      name: el.querySelector('.name').textContent
+    }));
+    localStorage.setItem('instadupe_highlights', JSON.stringify(data));
+  }
+
+  function loadHighlightsFromStorage() {
+    const saved = localStorage.getItem('instadupe_highlights');
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        data.forEach(h => addHighlightTile(h.imgUrl, h.name));
+      } catch (e) {
+        // ignore parse errors
+      }
+    }
+  }
+
   function addHighlightTile(imgUrl, name) {
     const row = document.getElementById('highlights-row');
     const el = document.createElement('div');
@@ -820,7 +860,10 @@
     el.innerHTML = `<div class="circle filled" style="background-image:url('${imgUrl}')"></div><div class="name"></div>`;
     el.querySelector('.name').textContent = name;
     el.addEventListener('click', () => {
-      if (confirm('Remove this highlight?')) el.remove();
+      if (confirm('Remove this highlight?')) {
+        el.remove();
+        saveHighlightsToStorage();
+      }
     });
     row.appendChild(el);
   }
@@ -835,6 +878,7 @@
     } else {
       const name = (prompt('Highlight name', 'Highlight') || '').trim().slice(0, 20) || 'Highlight';
       addHighlightTile(dataUrl, name);
+      saveHighlightsToStorage();
     }
   }
 
