@@ -135,6 +135,8 @@
     padding: 8px 18px 0;
     gap: 26px;
   }
+  /* Reserve room above the avatar for the note bubble so it clears the header */
+  .profile-top.has-note { margin-top: 54px; }
   .avatar-wrap { position: relative; flex-shrink: 0; }
   .avatar {
     width: 88px; height: 88px;
@@ -831,6 +833,7 @@
     const noteEl = document.getElementById('note-bubble');
     noteEl.textContent = profile.note;
     noteEl.style.display = profile.note ? 'block' : 'none';
+    document.querySelector('.profile-top').classList.toggle('has-note', !!profile.note);
 
     renderBio(profile.bio);
     setAvatar(profile.avatarUrl);
