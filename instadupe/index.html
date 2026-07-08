@@ -1442,13 +1442,10 @@
     if (!active) return;
     const rowRect = tabRow.getBoundingClientRect();
     const tabRect = active.getBoundingClientRect();
-    // Span the active icon's own left-to-right extent, with a little padding
-    const iconEl = active.querySelector('.ic-filled');
-    const iconRect = (iconEl && iconEl.offsetWidth ? iconEl : active).getBoundingClientRect();
     if (!tabRect.width) return;
-    const w = iconRect.width + 8;
-    const iconCenter = (iconRect.left - rowRect.left) + iconRect.width / 2;
-    const targetX = iconCenter - w / 2;
+    // Fill the whole tab territory, edge to edge (no side gaps)
+    const w = tabRect.width;
+    const targetX = tabRect.left - rowRect.left;
     const prevX = parseFloat(tabUnderline.dataset.x);
     let dur = 0;
     if (animate && !isNaN(prevX)) {
