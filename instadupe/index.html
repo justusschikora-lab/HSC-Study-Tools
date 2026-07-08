@@ -367,6 +367,18 @@
     cursor: pointer;
   }
   .content-grid.videos .post-tile { aspect-ratio: 9 / 16; }
+  .drag-clone {
+    position: fixed;
+    z-index: 20000;
+    pointer-events: none;
+    opacity: 0.92;
+    transform: scale(1.05);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.55);
+    background-size: cover; background-position: center;
+    border-radius: 4px;
+  }
+  .drag-src { opacity: 0.28; }
+  .reordering, .reordering * { user-select: none; }
   .reposts-toggle-row {
     display: flex; align-items: center; justify-content: space-between; gap: 10px;
   }
@@ -704,6 +716,8 @@
       <p><b>Add posts</b> — Tap the <b>+</b> at the top-left (or <b>Create</b> on the empty state). You can pick several photos at once; the grid grows on its own and the post count updates.</p>
       <p><b>Add highlights</b> — Tap the <b>New</b> circle to choose a cover photo, crop it, and give it an emoji or title.</p>
       <p><b>Remove things</b> — Tap a post to open it and hit <b>Remove</b>; tap a highlight to edit or remove it.</p>
+      <p><b>Reorder</b> — Press and hold a post or highlight for a moment, then drag it to a new spot.</p>
+      <p><b>Tabs</b> — Switch between Posts, Videos and Mentions. Turn on the Reposts tab in Edit profile.</p>
       <p><b>Saving</b> — Everything saves automatically on this device.</p>
       <p><b>Presets</b> — Tap the lock icon by your name to save the whole profile (details, posts and highlights) as a named preset, and switch between saved profiles instantly.</p>
       <p><b>Start over</b> — In Edit profile, use <b>Reset profile</b> or <b>Start from scratch</b>.</p>
@@ -1281,11 +1295,11 @@
 
     highlights.forEach((h, i) => {
       const el = document.createElement('div');
-      el.className = 'highlight';
+      el.className = 'highlight reorderable';
+      el.dataset.idx = i;
       el.innerHTML = `<div class="circle filled"></div><div class="name"></div>`;
       el.querySelector('.circle').style.backgroundImage = `url("${h.imgUrl}")`;
       el.querySelector('.name').textContent = h.name;
-      el.addEventListener('click', () => openEditHighlightModal(i));
       row.appendChild(el);
     });
   }
@@ -1413,8 +1427,8 @@
       arr.forEach((url, i) => {
         const tile = document.createElement('div');
         tile.className = 'post-tile';
+        tile.dataset.idx = i;
         tile.style.backgroundImage = `url("${url}")`;
-        tile.addEventListener('click', () => openContentViewer(activeTab, i));
         grid.appendChild(tile);
       });
     }
@@ -1468,6 +1482,90 @@
     }
     closePostViewer();
   }
+
+  // ---------- Drag-to-reorder (long-press to lift, drag to move) ----------
+  function enableReorder(container, tileSel, getArr, commit, onTap) {
+    container.addEventListener('pointerdown', (e) => {
+      if (e.button !== undefined && e.button !== 0) return;
+      const tile = e.target.closest(tileSel);
+      if (!tile || !container.contains(tile)) return;
+      const startX = e.clientX, startY = e.clientY;
+      let dragging = false, clone = null, holdTimer = null, done = false;
+
+      const blockTouch = (ev) => ev.preventDefault();
+
+      const startDrag = () => {
+        dragging = true;
+        const r = tile.getBoundingClientRect();
+        clone = tile.cloneNode(true);
+        clone.classList.add('drag-clone');
+        clone.style.left = r.left + 'px'; clone.style.top = r.top + 'px';
+        clone.style.width = r.width + 'px'; clone.style.height = r.height + 'px';
+        document.body.appendChild(clone);
+        tile.classList.add('drag-src');
+        document.body.classList.add('reordering');
+        document.addEventListener('touchmove', blockTouch, { passive: false });
+      };
+
+      const move = (ev) => {
+        if (!dragging) {
+          if (Math.hypot(ev.clientX - startX, ev.clientY - startY) > 10) finish(false);
+          return;
+        }
+        clone.style.left = (ev.clientX - clone.offsetWidth / 2) + 'px';
+        clone.style.top = (ev.clientY - clone.offsetHeight / 2) + 'px';
+        let t = document.elementFromPoint(ev.clientX, ev.clientY);
+        t = t && t.closest(tileSel);
+        if (t && t !== tile && container.contains(t)) {
+          const rect = t.getBoundingClientRect();
+          const after = ev.clientY > rect.top + rect.height / 2 ||
+            (ev.clientY >= rect.top && ev.clientY <= rect.bottom && ev.clientX > rect.left + rect.width / 2);
+          container.insertBefore(tile, after ? t.nextSibling : t);
+        }
+      };
+
+      const finish = (committed) => {
+        if (done) return; done = true;
+        clearTimeout(holdTimer);
+        document.removeEventListener('pointermove', move);
+        document.removeEventListener('pointerup', up);
+        document.removeEventListener('touchmove', blockTouch);
+        document.body.classList.remove('reordering');
+        if (dragging) {
+          if (clone) clone.remove();
+          tile.classList.remove('drag-src');
+          const order = [...container.querySelectorAll(tileSel)].map(el => parseInt(el.dataset.idx));
+          const arr = getArr();
+          commit(order.map(i => arr[i]));
+        }
+      };
+
+      const up = (ev) => {
+        const wasDrag = dragging;
+        finish(true);
+        if (!wasDrag && Math.hypot(ev.clientX - startX, ev.clientY - startY) < 10) {
+          onTap(parseInt(tile.dataset.idx));
+        }
+      };
+
+      holdTimer = setTimeout(() => { if (!done) startDrag(); }, 280);
+      document.addEventListener('pointermove', move);
+      document.addEventListener('pointerup', up);
+    });
+  }
+
+  enableReorder(
+    document.getElementById('content-grid'), '.post-tile',
+    () => collections[activeTab],
+    (newArr) => { collections[activeTab] = newArr; saveCollection(activeTab); renderContent(); },
+    (idx) => openContentViewer(activeTab, idx)
+  );
+  enableReorder(
+    document.getElementById('highlights-row'), '.highlight.reorderable',
+    () => highlights,
+    (newArr) => { highlights = newArr; saveHighlightsToStorage(); renderHighlights(); },
+    (idx) => openEditHighlightModal(idx)
+  );
 
   // ---------- Init ----------
   const ILLUSTRATIONS = ['illustration.png', 'illustration2.png'];
