@@ -429,6 +429,9 @@
     overflow-y: auto;
   }
   .modal-content h2 { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+  .instructions p { font-size: 14px; line-height: 1.45; color: #d8d8d8; margin: 0 0 13px; }
+  .instructions p:last-child { margin-bottom: 0; }
+  .instructions b { color: #fff; font-weight: 600; }
   .remove-link {
     display: block;
     width: 100%;
@@ -613,6 +616,23 @@
   <div class="pv-stage"><img id="pv-img" src="" alt=""></div>
 </div>
 
+<div id="instructions-modal" class="modal-overlay hidden">
+  <div class="modal-content">
+    <h2>How to use this</h2>
+    <div class="instructions">
+      <p><b>Edit profile</b> — Tap <b>Edit profile</b> to set your name, username, bio, the note bubble above your photo, follower &amp; following counts, profile picture and the DM badge number.</p>
+      <p><b>Add posts</b> — Tap the <b>+</b> at the top-left (or <b>Create</b> on the empty state). You can pick several photos at once; the grid grows on its own and the post count updates.</p>
+      <p><b>Add highlights</b> — Tap the <b>New</b> circle to choose a cover photo, crop it, and give it an emoji or title.</p>
+      <p><b>Remove things</b> — Tap a post to open it and hit <b>Remove</b>; tap a highlight to edit or remove it.</p>
+      <p><b>Saving</b> — Everything saves automatically on this device. The lock icon by your name is a manual quick-save.</p>
+      <p><b>Start over</b> — In Edit profile, use <b>Reset profile</b> or <b>Start from scratch</b>.</p>
+    </div>
+    <div class="form-buttons">
+      <button class="btn-primary" onclick="closeInstructions()">Got it</button>
+    </div>
+  </div>
+</div>
+
 <input type="file" id="photo-picker" accept="image/*" style="display:none">
 <input type="file" id="post-picker" accept="image/*" multiple style="display:none">
 
@@ -692,7 +712,7 @@
 
   <div class="action-row">
     <button class="btn" onclick="showModal()">Edit profile</button>
-    <button class="btn">Share profile</button>
+    <button class="btn" onclick="showInstructions()">Share profile</button>
     <button class="btn icon-only"><svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M15 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" stroke="white" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8.5" cy="7" r="4" stroke="white" stroke-width="1.9"/><path d="M19 8v6M22 11h-6" stroke="white" stroke-width="1.9" stroke-linecap="round"/></svg></button>
   </div>
 
@@ -875,6 +895,13 @@
     applyProfileToDOM();
     saveProfileToStorage();
     showModal();
+  }
+
+  function showInstructions() {
+    document.getElementById('instructions-modal').classList.remove('hidden');
+  }
+  function closeInstructions() {
+    document.getElementById('instructions-modal').classList.add('hidden');
   }
 
   function resetEverything() {
