@@ -1434,18 +1434,20 @@
     positionUnderline(true);
   }
 
-  // Sliding active-tab underline: velocity grows with distance travelled
+  // Sliding active-tab underline. Per-tab widths (px) measured from Instagram,
+  // centered under each tab; velocity grows with distance travelled.
   const tabRow = document.querySelector('.tab-row');
   const tabUnderline = document.getElementById('tab-underline');
+  const UNDERLINE_W = { posts: 40, videos: 80, reposts: 64, mentions: 64 };
   function positionUnderline(animate) {
     const active = document.querySelector('.tab.active');
     if (!active) return;
     const rowRect = tabRow.getBoundingClientRect();
     const tabRect = active.getBoundingClientRect();
     if (!tabRect.width) return;
-    // Fill the whole tab territory, edge to edge (no side gaps)
-    const w = tabRect.width;
-    const targetX = tabRect.left - rowRect.left;
+    const w = UNDERLINE_W[active.dataset.tab] || 64;
+    const tabCenter = (tabRect.left - rowRect.left) + tabRect.width / 2;
+    const targetX = tabCenter - w / 2;
     const prevX = parseFloat(tabUnderline.dataset.x);
     let dur = 0;
     if (animate && !isNaN(prevX)) {
