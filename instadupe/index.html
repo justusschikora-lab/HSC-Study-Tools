@@ -73,6 +73,17 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
+  #refresh-flash {
+    position: absolute;
+    inset: 0;
+    background: var(--bg);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 5000;
+    transition: opacity 0.05s linear;
+  }
+  #refresh-flash.show { opacity: 1; }
+
   /* ---------- Header ---------- */
   header.topbar {
     display: flex;
@@ -801,22 +812,8 @@
 </div>
 
 <div id="phone-frame">
+<div id="refresh-flash"></div>
 <div id="scroller">
-  <div id="pull-indicator">
-    <svg viewBox="0 0 24 24">
-      <g>
-        <rect x="11" y="1" width="2" height="6" rx="1" fill="white" opacity="1"/>
-        <rect x="11" y="1" width="2" height="6" rx="1" fill="white" opacity="0.87" transform="rotate(45 12 12)"/>
-        <rect x="11" y="1" width="2" height="6" rx="1" fill="white" opacity="0.74" transform="rotate(90 12 12)"/>
-        <rect x="11" y="1" width="2" height="6" rx="1" fill="white" opacity="0.61" transform="rotate(135 12 12)"/>
-        <rect x="11" y="1" width="2" height="6" rx="1" fill="white" opacity="0.48" transform="rotate(180 12 12)"/>
-        <rect x="11" y="1" width="2" height="6" rx="1" fill="white" opacity="0.35" transform="rotate(225 12 12)"/>
-        <rect x="11" y="1" width="2" height="6" rx="1" fill="white" opacity="0.22" transform="rotate(270 12 12)"/>
-        <rect x="11" y="1" width="2" height="6" rx="1" fill="white" opacity="0.13" transform="rotate(315 12 12)"/>
-      </g>
-    </svg>
-  </div>
-
   <header class="topbar">
     <svg class="plus" onclick="openCreateSheet()" width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="1.9" stroke-linecap="round"/></svg>
     <div class="userblock">
@@ -834,6 +831,21 @@
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 6.5h18M3 12h18M3 17.5h18" stroke="white" stroke-width="1.9" stroke-linecap="round"/></svg>
     </div>
   </header>
+
+  <div id="pull-indicator">
+    <svg viewBox="0 0 24 24">
+      <g>
+        <rect x="11" y="1" width="2" height="6" rx="1" fill="white" opacity="1"/>
+        <rect x="11" y="1" width="2" height="6" rx="1" fill="white" opacity="0.87" transform="rotate(45 12 12)"/>
+        <rect x="11" y="1" width="2" height="6" rx="1" fill="white" opacity="0.74" transform="rotate(90 12 12)"/>
+        <rect x="11" y="1" width="2" height="6" rx="1" fill="white" opacity="0.61" transform="rotate(135 12 12)"/>
+        <rect x="11" y="1" width="2" height="6" rx="1" fill="white" opacity="0.48" transform="rotate(180 12 12)"/>
+        <rect x="11" y="1" width="2" height="6" rx="1" fill="white" opacity="0.35" transform="rotate(225 12 12)"/>
+        <rect x="11" y="1" width="2" height="6" rx="1" fill="white" opacity="0.22" transform="rotate(270 12 12)"/>
+        <rect x="11" y="1" width="2" height="6" rx="1" fill="white" opacity="0.13" transform="rotate(315 12 12)"/>
+      </g>
+    </svg>
+  </div>
 
   <div class="profile-top">
     <div class="avatar-wrap">
@@ -1676,7 +1688,12 @@
     if (dist > THRESHOLD * 0.5) {
       indicator.style.height = '50px';
       indicator.classList.add('show');
-      setTimeout(() => { window.location.reload(); }, 700);
+      // spin for a beat, then flicker to the plain blue background, then reload
+      setTimeout(() => {
+        const flash = document.getElementById('refresh-flash');
+        flash.classList.add('show');
+        setTimeout(() => { window.location.reload(); }, 180);
+      }, 700);
     } else {
       indicator.style.height = '0px';
       indicator.classList.remove('show');
