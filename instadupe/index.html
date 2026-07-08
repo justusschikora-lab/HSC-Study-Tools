@@ -1446,8 +1446,12 @@
     const tabRect = active.getBoundingClientRect();
     if (!tabRect.width) return;
     const w = UNDERLINE_W;
-    const tabCenter = (tabRect.left - rowRect.left) + tabRect.width / 2;
-    const targetX = tabCenter - w / 2;
+    // Center under the main glyph (first svg of the active icon) so the videos
+    // dropdown chevron doesn't shift the bar off-centre.
+    const glyph = active.querySelector('.ic-filled svg');
+    const gRect = (glyph && glyph.getBoundingClientRect().width) ? glyph.getBoundingClientRect() : tabRect;
+    const center = (gRect.left - rowRect.left) + gRect.width / 2;
+    const targetX = center - w / 2;
     const prevX = parseFloat(tabUnderline.dataset.x);
     let dur = 0;
     if (animate && !isNaN(prevX)) {
