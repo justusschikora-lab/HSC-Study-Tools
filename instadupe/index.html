@@ -1441,17 +1441,22 @@
     const active = document.querySelector('.tab.active');
     if (!active) return;
     const rowRect = tabRow.getBoundingClientRect();
-    const r = active.getBoundingClientRect();
-    if (!r.width) return;
-    const w = 30;
-    const targetX = (r.left - rowRect.left) + r.width / 2 - w / 2;
+    const tabRect = active.getBoundingClientRect();
+    // Span the active icon's own left-to-right extent, with a little padding
+    const iconEl = active.querySelector('.ic-filled');
+    const iconRect = (iconEl && iconEl.offsetWidth ? iconEl : active).getBoundingClientRect();
+    if (!tabRect.width) return;
+    const w = iconRect.width + 8;
+    const iconCenter = (iconRect.left - rowRect.left) + iconRect.width / 2;
+    const targetX = iconCenter - w / 2;
     const prevX = parseFloat(tabUnderline.dataset.x);
     let dur = 0;
     if (animate && !isNaN(prevX)) {
-      const steps = Math.max(1, Math.round(Math.abs(targetX - prevX) / r.width));
-      dur = Math.min(0.5, 0.22 * Math.sqrt(steps));
+      const steps = Math.max(1, Math.round(Math.abs(targetX - prevX) / tabRect.width));
+      dur = Math.min(0.62, 0.32 * Math.sqrt(steps));
     }
-    tabUnderline.style.transition = dur ? `transform ${dur}s cubic-bezier(0.4,0,0.2,1)` : 'none';
+    const ease = 'cubic-bezier(0.35, 0, 0.15, 1)';
+    tabUnderline.style.transition = dur ? `transform ${dur}s ${ease}, width ${dur}s ${ease}` : 'none';
     tabUnderline.style.width = w + 'px';
     tabUnderline.style.transform = `translateX(${targetX}px)`;
     tabUnderline.dataset.x = targetX;
