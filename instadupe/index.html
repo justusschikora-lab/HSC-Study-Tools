@@ -79,7 +79,7 @@
     align-items: center;
     padding: 4px 16px 12px;
   }
-  header.topbar .plus { flex-shrink: 0; }
+  header.topbar .plus { flex-shrink: 0; cursor: pointer; }
   header.topbar .lock-btn { background: none; border: none; padding: 4px; cursor: pointer; display: flex; align-items: center; }
   header.topbar .lock-btn svg { transition: opacity 0.3s; }
   header.topbar .lock-btn:active svg { opacity: 0.6; }
@@ -309,6 +309,46 @@
     font-family: inherit;
   }
 
+  /* ---------- Posts grid ---------- */
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5px;
+  }
+  .post-tile {
+    aspect-ratio: 3 / 4;
+    background: #1a1a1a center/cover no-repeat;
+    cursor: pointer;
+  }
+
+  /* ---------- Post viewer ---------- */
+  #post-viewer {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 11000;
+    display: flex;
+    flex-direction: column;
+  }
+  #post-viewer.hidden { display: none; }
+  #post-viewer .pv-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: max(14px, env(safe-area-inset-top)) 16px 12px;
+  }
+  #post-viewer .pv-head button {
+    background: none; border: none; color: var(--text);
+    font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer; padding: 4px;
+  }
+  #post-viewer .pv-head .pv-remove { color: var(--red); }
+  #post-viewer .pv-stage {
+    flex: 1; min-height: 0;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 12px calc(14px + env(safe-area-inset-bottom));
+  }
+  #post-viewer .pv-stage img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
   /* ---------- Bottom nav ---------- */
   .bottom-nav {
     flex-shrink: 0;
@@ -356,7 +396,7 @@
   }
 
   /* ---------- Modal ---------- */
-  #modal {
+  .modal-overlay {
     position: fixed;
     inset: 0;
     background: rgba(0,0,0,0.6);
@@ -364,8 +404,8 @@
     z-index: 10000;
     padding: 16px;
   }
-  #modal.hidden { display: none; }
-  #modal-content {
+  .modal-overlay.hidden { display: none; }
+  .modal-content {
     background: var(--panel);
     border-radius: 16px;
     padding: 20px;
@@ -373,7 +413,20 @@
     max-height: 85vh;
     overflow-y: auto;
   }
-  #modal h2 { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+  .modal-content h2 { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+  .remove-link {
+    display: block;
+    width: 100%;
+    margin-top: 14px;
+    background: none;
+    border: none;
+    color: var(--red);
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    padding: 6px;
+  }
   .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
   .form-group label { font-size: 13px; color: var(--subtext); font-weight: 500; }
   .form-group input, .form-group textarea {
@@ -468,8 +521,8 @@
 </head>
 <body>
 
-<div id="modal" class="hidden">
-  <div id="modal-content">
+<div id="modal" class="modal-overlay hidden">
+  <div id="modal-content" class="modal-content">
     <h2>Edit Profile</h2>
     <div class="form-group">
       <label>Username</label>
@@ -486,10 +539,6 @@
     <div class="form-group">
       <label>Bio</label>
       <textarea id="bio" rows="3" placeholder="e.g.&#10;living my best life&#10;@somelink"></textarea>
-    </div>
-    <div class="form-group">
-      <label>Posts</label>
-      <input type="number" id="posts" min="0">
     </div>
     <div class="form-group">
       <label>Followers</label>
@@ -514,10 +563,42 @@
       <button class="btn-secondary" onclick="cancelModal()">Cancel</button>
       <button class="btn-primary" onclick="saveProfileFromModal()">Save</button>
     </div>
+    <button class="remove-link" onclick="resetProfile()">Reset profile</button>
   </div>
 </div>
 
+<div id="highlight-modal" class="modal-overlay hidden">
+  <div class="modal-content">
+    <h2 id="highlight-modal-title">New highlight</h2>
+    <div class="form-group">
+      <label>Cover photo</label>
+      <div class="avatar-picker-row">
+        <div id="highlight-preview" class="avatar-preview-circle"></div>
+        <button type="button" class="choose-photo-btn" onclick="openHighlightPhotoPicker()">Choose photo</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Title (emoji or text)</label>
+      <input type="text" id="highlight-title" maxlength="20" placeholder="e.g. ✈️  or  Trips">
+    </div>
+    <div class="form-buttons">
+      <button class="btn-secondary" onclick="cancelHighlightModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveHighlightFromModal()">Save</button>
+    </div>
+    <button id="highlight-remove-btn" class="remove-link" onclick="removeCurrentHighlight()" style="display:none">Remove highlight</button>
+  </div>
+</div>
+
+<div id="post-viewer" class="hidden">
+  <div class="pv-head">
+    <button onclick="closePostViewer()">Close</button>
+    <button class="pv-remove" onclick="removeCurrentPost()">Remove</button>
+  </div>
+  <div class="pv-stage"><img id="pv-img" src="" alt=""></div>
+</div>
+
 <input type="file" id="photo-picker" accept="image/*" style="display:none">
+<input type="file" id="post-picker" accept="image/*" multiple style="display:none">
 
 <div id="cropper" class="hidden">
   <div class="crop-head">
@@ -556,7 +637,7 @@
   </div>
 
   <header class="topbar">
-    <svg class="plus" width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="1.9" stroke-linecap="round"/></svg>
+    <svg class="plus" onclick="openPostPicker()" width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="1.9" stroke-linecap="round"/></svg>
     <div class="userblock">
       <button class="lock-btn" title="Save profile" onclick="quickSaveProfile()">
         <svg width="15" height="17" viewBox="0 0 24 24" fill="none"><rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5" stroke="white" stroke-width="1.9"/><path d="M8 10.5V7.5a4 4 0 017.5-2" stroke="white" stroke-width="1.9" stroke-linecap="round"/></svg>
@@ -596,12 +677,7 @@
     <button class="btn icon-only"><svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M15 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" stroke="white" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8.5" cy="7" r="4" stroke="white" stroke-width="1.9"/><path d="M19 8v6M22 11h-6" stroke="white" stroke-width="1.9" stroke-linecap="round"/></svg></button>
   </div>
 
-  <div class="highlights-row" id="highlights-row">
-    <div class="highlight" onclick="openHighlightPicker()">
-      <div class="circle"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-      <div class="name">New</div>
-    </div>
-  </div>
+  <div class="highlights-row" id="highlights-row"></div>
 
   <div class="tab-row">
     <div class="tab active"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="2.5" y="2.5" width="5.4" height="5.4" rx="1.2" fill="white"/><rect x="9.3" y="2.5" width="5.4" height="5.4" rx="1.2" fill="white"/><rect x="16.1" y="2.5" width="5.4" height="5.4" rx="1.2" fill="white"/><rect x="2.5" y="9.3" width="5.4" height="5.4" rx="1.2" fill="white"/><rect x="9.3" y="9.3" width="5.4" height="5.4" rx="1.2" fill="white"/><rect x="16.1" y="9.3" width="5.4" height="5.4" rx="1.2" fill="white"/><rect x="2.5" y="16.1" width="5.4" height="5.4" rx="1.2" fill="white"/><rect x="9.3" y="16.1" width="5.4" height="5.4" rx="1.2" fill="white"/><rect x="16.1" y="16.1" width="5.4" height="5.4" rx="1.2" fill="white"/></svg></div>
@@ -610,11 +686,13 @@
     <div class="tab"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M4 20c0-3.3 3.6-5.5 8-5.5s8 2.2 8 5.5" stroke="white" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="8" r="4" stroke="white" stroke-width="1.6"/><rect x="1.5" y="1.5" width="21" height="21" rx="5" stroke="white" stroke-width="1.6"/></svg></div>
   </div>
 
+  <div class="posts-grid" id="posts-grid" style="display:none"></div>
+
   <div class="empty-state">
     <img src="illustration.jpg" alt="">
     <div class="label">Create your first post</div>
     <div class="sublabel">Make this space your own.</div>
-    <button class="create-btn">Create</button>
+    <button class="create-btn" onclick="openPostPicker()">Create</button>
   </div>
 </div>
 
@@ -642,11 +720,12 @@
   let pulling = false;
 
   const DEFAULT_AVATAR = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23303030'/%3E%3Ccircle cx='50' cy='40' r='16' fill='%236e6e6e'/%3E%3Cpath d='M24 84c0-15 12-25 26-25s26 10 26 25z' fill='%236e6e6e'/%3E%3C/svg%3E";
+  const HIGHLIGHT_PLACEHOLDER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%232b2b2b'/%3E%3Ccircle cx='38' cy='40' r='7' fill='%23555'/%3E%3Cpath d='M18 80l22-24 12 12 14-18 18 30z' fill='%23555'/%3E%3C/svg%3E";
 
   // ---------- Profile state & persistence ----------
   const profile = {
     username: '', displayName: '', note: '', bio: '',
-    posts: 0, followers: 0, following: 0,
+    followers: 0, following: 0,
     avatarUrl: DEFAULT_AVATAR, dmBadge: 0
   };
   let pendingAvatarUrl = DEFAULT_AVATAR;
@@ -718,7 +797,6 @@
     setAvatar(profile.avatarUrl);
 
     const statDivs = document.querySelectorAll('.stat');
-    statDivs[0].querySelector('.num').textContent = formatNumber(profile.posts);
     statDivs[1].querySelector('.num').textContent = profile.followers.toLocaleString('en-US');
     statDivs[2].querySelector('.num').textContent = profile.following.toLocaleString('en-US');
 
@@ -734,7 +812,6 @@
     document.getElementById('displayname').value = profile.displayName;
     document.getElementById('note').value = profile.note;
     document.getElementById('bio').value = profile.bio;
-    document.getElementById('posts').value = profile.posts;
     document.getElementById('followers').value = profile.followers;
     document.getElementById('following').value = profile.following;
     document.getElementById('dm-badge').value = profile.dmBadge;
@@ -755,7 +832,6 @@
     profile.displayName = document.getElementById('displayname').value.trim();
     profile.note = document.getElementById('note').value.trim();
     profile.bio = document.getElementById('bio').value;
-    profile.posts = parseInt(document.getElementById('posts').value) || 0;
     profile.followers = parseInt(document.getElementById('followers').value) || 0;
     profile.following = parseInt(document.getElementById('following').value) || 0;
     profile.dmBadge = parseInt(document.getElementById('dm-badge').value) || 0;
@@ -766,8 +842,23 @@
     modal.classList.add('hidden');
   }
 
+  function resetProfile() {
+    if (!confirm('Reset your profile details back to blank? Your posts and highlights are not affected.')) return;
+    profile.username = '';
+    profile.displayName = '';
+    profile.note = '';
+    profile.bio = '';
+    profile.followers = 0;
+    profile.following = 0;
+    profile.dmBadge = 0;
+    profile.avatarUrl = DEFAULT_AVATAR;
+    pendingAvatarUrl = DEFAULT_AVATAR;
+    applyProfileToDOM();
+    saveProfileToStorage();
+    showModal();
+  }
+
   applyProfileToDOM();
-  loadHighlightsFromStorage();
 
   // ---------- Shared cropper (avatar photo + highlight photo) ----------
   const cropperEl = document.getElementById('cropper');
@@ -777,6 +868,7 @@
   const photoPicker = document.getElementById('photo-picker');
   const cropTitleEl = document.getElementById('crop-title');
   const cropHintEl = document.getElementById('crop-hint-text');
+  const highlightModal = document.getElementById('highlight-modal');
   let ccx = 0, ccy = 0, cd = 0;
   let cropMode = 'avatar';
 
@@ -785,7 +877,7 @@
     photoPicker.value = '';
     photoPicker.click();
   }
-  function openHighlightPicker() {
+  function openHighlightPhotoPicker() {
     cropMode = 'highlight';
     photoPicker.value = '';
     photoPicker.click();
@@ -800,8 +892,9 @@
       cropHintEl.textContent = 'Drag the circle over the profile picture';
       modal.classList.add('hidden');
     } else {
-      cropTitleEl.textContent = 'Crop highlight picture';
-      cropHintEl.textContent = 'Drag the circle over the highlight picture';
+      cropTitleEl.textContent = 'Crop highlight cover';
+      cropHintEl.textContent = 'Drag the circle over the cover photo';
+      highlightModal.classList.add('hidden');
     }
     cropperEl.classList.remove('hidden');
   });
@@ -856,42 +949,92 @@
     return canvas.toDataURL('image/jpeg', 0.92);
   }
 
-  const highlights = [];
+  // ---------- Highlights (array-driven) ----------
+  let highlights = [];
+  let editingHighlightIndex = null;
+  let pendingHighlightUrl = HIGHLIGHT_PLACEHOLDER;
+
+  const NEW_HIGHLIGHT_TILE = `<div class="circle"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg></div><div class="name">New</div>`;
 
   function saveHighlightsToStorage() {
-    const tiles = document.querySelectorAll('#highlights-row .highlight:not(:first-child)');
-    const data = Array.from(tiles).map(el => ({
-      imgUrl: el.querySelector('.circle').style.backgroundImage.match(/url\(["']?(.+?)["']?\)/)?.[1] || '',
-      name: el.querySelector('.name').textContent
-    }));
-    localStorage.setItem('instadupe_highlights', JSON.stringify(data));
+    try { localStorage.setItem('instadupe_highlights', JSON.stringify(highlights)); }
+    catch (e) { alert('Storage full — could not save highlights.'); }
   }
 
   function loadHighlightsFromStorage() {
     const saved = localStorage.getItem('instadupe_highlights');
     if (saved) {
-      try {
-        const data = JSON.parse(saved);
-        data.forEach(h => addHighlightTile(h.imgUrl, h.name));
-      } catch (e) {
-        // ignore parse errors
-      }
+      try { highlights = JSON.parse(saved) || []; }
+      catch (e) { highlights = []; }
     }
   }
 
-  function addHighlightTile(imgUrl, name) {
+  function renderHighlights() {
     const row = document.getElementById('highlights-row');
-    const el = document.createElement('div');
-    el.className = 'highlight';
-    el.innerHTML = `<div class="circle filled" style="background-image:url('${imgUrl}')"></div><div class="name"></div>`;
-    el.querySelector('.name').textContent = name;
-    el.addEventListener('click', () => {
-      if (confirm('Remove this highlight?')) {
-        el.remove();
-        saveHighlightsToStorage();
-      }
+    row.innerHTML = '';
+
+    const newTile = document.createElement('div');
+    newTile.className = 'highlight';
+    newTile.innerHTML = NEW_HIGHLIGHT_TILE;
+    newTile.addEventListener('click', openNewHighlightModal);
+    row.appendChild(newTile);
+
+    highlights.forEach((h, i) => {
+      const el = document.createElement('div');
+      el.className = 'highlight';
+      el.innerHTML = `<div class="circle filled"></div><div class="name"></div>`;
+      el.querySelector('.circle').style.backgroundImage = `url("${h.imgUrl}")`;
+      el.querySelector('.name').textContent = h.name;
+      el.addEventListener('click', () => openEditHighlightModal(i));
+      row.appendChild(el);
     });
-    row.appendChild(el);
+  }
+
+  function updateHighlightPreview() {
+    document.getElementById('highlight-preview').style.backgroundImage = `url("${pendingHighlightUrl}")`;
+  }
+
+  function openNewHighlightModal() {
+    editingHighlightIndex = null;
+    pendingHighlightUrl = HIGHLIGHT_PLACEHOLDER;
+    document.getElementById('highlight-title').value = '';
+    document.getElementById('highlight-modal-title').textContent = 'New highlight';
+    document.getElementById('highlight-remove-btn').style.display = 'none';
+    updateHighlightPreview();
+    highlightModal.classList.remove('hidden');
+  }
+
+  function openEditHighlightModal(i) {
+    editingHighlightIndex = i;
+    pendingHighlightUrl = highlights[i].imgUrl;
+    document.getElementById('highlight-title').value = highlights[i].name;
+    document.getElementById('highlight-modal-title').textContent = 'Edit highlight';
+    document.getElementById('highlight-remove-btn').style.display = 'block';
+    updateHighlightPreview();
+    highlightModal.classList.remove('hidden');
+  }
+
+  function saveHighlightFromModal() {
+    const name = document.getElementById('highlight-title').value.trim().slice(0, 20) || 'Highlight';
+    const data = { imgUrl: pendingHighlightUrl, name };
+    if (editingHighlightIndex === null) highlights.push(data);
+    else highlights[editingHighlightIndex] = data;
+    renderHighlights();
+    saveHighlightsToStorage();
+    highlightModal.classList.add('hidden');
+  }
+
+  function removeCurrentHighlight() {
+    if (editingHighlightIndex !== null) {
+      highlights.splice(editingHighlightIndex, 1);
+      renderHighlights();
+      saveHighlightsToStorage();
+    }
+    highlightModal.classList.add('hidden');
+  }
+
+  function cancelHighlightModal() {
+    highlightModal.classList.add('hidden');
   }
 
   function confirmCrop() {
@@ -902,16 +1045,120 @@
       updateAvatarPreview();
       reopenModal();
     } else {
-      const name = (prompt('Highlight name', 'Highlight') || '').trim().slice(0, 20) || 'Highlight';
-      addHighlightTile(dataUrl, name);
-      saveHighlightsToStorage();
+      pendingHighlightUrl = dataUrl;
+      updateHighlightPreview();
+      highlightModal.classList.remove('hidden');
     }
   }
 
   function cancelCrop() {
     cropperEl.classList.add('hidden');
     if (cropMode === 'avatar') reopenModal();
+    else highlightModal.classList.remove('hidden');
   }
+
+  // ---------- Posts ----------
+  const postPicker = document.getElementById('post-picker');
+  let posts = [];
+  let currentPostIndex = null;
+
+  function savePostsToStorage() {
+    try { localStorage.setItem('instadupe_posts', JSON.stringify(posts)); }
+    catch (e) { alert('Storage full — some posts could not be saved. Try fewer or smaller photos.'); }
+  }
+
+  function loadPostsFromStorage() {
+    const saved = localStorage.getItem('instadupe_posts');
+    if (saved) {
+      try { posts = JSON.parse(saved) || []; }
+      catch (e) { posts = []; }
+    }
+  }
+
+  function updatePostCount() {
+    document.querySelectorAll('.stat')[0].querySelector('.num').textContent = formatNumber(posts.length);
+  }
+
+  function renderPosts() {
+    const grid = document.getElementById('posts-grid');
+    const empty = document.querySelector('.empty-state');
+    grid.innerHTML = '';
+    if (posts.length === 0) {
+      grid.style.display = 'none';
+      empty.style.display = 'flex';
+    } else {
+      empty.style.display = 'none';
+      grid.style.display = 'grid';
+      posts.forEach((url, i) => {
+        const tile = document.createElement('div');
+        tile.className = 'post-tile';
+        tile.style.backgroundImage = `url("${url}")`;
+        tile.addEventListener('click', () => openPostViewer(i));
+        grid.appendChild(tile);
+      });
+    }
+    updatePostCount();
+  }
+
+  function fileToScaledDataUrl(file, maxDim, quality) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        let width = img.width, height = img.height;
+        const scale = Math.min(1, maxDim / Math.max(width, height));
+        width = Math.round(width * scale);
+        height = Math.round(height * scale);
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        URL.revokeObjectURL(img.src);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = reject;
+      img.src = URL.createObjectURL(file);
+    });
+  }
+
+  function openPostPicker() {
+    postPicker.value = '';
+    postPicker.click();
+  }
+
+  postPicker.addEventListener('change', async (e) => {
+    const files = Array.from(e.target.files);
+    for (const f of files) {
+      try { posts.push(await fileToScaledDataUrl(f, 1080, 0.8)); }
+      catch (err) { /* skip unreadable file */ }
+    }
+    renderPosts();
+    savePostsToStorage();
+  });
+
+  function openPostViewer(i) {
+    currentPostIndex = i;
+    document.getElementById('pv-img').src = posts[i];
+    document.getElementById('post-viewer').classList.remove('hidden');
+  }
+
+  function closePostViewer() {
+    document.getElementById('post-viewer').classList.add('hidden');
+    currentPostIndex = null;
+  }
+
+  function removeCurrentPost() {
+    if (currentPostIndex !== null) {
+      posts.splice(currentPostIndex, 1);
+      renderPosts();
+      savePostsToStorage();
+    }
+    closePostViewer();
+  }
+
+  // ---------- Init highlights + posts ----------
+  loadHighlightsFromStorage();
+  renderHighlights();
+  loadPostsFromStorage();
+  renderPosts();
 
   scroller.addEventListener('touchstart', (e) => {
     if (scroller.scrollTop <= 0) { startY = e.touches[0].clientY; pulling = true; }
