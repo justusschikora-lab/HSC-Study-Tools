@@ -4,29 +4,34 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Instagram</title>
-<link rel="apple-touch-icon" href="icon.png">
+<link rel="apple-touch-icon" href="icon.jpg">
+<link rel="icon" href="icon.jpg">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <style>
   :root {
-    --bg: #000000;
-    --panel: #121212;
-    --pill: #262626;
+    --bg: #0c0f14;
+    --panel: #1a1d24;
+    --btn: #2b2f35;
     --text: #ffffff;
-    --subtext: #8e8e8e;
+    --subtext: #a8a8a8;
+    --link: #85a0f9;
+    --accent: #5b51d8;
+    --red: #ff3040;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body {
     margin: 0;
     padding: 0;
-    background: #000000;
+    background: var(--bg);
     color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     height: 100%;
     height: 100dvh;
     overflow: hidden;
     -webkit-user-select: none;
     user-select: none;
+    -webkit-font-smoothing: antialiased;
   }
 
   #phone-frame {
@@ -36,59 +41,17 @@
     background: var(--bg);
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 
   #scroller {
-    height: calc(100% - 54px - env(safe-area-inset-bottom));
+    flex: 1;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     position: relative;
-  }
-
-  .highlights-row {
-    display: flex;
-    gap: 18px;
-    padding: 4px 16px 20px;
-  }
-  .highlight {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-  }
-  .highlight .circle {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    border: 1.5px dashed #555;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .highlight .name {
-    font-size: 12px;
-    color: var(--text);
-  }
-
-  .bottom-nav {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 54px;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    border-top: 1px solid #262626;
-    background: var(--bg);
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-  .bottom-nav .nav-avatar {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: #333 center/cover no-repeat;
-    border: 1.5px solid var(--text);
+    min-height: 0;
+    padding-top: max(6px, env(safe-area-inset-top));
   }
 
   #pull-indicator {
@@ -100,164 +63,567 @@
     transition: height 0.15s ease-out;
   }
   #pull-indicator svg {
-    width: 22px;
-    height: 22px;
+    width: 22px; height: 22px;
     animation: spin 0.7s linear infinite;
-    opacity: 0;
-    transition: opacity 0.1s;
+    opacity: 0; transition: opacity 0.1s;
   }
   #pull-indicator.show svg { opacity: 1; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
+  /* ---------- Header ---------- */
   header.topbar {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 10px 14px 14px;
-    padding-top: max(10px, env(safe-area-inset-top));
+    padding: 4px 16px 12px;
   }
-  header.topbar .left {
+  header.topbar .plus { flex-shrink: 0; }
+  header.topbar .userblock {
+    flex: 1;
     display: flex;
     align-items: center;
-    gap: 14px;
+    justify-content: center;
+    gap: 6px;
+    min-width: 0;
   }
   header.topbar .username {
-    font-size: 19px;
+    font-size: 21px;
     font-weight: 700;
+    letter-spacing: -0.3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  header.topbar .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--red);
+    flex-shrink: 0;
+    margin-left: 2px;
   }
   header.topbar .icons {
     display: flex;
     align-items: center;
-    gap: 18px;
+    gap: 20px;
+    flex-shrink: 0;
+    margin-left: 8px;
+  }
+  header.topbar .icons .threads-wrap { position: relative; display: flex; }
+  .top-badge {
+    position: absolute;
+    top: -6px; right: -8px;
+    background: var(--red);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 16px; height: 16px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 4px;
+    border: 1.5px solid var(--bg);
   }
 
-  .profile-row {
+  /* ---------- Profile ---------- */
+  .profile-top {
     display: flex;
     align-items: center;
-    padding: 4px 16px 18px;
-    gap: 22px;
+    padding: 8px 18px 0;
+    gap: 26px;
   }
+  .avatar-wrap { position: relative; flex-shrink: 0; }
   .avatar {
-    width: 86px;
-    height: 86px;
+    width: 88px; height: 88px;
     border-radius: 50%;
     object-fit: cover;
     background: #333 center/cover no-repeat;
-    flex-shrink: 0;
+  }
+  .avatar-wrap .add-story {
+    position: absolute;
+    bottom: 0px; right: 0px;
+    width: 27px; height: 27px;
+    border-radius: 50%;
+    background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    border: 3px solid var(--bg);
+  }
+  .note-bubble {
+    position: absolute;
+    bottom: 84px; left: 2px;
+    background: #363638;
+    color: #f0f0f0;
+    font-size: 12.5px;
+    line-height: 1.2;
+    padding: 8px 13px;
+    border-radius: 16px;
+    max-width: 128px;
+    text-align: center;
+    z-index: 3;
+  }
+  .note-bubble::after {
+    content: "";
+    position: absolute;
+    bottom: -6px; left: 40px;
+    width: 10px; height: 10px;
+    background: #363638;
+    border-radius: 50%;
+  }
+  .note-bubble::before {
+    content: "";
+    position: absolute;
+    bottom: -13px; left: 36px;
+    width: 5px; height: 5px;
+    background: #363638;
+    border-radius: 50%;
+  }
+  .info-col { flex: 1; min-width: 0; }
+  .info-col .name {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 14px;
   }
   .stats {
     display: flex;
-    flex: 1;
     justify-content: space-between;
+    padding-right: 6px;
   }
   .stat { text-align: center; }
-  .stat .num { font-size: 18px; font-weight: 700; line-height: 1.2; }
-  .stat .label { font-size: 14px; color: var(--text); }
+  .stat .num { font-size: 19px; font-weight: 700; line-height: 1.15; }
+  .stat .label { font-size: 14.5px; color: var(--text); margin-top: 1px; }
 
-  .name-row {
-    padding: 0 16px 14px;
-    font-size: 15px;
-    font-weight: 700;
+  /* ---------- Bio ---------- */
+  .bio {
+    padding: 12px 18px 0;
+    font-size: 14.5px;
+    line-height: 1.35;
   }
+  .bio .flag { font-size: 15px; }
+  .bio .link { color: var(--link); }
 
-  .followed-by {
-    display: flex;
+  .banners-btn {
+    margin: 14px 18px 0;
+    display: inline-flex;
     align-items: center;
-    gap: 10px;
-    padding: 0 16px 16px;
-  }
-  .followed-by .avatars { display: flex; }
-  .followed-by .avatars img {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    border: 2px solid var(--bg);
-    margin-left: -10px;
-    object-fit: cover;
-    background: #333;
-  }
-  .followed-by .avatars img:first-child { margin-left: 0; }
-  .followed-by .text {
-    font-size: 13.5px;
+    gap: 7px;
+    background: transparent;
+    border: 1px solid #303030;
     color: var(--subtext);
-    line-height: 1.3;
+    border-radius: 9px;
+    padding: 8px 15px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
   }
-  .followed-by .text b { color: var(--text); font-weight: 600; }
 
+  /* ---------- Action buttons ---------- */
   .action-row {
     display: flex;
-    gap: 8px;
-    padding: 0 16px 18px;
+    gap: 6px;
+    padding: 14px 16px 0;
   }
   .btn {
     flex: 1;
-    background: var(--pill);
+    background: var(--btn);
     color: var(--text);
     border: none;
-    border-radius: 8px;
+    border-radius: 9px;
     padding: 9px 0;
     font-size: 14.5px;
     font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     gap: 4px;
+    cursor: pointer;
+    font-family: inherit;
   }
-  .btn.icon-only {
-    flex: 0 0 44px;
-  }
+  .btn.icon-only { flex: 0 0 46px; }
 
+  /* ---------- Highlights ---------- */
+  .highlights-row {
+    display: flex;
+    gap: 20px;
+    padding: 18px 18px 20px;
+    overflow-x: auto;
+  }
+  .highlights-row::-webkit-scrollbar { display: none; }
+  .highlight {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .highlight .circle {
+    width: 66px; height: 66px;
+    border-radius: 50%;
+    border: 1px solid #363636;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .highlight .circle.filled {
+    border: 1px solid #4a4a4a;
+    background-size: cover;
+    background-position: center;
+    padding: 3px;
+    background-clip: content-box;
+  }
+  .highlight .reuse-badge {
+    position: absolute;
+    left: 3px; bottom: 24px;
+    width: 20px; height: 20px;
+    border-radius: 6px;
+    background: #3897f0;
+    border: 2px solid var(--bg);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .highlight .name { font-size: 12.5px; color: var(--text); }
+
+  /* ---------- Tabs ---------- */
   .tab-row {
     display: flex;
-    border-top: 1px solid #262626;
+    border-top: 0.5px solid #262626;
   }
   .tab {
     flex: 1;
     display: flex;
     justify-content: center;
     padding: 12px 0;
-    border-bottom: 2px solid transparent;
+    border-bottom: 1px solid transparent;
   }
-  .tab.active { border-bottom: 2px solid var(--text); }
+  .tab.active { border-bottom: 1px solid var(--text); }
+  .tab svg { opacity: 0.55; }
+  .tab.active svg { opacity: 1; }
 
+  /* ---------- Empty state ---------- */
   .empty-state {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 90px;
-    gap: 18px;
+    padding: 44px 20px 40px;
   }
-  .empty-state .camera-circle {
-    width: 96px;
-    height: 96px;
-    border-radius: 50%;
-    border: 2px solid var(--text);
+  .empty-state img {
+    width: 200px;
+    height: auto;
+    display: block;
+    margin-bottom: 18px;
+  }
+  .empty-state .label {
+    font-size: 23px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+  .empty-state .sublabel {
+    font-size: 15px;
+    color: var(--subtext);
+    margin-top: 8px;
+    margin-bottom: 18px;
+  }
+  .empty-state .create-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 11px;
+    padding: 12px 40px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: inherit;
+  }
+
+  /* ---------- Bottom nav ---------- */
+  .bottom-nav {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 50px;
+    border-top: 0.5px solid #262626;
+    background: var(--bg);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .bottom-nav .nav-item {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
   }
-  .empty-state .label {
-    font-size: 21px;
+  .bottom-nav .nav-item .badge {
+    position: absolute;
+    top: -5px; right: -10px;
+    background: var(--red);
+    color: #fff;
+    font-size: 11px;
     font-weight: 700;
-  }
-  .empty-state .sublabel {
-    font-size: 14px;
-    color: var(--subtext);
-    margin-top: -10px;
-  }
-  .empty-state .create-btn {
-    background: #0095f6;
-    color: var(--text);
-    border: none;
+    min-width: 16px; height: 16px;
     border-radius: 8px;
-    padding: 10px 28px;
-    font-size: 14.5px;
-    font-weight: 600;
-    margin-top: 4px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 4px;
+    border: 1.5px solid var(--bg);
+  }
+  .bottom-nav .nav-avatar-wrap { position: relative; }
+  .bottom-nav .nav-avatar {
+    width: 27px; height: 27px;
+    border-radius: 50%;
+    background: #333 center/cover no-repeat;
+    border: 1px solid #555;
+  }
+  .bottom-nav .nav-avatar-wrap .dot {
+    position: absolute;
+    bottom: -1px; right: -1px;
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--red);
+    border: 1.5px solid var(--bg);
+  }
+
+  /* ---------- Modal ---------- */
+  #modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 10000;
+    padding: 16px;
+  }
+  #modal.hidden { display: none; }
+  #modal-content {
+    background: var(--panel);
+    border-radius: 16px;
+    padding: 20px;
+    max-width: 340px; width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+  #modal h2 { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+  .form-group label { font-size: 13px; color: var(--subtext); font-weight: 500; }
+  .form-group input {
+    background: var(--bg);
+    border: 1px solid #363636;
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-size: 15px;
+    font-family: inherit;
+  }
+  .form-group input:focus { outline: none; border-color: #0095f6; }
+  .form-buttons { display: flex; gap: 10px; margin-top: 20px; }
+  .form-buttons button {
+    flex: 1; padding: 11px; border: none; border-radius: 8px;
+    font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit;
+  }
+  .form-buttons .btn-primary { background: #0095f6; color: #fff; }
+
+  /* ---------- Importer / cropper ---------- */
+  #cropper {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 11000;
+    display: flex;
+    flex-direction: column;
+    padding: max(14px, env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom));
+  }
+  #cropper.hidden { display: none; }
+  #cropper .crop-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  #cropper .crop-head .title { font-size: 16px; font-weight: 700; }
+  #cropper .crop-head button {
+    background: none; border: none; color: var(--text);
+    font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer;
+    padding: 4px;
+  }
+  #cropper .crop-head button.use { color: #0095f6; }
+  #cropper .crop-hint { font-size: 13px; color: var(--subtext); text-align: center; margin-bottom: 10px; }
+  #crop-stage {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    touch-action: none;
+  }
+  #crop-wrap { position: relative; display: inline-block; max-width: 100%; max-height: 100%; }
+  #crop-img { display: block; max-width: 100%; max-height: 60vh; -webkit-user-drag: none; user-select: none; pointer-events: none; }
+  #crop-circle {
+    position: absolute;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 0 9999px rgba(0,0,0,0.55);
+    cursor: grab;
+    touch-action: none;
+  }
+  #crop-circle:active { cursor: grabbing; }
+  #cropper .crop-controls { margin-top: 16px; }
+  #cropper .crop-controls label { font-size: 13px; color: var(--subtext); display: block; margin-bottom: 8px; }
+  #crop-size { width: 100%; accent-color: #0095f6; }
+  #ocr-status {
+    text-align: center;
+    font-size: 13.5px;
+    color: var(--subtext);
+    margin-top: 14px;
+    min-height: 18px;
+  }
+  #ocr-status.busy::before {
+    content: "";
+    display: inline-block;
+    width: 13px; height: 13px;
+    border: 2px solid #555;
+    border-top-color: #fff;
+    border-radius: 50%;
+    margin-right: 7px;
+    vertical-align: -2px;
+    animation: spin 0.7s linear infinite;
+  }
+
+  /* ---------- Import instructions ---------- */
+  #import-intro {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 11000;
+    padding: 16px;
+  }
+  #import-intro.hidden { display: none; }
+  .intro-card {
+    background: var(--panel);
+    border-radius: 16px;
+    padding: 24px 20px;
+    max-width: 340px; width: 100%;
+    text-align: center;
+    max-height: 88vh;
+    overflow-y: auto;
+  }
+  .intro-icon { font-size: 34px; margin-bottom: 6px; }
+  .intro-card h2 { font-size: 19px; font-weight: 700; margin-bottom: 4px; }
+  .intro-sub { font-size: 14px; color: var(--subtext); margin-bottom: 20px; }
+  .intro-steps {
+    text-align: left;
+    margin: 0 0 22px;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .intro-steps li {
+    font-size: 14px; line-height: 1.4; color: #cfcfcf;
+    position: relative; padding-left: 34px;
+    counter-increment: step;
+  }
+  .intro-steps li::before {
+    content: counter(step);
+    position: absolute; left: 0; top: -1px;
+    width: 24px; height: 24px;
+    background: #0095f6; color: #fff;
+    border-radius: 50%;
+    font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .intro-steps li b { color: var(--text); font-weight: 600; }
+  .intro-primary {
+    width: 100%; background: #0095f6; color: #fff; border: none;
+    border-radius: 10px; padding: 12px; font-size: 15px; font-weight: 700;
+    font-family: inherit; cursor: pointer;
+  }
+  .intro-secondary {
+    width: 100%; background: none; border: none; color: var(--subtext);
+    font-size: 14px; font-weight: 600; font-family: inherit;
+    margin-top: 10px; padding: 6px; cursor: pointer;
   }
 </style>
 </head>
 <body>
+
+<div id="modal">
+  <div id="modal-content">
+    <h2>Create Profile</h2>
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" id="username" placeholder="e.g. jane.doe" value="">
+    </div>
+    <div class="form-group">
+      <label>Full Name</label>
+      <input type="text" id="fullname" placeholder="e.g. Jane Doe" value="">
+    </div>
+    <div class="form-group">
+      <label>Note bubble (leave blank to hide)</label>
+      <input type="text" id="note" placeholder="e.g. Inspo needed..." value="">
+    </div>
+    <div class="form-group">
+      <label>Bio — flag emoji</label>
+      <input type="text" id="bio-flag" placeholder="🇩🇪" value="" style="max-width:80px;">
+    </div>
+    <div class="form-group">
+      <label>Bio — link text</label>
+      <input type="text" id="bio-link" placeholder="e.g. @yourlink" value="">
+    </div>
+    <div class="form-group">
+      <label>Posts</label>
+      <input type="number" id="posts" value="0" min="0">
+    </div>
+    <div class="form-group">
+      <label>Followers</label>
+      <input type="number" id="followers" value="0" min="0">
+    </div>
+    <div class="form-group">
+      <label>Following</label>
+      <input type="number" id="following" value="0" min="0">
+    </div>
+    <div class="form-group">
+      <label>Avatar</label>
+      <input type="file" id="avatar-file" accept="image/*" style="background: var(--bg); border: 1px solid #363636; border-radius: 8px; padding: 10px 12px; color: var(--text); font-size: 15px; font-family: inherit; cursor: pointer;">
+      <input type="text" id="avatar-url" placeholder="Or paste image URL" value="">
+    </div>
+    <div class="form-group">
+      <label>DM badge</label>
+      <input type="number" id="dm-badge" value="0" min="0">
+    </div>
+    <div class="form-buttons">
+      <button class="btn-primary" onclick="applyProfile()">Create</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="screenshot-input" accept="image/*" style="display:none">
+
+<div id="import-intro" class="hidden">
+  <div class="intro-card">
+    <div class="intro-icon">📷</div>
+    <h2>Import a profile</h2>
+    <p class="intro-sub">Recreate any account from a screenshot.</p>
+    <ol class="intro-steps">
+      <li><b>Screenshot their profile.</b> Open the Instagram account you want and grab a screenshot showing the profile picture, username, name and the posts / followers / following row.</li>
+      <li><b>Choose it here.</b> It reads the details automatically and fills them in.</li>
+      <li><b>Crop their photo.</b> Drag the circle over their profile picture.</li>
+      <li><b>Review & create.</b> Fix anything it misread, then tap Create.</li>
+    </ol>
+    <button class="intro-primary" onclick="pickScreenshot()">Choose screenshot</button>
+    <button class="intro-secondary" onclick="closeImportIntro()">Cancel</button>
+  </div>
+</div>
+
+<div id="cropper" class="hidden">
+  <div class="crop-head">
+    <button onclick="cancelCrop()">Cancel</button>
+    <span class="title">Crop profile picture</span>
+    <button class="use" onclick="confirmCrop()">Use</button>
+  </div>
+  <div class="crop-hint">Drag the circle over their profile picture</div>
+  <div id="crop-stage">
+    <div id="crop-wrap">
+      <img id="crop-img" src="" alt="">
+      <div id="crop-circle"></div>
+    </div>
+  </div>
+  <div class="crop-controls">
+    <label>Size</label>
+    <input type="range" id="crop-size" min="20" max="100" value="55">
+  </div>
+  <div id="ocr-status"></div>
+</div>
 
 <div id="phone-frame">
 <div id="scroller">
@@ -266,89 +632,325 @@
   </div>
 
   <header class="topbar">
-    <div class="left">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span class="username">christian.lorenzo1</span>
+    <svg class="plus" width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="1.9" stroke-linecap="round"/></svg>
+    <div class="userblock">
+      <svg width="15" height="17" viewBox="0 0 24 24" fill="none"><rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5" stroke="white" stroke-width="1.9"/><path d="M8 10.5V7.5a4 4 0 017.5-2" stroke="white" stroke-width="1.9" stroke-linecap="round"/></svg>
+      <span class="username"></span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 9.5l6 6 6-6" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="dot"></div>
     </div>
     <div class="icons">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" fill="white"/></svg>
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="5" cy="12" r="1.6" fill="white"/><circle cx="12" cy="12" r="1.6" fill="white"/><circle cx="19" cy="12" r="1.6" fill="white"/></svg>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 6.5h18M3 12h18M3 17.5h18" stroke="white" stroke-width="1.9" stroke-linecap="round"/></svg>
     </div>
   </header>
 
-  <div class="profile-row">
-    <div class="avatar" id="avatar" style="background-image:url('avatar.jpg')"></div>
-    <div class="stats">
-      <div class="stat"><div class="num">0</div><div class="label">posts</div></div>
-      <div class="stat"><div class="num">227</div><div class="label">followers</div></div>
-      <div class="stat"><div class="num">243</div><div class="label">following</div></div>
+  <div class="profile-top">
+    <div class="avatar-wrap">
+      <div class="note-bubble" id="note-bubble" style="display:none"></div>
+      <div class="avatar" id="avatar"></div>
+      <div class="add-story"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="black" stroke-width="2.6" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="info-col">
+      <div class="name"></div>
+      <div class="stats">
+        <div class="stat"><div class="num">0</div><div class="label">posts</div></div>
+        <div class="stat"><div class="num">0</div><div class="label">followers</div></div>
+        <div class="stat"><div class="num">0</div><div class="label">following</div></div>
+      </div>
     </div>
   </div>
 
-  <div class="name-row">Christian Lorenzo</div>
-
-  <div class="followed-by">
-    <div class="avatars">
-      <img src="https://i.pravatar.cc/40?img=12">
-      <img src="https://i.pravatar.cc/40?img=33">
-      <img src="https://i.pravatar.cc/40?img=8">
-    </div>
-    <div class="text">Followed by <b>aidan._.bell</b>, <b>zach.pawley</b> and 50 others</div>
+  <div class="bio" style="display:none">
+    <span class="flag" id="bio-flag-display"></span><br>
+    <span class="link" id="bio-link-display"></span>
   </div>
+
+  <button class="banners-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#a8a8a8" stroke-width="2.4" stroke-linecap="round"/></svg> Add banners</button>
 
   <div class="action-row">
-    <button class="btn">Edit profile</button>
-    <button class="btn">Share profile</button>
-    <button class="btn icon-only"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="7" r="4" stroke="white" stroke-width="2"/><path d="M20 8v6M17 11h6" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></button>
+    <button class="btn" onclick="showModal()">Edit profile</button>
+    <button class="btn" onclick="startImport()">Share profile</button>
+    <button class="btn icon-only"><svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M15 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" stroke="white" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8.5" cy="7" r="4" stroke="white" stroke-width="1.9"/><path d="M19 8v6M22 11h-6" stroke="white" stroke-width="1.9" stroke-linecap="round"/></svg></button>
   </div>
 
   <div class="highlights-row">
     <div class="highlight">
-      <div class="circle"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div>
+      <div class="circle"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg></div>
       <div class="name">New</div>
+    </div>
+    <div class="highlight">
+      <div class="circle filled" id="highlight-thumb"></div>
+      <div class="reuse-badge"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M17 2l4 3.5-4 3.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 11.5V9a4 4 0 014-4h14" stroke="white" stroke-width="2.2" stroke-linecap="round"/><path d="M7 22l-4-3.5 4-3.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12.5V15a4 4 0 01-4 4H3" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg></div>
+      <div class="name">Memories</div>
     </div>
   </div>
 
   <div class="tab-row">
-    <div class="tab active"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="2.5" y="2.5" width="6" height="6" rx="1" stroke="white" stroke-width="1.5"/><rect x="9" y="2.5" width="6" height="6" rx="1" stroke="white" stroke-width="1.5"/><rect x="15.5" y="2.5" width="6" height="6" rx="1" stroke="white" stroke-width="1.5"/><rect x="2.5" y="9" width="6" height="6" rx="1" stroke="white" stroke-width="1.5"/><rect x="9" y="9" width="6" height="6" rx="1" stroke="white" stroke-width="1.5"/><rect x="15.5" y="9" width="6" height="6" rx="1" stroke="white" stroke-width="1.5"/><rect x="2.5" y="15.5" width="6" height="6" rx="1" stroke="white" stroke-width="1.5"/><rect x="9" y="15.5" width="6" height="6" rx="1" stroke="white" stroke-width="1.5"/><rect x="15.5" y="15.5" width="6" height="6" rx="1" stroke="white" stroke-width="1.5"/></svg></div>
-    <div class="tab"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="2" y="3.5" width="20" height="17" rx="3.5" stroke="white" stroke-width="1.5"/><path d="M10 9l5 3-5 3V9z" fill="white"/></svg></div>
-    <div class="tab"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M17 2l4 3.5-4 3.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 11.5V9a4 4 0 014-4h14" stroke="white" stroke-width="1.5" stroke-linecap="round"/><path d="M7 22l-4-3.5 4-3.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12.5V15a4 4 0 01-4 4H3" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
-    <div class="tab"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="3" stroke="white" stroke-width="1.5"/><path d="M5.5 21c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/><rect x="1.5" y="1.5" width="21" height="21" rx="4" stroke="white" stroke-width="1.5"/></svg></div>
+    <div class="tab active"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="2.5" y="2.5" width="5.4" height="5.4" rx="1.2" fill="white"/><rect x="9.3" y="2.5" width="5.4" height="5.4" rx="1.2" fill="white"/><rect x="16.1" y="2.5" width="5.4" height="5.4" rx="1.2" fill="white"/><rect x="2.5" y="9.3" width="5.4" height="5.4" rx="1.2" fill="white"/><rect x="9.3" y="9.3" width="5.4" height="5.4" rx="1.2" fill="white"/><rect x="16.1" y="9.3" width="5.4" height="5.4" rx="1.2" fill="white"/><rect x="2.5" y="16.1" width="5.4" height="5.4" rx="1.2" fill="white"/><rect x="9.3" y="16.1" width="5.4" height="5.4" rx="1.2" fill="white"/><rect x="16.1" y="16.1" width="5.4" height="5.4" rx="1.2" fill="white"/></svg></div>
+    <div class="tab"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="2.2" y="2.2" width="19.6" height="19.6" rx="4.5" stroke="white" stroke-width="1.6"/><path d="M2.5 8h19M9 2.5L12 8M15 2.5L18 8" stroke="white" stroke-width="1.6"/><path d="M10 12l5 3-5 3v-6z" fill="white"/></svg></div>
+    <div class="tab"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M17 2.5l4 3.5-4 3.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 11V9a4 4 0 014-4h14" stroke="white" stroke-width="1.6" stroke-linecap="round"/><path d="M7 21.5l-4-3.5 4-3.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 13v2a4 4 0 01-4 4H3" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+    <div class="tab"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M4 20c0-3.3 3.6-5.5 8-5.5s8 2.2 8 5.5" stroke="white" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="8" r="4" stroke="white" stroke-width="1.6"/><rect x="1.5" y="1.5" width="21" height="21" rx="5" stroke="white" stroke-width="1.6"/></svg></div>
   </div>
 
   <div class="empty-state">
-    <div class="camera-circle">
-      <svg width="38" height="38" viewBox="0 0 24 24" fill="none"><path d="M4 8a2 2 0 012-2h2l1-1.5h6L16 6h2a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V8z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.5" stroke="white" stroke-width="1.6"/></svg>
-    </div>
+    <img src="illustration.jpg" alt="">
     <div class="label">Create your first post</div>
-    <div class="sublabel">Share your point of view.</div>
+    <div class="sublabel">Make this space your own.</div>
     <button class="create-btn">Create</button>
   </div>
 </div>
 
 <div class="bottom-nav">
-  <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M3.5 10.5L12 3l8.5 7.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 9.5V20a1 1 0 001 1h11a1 1 0 001-1V9.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-  <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="2.5" y="4.5" width="19" height="15" rx="3" stroke="white" stroke-width="1.6"/><path d="M9.5 10l5 2.5-5 2.5v-5z" fill="white"/></svg>
-  <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M22 3L2 10.5l8 3.5 3.5 8L22 3z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-  <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7.5" stroke="white" stroke-width="1.6"/><path d="M21 21l-4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>
-  <div class="nav-avatar" style="background-image:url('avatar.jpg')"></div>
+  <div class="nav-item"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M3 10.5L12 3l9 7.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 9.5V20a1 1 0 001 1h4v-6h3v6h4a1 1 0 001-1V9.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  <div class="nav-item"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5" stroke="white" stroke-width="1.8"/><path d="M9.5 8.5l6 3.5-6 3.5v-7z" fill="white"/></svg></div>
+  <div class="nav-item">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M21.5 3.5L2.8 10.2a.6.6 0 000 1.13l6.6 2.35a1 1 0 01.6.6l2.35 6.6a.6.6 0 001.13 0L21.5 3.5z" stroke="white" stroke-width="1.7" stroke-linejoin="round"/><path d="M21.5 3.5L10 14" stroke="white" stroke-width="1.7" stroke-linecap="round"/></svg>
+    <span class="badge" id="dm-badge-display" style="display:none">0</span>
+  </div>
+  <div class="nav-item"><svg width="25" height="25" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7.5" stroke="white" stroke-width="1.8"/><path d="M21 21l-4.5-4.5" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+  <div class="nav-item nav-avatar-wrap">
+    <div class="nav-avatar"></div>
+    <div class="dot"></div>
+  </div>
 </div>
 </div>
 
 <script>
-  // pull-to-refresh: drag down from the top of the scroller, release past
-  // threshold to trigger a spinner then a real reload (like real Instagram)
   const scroller = document.getElementById('scroller');
   const indicator = document.getElementById('pull-indicator');
+  const modal = document.getElementById('modal');
   const THRESHOLD = 70;
   let startY = null;
   let pulling = false;
+  let importedAvatar = null;
+
+  const DEFAULT_AVATAR = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23303030'/%3E%3Ccircle cx='50' cy='40' r='16' fill='%236e6e6e'/%3E%3Cpath d='M24 84c0-15 12-25 26-25s26 10 26 25z' fill='%236e6e6e'/%3E%3C/svg%3E";
+
+  function setAvatar(url) {
+    document.querySelectorAll('.avatar, .nav-avatar').forEach(el => el.style.backgroundImage = `url("${url}")`);
+    document.getElementById('highlight-thumb').style.backgroundImage = `url("${url}")`;
+  }
+  setAvatar(DEFAULT_AVATAR);
+
+  function formatNumber(num) {
+    if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+    if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+    return num.toString();
+  }
+
+  function showModal() { modal.classList.remove('hidden'); }
+
+  function setBadge(el, val) {
+    el.textContent = val;
+    el.style.display = val > 0 ? 'flex' : 'none';
+  }
+
+  function applyProfile() {
+    const username = document.getElementById('username').value.trim();
+    const fullname = document.getElementById('fullname').value.trim();
+    const note = document.getElementById('note').value.trim();
+    const bioFlag = document.getElementById('bio-flag').value.trim();
+    const bioLink = document.getElementById('bio-link').value.trim();
+    const posts = parseInt(document.getElementById('posts').value) || 0;
+    const followers = parseInt(document.getElementById('followers').value) || 0;
+    const following = parseInt(document.getElementById('following').value) || 0;
+    const avatarFile = document.getElementById('avatar-file').files[0];
+    const urlField = document.getElementById('avatar-url').value.trim();
+    let avatarUrl;
+    if (avatarFile) avatarUrl = URL.createObjectURL(avatarFile);
+    else if (importedAvatar && urlField === '(imported photo)') avatarUrl = importedAvatar;
+    else avatarUrl = urlField || DEFAULT_AVATAR;
+    const dmBadge = parseInt(document.getElementById('dm-badge').value) || 0;
+
+    document.querySelector('.username').textContent = username;
+    document.querySelector('.name').textContent = fullname;
+
+    const noteEl = document.getElementById('note-bubble');
+    noteEl.textContent = note;
+    noteEl.style.display = note ? 'block' : 'none';
+
+    const bioEl = document.querySelector('.bio');
+    if (bioFlag || bioLink) {
+      bioEl.style.display = '';
+      bioEl.innerHTML = (bioFlag ? `<span class="flag">${bioFlag}</span><br>` : '') +
+                        (bioLink ? `<span class="link">${bioLink}</span>` : '');
+    } else {
+      bioEl.style.display = 'none';
+    }
+
+    setAvatar(avatarUrl);
+
+    const statDivs = document.querySelectorAll('.stat');
+    statDivs[0].querySelector('.num').textContent = formatNumber(posts);
+    statDivs[1].querySelector('.num').textContent = followers.toLocaleString('en-US');
+    statDivs[2].querySelector('.num').textContent = following.toLocaleString('en-US');
+
+    setBadge(document.getElementById('dm-badge-display'), dmBadge);
+
+    modal.classList.add('hidden');
+  }
+
+  /* ---------- Import from screenshot (OCR + crop) ---------- */
+  const cropperEl = document.getElementById('cropper');
+  const cropImg = document.getElementById('crop-img');
+  const cropCircle = document.getElementById('crop-circle');
+  const cropSizeInput = document.getElementById('crop-size');
+  const shotInput = document.getElementById('screenshot-input');
+  let ccx = 0, ccy = 0, cd = 0;
+
+  function startImport() { document.getElementById('import-intro').classList.remove('hidden'); }
+  function closeImportIntro() { document.getElementById('import-intro').classList.add('hidden'); }
+  function pickScreenshot() { closeImportIntro(); shotInput.value = ''; shotInput.click(); }
+
+  shotInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    cropImg.src = URL.createObjectURL(file);
+    cropperEl.classList.remove('hidden');
+    runOCR(file);
+  });
+
+  function clampCircle() {
+    const w = cropImg.clientWidth, h = cropImg.clientHeight;
+    cd = Math.max(30, Math.min(cd, w, h));
+    ccx = Math.max(cd / 2, Math.min(ccx, w - cd / 2));
+    ccy = Math.max(cd / 2, Math.min(ccy, h - cd / 2));
+  }
+  function layoutCircle() {
+    clampCircle();
+    cropCircle.style.width = cd + 'px';
+    cropCircle.style.height = cd + 'px';
+    cropCircle.style.left = (ccx - cd / 2) + 'px';
+    cropCircle.style.top = (ccy - cd / 2) + 'px';
+  }
+  function sizeFromSlider() {
+    const w = cropImg.clientWidth, h = cropImg.clientHeight;
+    cd = (parseInt(cropSizeInput.value) / 100) * Math.min(w, h);
+  }
+  cropImg.addEventListener('load', () => {
+    sizeFromSlider();
+    ccx = cropImg.clientWidth * 0.22;
+    ccy = cropImg.clientHeight * 0.18;
+    layoutCircle();
+  });
+  cropSizeInput.addEventListener('input', () => { sizeFromSlider(); layoutCircle(); });
+
+  let dragging = false, dsx = 0, dsy = 0, scx = 0, scy = 0;
+  cropCircle.addEventListener('pointerdown', (e) => {
+    dragging = true;
+    cropCircle.setPointerCapture(e.pointerId);
+    dsx = e.clientX; dsy = e.clientY; scx = ccx; scy = ccy;
+  });
+  cropCircle.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    ccx = scx + (e.clientX - dsx);
+    ccy = scy + (e.clientY - dsy);
+    layoutCircle();
+  });
+  cropCircle.addEventListener('pointerup', () => { dragging = false; });
+  cropCircle.addEventListener('pointercancel', () => { dragging = false; });
+
+  function confirmCrop() {
+    const scale = cropImg.naturalWidth / cropImg.clientWidth;
+    const sx = (ccx - cd / 2) * scale, sy = (ccy - cd / 2) * scale, sd = cd * scale;
+    const out = Math.max(1, Math.round(sd));
+    const canvas = document.createElement('canvas');
+    canvas.width = out; canvas.height = out;
+    canvas.getContext('2d').drawImage(cropImg, sx, sy, sd, sd, 0, 0, out, out);
+    importedAvatar = canvas.toDataURL('image/jpeg', 0.92);
+    setAvatar(importedAvatar);
+    document.getElementById('avatar-url').value = '(imported photo)';
+    cropperEl.classList.add('hidden');
+    showModal();
+  }
+  function cancelCrop() { cropperEl.classList.add('hidden'); }
+  window.startImport = startImport;
+  window.closeImportIntro = closeImportIntro;
+  window.pickScreenshot = pickScreenshot;
+  window.confirmCrop = confirmCrop;
+  window.cancelCrop = cancelCrop;
+
+  function loadTesseract() {
+    return new Promise((resolve, reject) => {
+      if (window.Tesseract) return resolve();
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+      s.onload = () => resolve();
+      s.onerror = () => reject(new Error('load failed'));
+      document.head.appendChild(s);
+    });
+  }
+
+  function parseCount(s) {
+    if (!s) return null;
+    s = s.toString().trim().toLowerCase().replace(/,/g, '').replace(/\s/g, '');
+    let mult = 1;
+    if (s.endsWith('k')) { mult = 1000; s = s.slice(0, -1); }
+    else if (s.endsWith('m')) { mult = 1000000; s = s.slice(0, -1); }
+    const n = parseFloat(s);
+    return isNaN(n) ? null : Math.round(n * mult);
+  }
+
+  function parseProfile(text) {
+    const raw = (text || '').replace(/\r/g, '');
+    const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+    const stop = /^(posts?|followers?|following|edit|profile|share|message|follow|new|memories|create|your|first|post|add|banners)$/i;
+    const res = {};
+    const num = (label) => {
+      let m = raw.match(new RegExp('([0-9][0-9.,]*\\s*[km]?)\\s*' + label, 'i'));
+      if (!m) {
+        const idx = lines.findIndex(l => new RegExp('^' + label + '$', 'i').test(l));
+        if (idx > 0) m = [null, lines[idx - 1]];
+      }
+      return m ? parseCount(m[1]) : null;
+    };
+    res.posts = num('posts');
+    res.followers = num('followers');
+    res.following = num('following');
+    let handle = null, name = null;
+    for (const l of lines) {
+      const t = l.replace(/^@/, '');
+      if (!handle && /^[a-z0-9._]{2,30}$/i.test(t) && /[a-z]/i.test(t) && !stop.test(t)) handle = t;
+    }
+    for (const l of lines) {
+      if (/[a-zA-Z]/.test(l) && /\s/.test(l) && !/\d/.test(l) && !stop.test(l) && l.length <= 30) { name = l; break; }
+    }
+    res.username = handle;
+    res.fullname = name;
+    return res;
+  }
+
+  function prefill(res) {
+    const set = (id, v) => { if (v !== null && v !== undefined && v !== '') document.getElementById(id).value = v; };
+    set('username', res.username);
+    set('fullname', res.fullname);
+    set('posts', res.posts);
+    set('followers', res.followers);
+    set('following', res.following);
+  }
+
+  async function runOCR(file) {
+    const status = document.getElementById('ocr-status');
+    status.className = 'busy';
+    status.textContent = 'Reading profile…';
+    try {
+      await loadTesseract();
+      const { data } = await Tesseract.recognize(file, 'eng');
+      const res = parseProfile(data.text || '');
+      prefill(res);
+      const got = res.username || res.followers != null;
+      status.className = '';
+      status.textContent = got
+        ? 'Got it — crop the photo, then review the details.'
+        : 'Couldn’t read much — crop the photo, then type the details.';
+    } catch (err) {
+      status.className = '';
+      status.textContent = 'Couldn’t auto-read text — crop the photo, then type the details.';
+    }
+  }
 
   scroller.addEventListener('touchstart', (e) => {
-    if (scroller.scrollTop <= 0) {
-      startY = e.touches[0].clientY;
-      pulling = true;
-    }
+    if (scroller.scrollTop <= 0) { startY = e.touches[0].clientY; pulling = true; }
   }, { passive: true });
 
   scroller.addEventListener('touchmove', (e) => {
