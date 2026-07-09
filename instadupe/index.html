@@ -73,17 +73,6 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  #refresh-flash {
-    position: absolute;
-    inset: 0;
-    background: var(--bg);
-    opacity: 0;
-    pointer-events: none;
-    z-index: 5000;
-    transition: opacity 0.05s linear;
-  }
-  #refresh-flash.show { opacity: 1; }
-
   /* ---------- Header ---------- */
   header.topbar {
     display: flex;
@@ -812,7 +801,6 @@
 </div>
 
 <div id="phone-frame">
-<div id="refresh-flash"></div>
 <div id="scroller">
   <header class="topbar">
     <svg class="plus" onclick="openCreateSheet()" width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="1.9" stroke-linecap="round"/></svg>
@@ -1688,12 +1676,7 @@
     if (dist > THRESHOLD * 0.5) {
       indicator.style.height = '50px';
       indicator.classList.add('show');
-      // spin for a beat, then flicker to the plain blue background, then reload
-      setTimeout(() => {
-        const flash = document.getElementById('refresh-flash');
-        flash.classList.add('show');
-        setTimeout(() => { window.location.reload(); }, 180);
-      }, 700);
+      setTimeout(() => { window.location.reload(); }, 700);
     } else {
       indicator.style.height = '0px';
       indicator.classList.remove('show');
