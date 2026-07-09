@@ -1736,7 +1736,13 @@
     if (dist > THRESHOLD * 0.5) {
       indicator.style.height = '50px';
       indicator.classList.add('show');
-      setTimeout(() => { window.location.reload(); }, 700);
+      setTimeout(() => {
+        // Retract smoothly before navigating — otherwise the hard reload cuts
+        // the indicator off mid-height and it looks like it snaps.
+        indicator.style.height = '0px';
+        indicator.classList.remove('show');
+        setTimeout(() => { window.location.reload(); }, 340);
+      }, 700);
     } else {
       indicator.style.height = '0px';
       indicator.classList.remove('show');
